@@ -1,0 +1,183 @@
+﻿@page "/list"
+
+@using Bostadsvaljare.Data
+@using BlazorStrap
+@using Syncfusion.Blazor.Grids
+
+
+
+<BSImage src="IMG/FramsidaExt.jpg"
+         Style="
+        width: 71%;
+        margin-bottom: 10px;
+        margin-right: 5px;
+        display: inline-block;"></BSImage>
+<BSCard CardType="CardType.Card" Class="card-inner">
+    <BSCard CardType="CardType.Image" Class="cardpictop" src="/IMG/Floorplan mortnäs.png" alt="Card image cap" />
+    <BSImage src="IMG/FramsidaExt.jpg" Class="cardpicL"></BSImage>
+    <BSImage src="IMG/FramsidaExt.jpg" Class="cardpic"></BSImage>
+    <BSImage src="IMG/FramsidaExt.jpg" Class="cardpic"></BSImage>
+    <BSImage src="IMG/FramsidaExt.jpg" Class="cardpicR"></BSImage>
+    <BSCard CardType="CardType.Body">
+        <BSCard CardType="CardType.Title">Hus 27a</BSCard>
+        <BSCard CardType="CardType.Subtitle">Storlek: 180 Kvm</BSCard>
+        <BSCard CardType="CardType.Subtitle">Pris:    4 000 000 Kr</BSCard>
+        <BSCard CardType="CardType.Text">Balkongen Ligger österut med vinutsikt över dalrön och kvällsol.</BSCard>
+        <BSCard CardType="CardType.Link">Klicka här för Bokfaktablad.</BSCard>
+    </BSCard>
+</BSCard>
+
+
+<SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true">
+    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
+    <GridColumns>
+        <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer"></GridColumn>
+        <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek"></GridColumn>
+        <GridColumn Field="@nameof(Houses.Price)" Format="C2" HeaderText="Pris"></GridColumn>
+        <GridColumn Field="@nameof(Houses.LandArea)" HeaderText="Tomtstorlek"></GridColumn>
+        <GridColumn Field="@nameof(Houses.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" } )>
+            <Template>
+                @{
+                    var House = (context as Houses);
+                    <div class="image">
+                        @if (House.Status == "Sålt")
+                        {
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
+                                 height="25"
+                                 width="25" />
+                        }
+                        @if (House.Status == "Reserverad")
+                        {
+                            <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
+                                 height="25"
+                                 width="25" />
+                        }
+                        @if (House.Status == "Ledig")
+                        {
+                            <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
+                                 height="25"
+                                 width="25" />
+                        }
+                        <span id="Emptext">@House.Status</span>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+
+    </GridColumns>
+</SfGrid>
+
+
+
+@code{
+
+
+    public List<Houses> dataSource { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.dataSource = Houses.GetHouseData();
+    }
+
+    public class Houses
+
+    {
+        public double Sqm { get; set; }
+        public string Price { get; set; }
+        public double LandArea { get; set; }
+        public string HouseNumber { get; set; }
+        public string Status { get; set; }
+
+        public static List<Houses> GetHouseData()
+
+        {
+            List<Houses> HouseData = new List<Houses>();
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+
+            return HouseData;
+
+        }
+
+
+
+    }
+}
+
+
+
+
+
+
+
+
+<style>
+
+
+    .carousel-inner {
+        width: 1200px;
+        margin-bottom: 10px;
+        margin-right: 5px;
+        display: inline-block;
+    }
+
+    .card-inner {
+        float: right;
+        width: 28%;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+
+    .cardpic {
+        width: 23%;
+        margin-right: 5px;
+        display: inline-block;
+    }
+
+    .cardpicR {
+        width: 23%;
+        display: inline-block;
+    }
+
+    .cardpicL {
+        width: 23%;
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .cardpictop {
+        width: 95%;
+        height: 350px;
+        display: inline-block;
+        margin: 10px;
+    }
+</style>

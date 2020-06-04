@@ -1,0 +1,129 @@
+﻿@page "/fetchdata"
+
+@using Bostadsvaljare.Data
+@using BlazorStrap
+@using Syncfusion.Blazor.Grids
+
+
+
+<BSCarousel Class="carousel-inner">
+    <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
+    <div class="carousel-inner">
+        @for (int i = 0; i < items.Count; i++)
+        {<BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" ActionLink="@items[i].ActionLink" ActionLinkTarget="@items[i].ActionLinkTarget"></BSCarouselItem>
+        }
+    </div>
+    <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
+    <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
+</BSCarousel>
+<BSCard CardType="CardType.Card" Class="card-inner">
+    <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
+    <BSCard CardType="CardType.Body">
+        <BSCard CardType="CardType.Title">Hus 27a</BSCard>
+        <BSCard CardType="CardType.Subtitle">180 kvm - 4 000 000kr</BSCard>
+        <BSCard CardType="CardType.Text">Some quick example text to build on the ca rd title and make ddddddddddasdas  d  asdasdasdasdasdasda sdasdasdasdasdup ddd ddddddddddd ddddddddd  ddddddddddddddddddddddddddddd dddddddddthe bulk of the cards content.Some quick exampsadddddddddddddddddddddddddddddddddddddddle text to build on the card title and make up the k example text to build on the card title and make up the bulk of the cards content</BSCard>
+    </BSCard>
+</BSCard>
+
+
+
+
+<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
+<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
+<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
+<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
+
+
+
+<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
+    <GridColumns>
+        <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+        <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+        <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+
+@code {
+    int i = 0;
+    IList<Item>
+    items = new List<Item>
+        {
+        new Item {
+            Source = "IMG/FramsidaExt.jpg",
+            Alt ="First Slide",
+            Caption = "Slide 1",
+            Header = "Slide 1 Header",
+            ActionLink = "https://visivo.se",
+            ActionLinkTarget = "_blank"
+        },
+        new Item {
+            Source = "IMG/FramsidaExt.jpg",
+            Alt ="Second Slide",
+            Caption = "Slide 2",
+            Header = "Slide 2 Header",
+            ActionLink = "https://visivo.se",
+            ActionLinkTarget = "_blank"
+        },
+        new Item {
+            Source = "IMG/FramsidaExt.jpg",
+            Alt ="Third Slide",
+            Caption = "Slide 3",
+            Header = "Slide 3 Header",
+            ActionLink = "https://visivo.se",
+            ActionLinkTarget = "_blank"
+        }
+                                };
+
+    class Item
+    {
+        public string Source { get; set; }
+        public string Alt { get; set; }
+        public string Caption { get; set; }
+        public string Header { get; set; }
+        public string ActionLink { get; set; }
+        public string ActionLinkTarget { get; set; }
+    }
+
+    public List<Order> Orders { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Orders = Enumerable.Range(1, 75).Select(x => new Order()
+        {
+            OrderID = 1000 + x,
+            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
+            Freight = 2.1 * x,
+            OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
+        }).ToList();
+    }
+
+    public class Order
+    {
+        public int? OrderID { get; set; }
+        public string CustomerID { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public double? Freight { get; set; }
+    }
+
+}
+
+<style>
+
+
+    .carousel-inner {
+        width: 1200px;
+        margin-bottom: 10px;
+        margin-right: 5px;
+        display: inline-block;
+    }
+
+    .card-inner {
+        float: right;
+        width: 340px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+</style>
