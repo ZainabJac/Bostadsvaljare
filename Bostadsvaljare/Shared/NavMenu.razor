@@ -3,25 +3,22 @@
 
 
     <div class="topnav">
-       
-            <NavLink href="" Match="NavLinkMatch.All" style=" display: inline-block;">
-                <SfButton IsPrimary="true"  CssClass="menyknappV">Meny</SfButton>
-            </NavLink>
-        
-            <NavLink  href="counter" style=" display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="menyknapp">Exteriör</SfButton>
-            </NavLink>
-       
-    
-            <NavLink  href="fetchdata" style=" display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="menyknapp">Interiör</SfButton>
-            </NavLink>
-        
-       
-            <NavLink  href="list" style=" display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="menyknapp">Närområde</SfButton>
-            </NavLink>
-     
+
+        <NavLink href="" Match="NavLinkMatch.All" style=" margin-right: 610px; display: inline-block;">
+            <SfButton IsPrimary="true" CssClass="e-flat">Meny</SfButton>
+        </NavLink>
+        <NavLink href="counter" style="display: inline-block;">
+            <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="fetchdata" style=" display: inline-block;">
+            <SfButton IsPrimary="true" CssClass="e-flat">Interiör</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="list" style=" display: inline-block;">
+            <SfButton IsPrimary="true" CssClass="e-flat">Närområde</SfButton>
+        </NavLink>
+
     </div>
 
 
@@ -29,7 +26,12 @@
 <style>
 
 
-
+    .menuslash {
+        display: inline-block;
+        font-family: 'Futura PT';
+        font-weight: bold;
+        font-size: 15px;
+    }
 
     .topnav {
         overflow: hidden;
@@ -44,22 +46,19 @@
             margin-top: 40px;
         }
 
-    .menyknapp {
+    .e-flat {
         margin-left: 30px;
         margin-right: 30px;
         margin-top: 5px; 
         margin-bottom:5px;
+        font-family: 'Futura PT';
+        font-weight: bold;
+        font-size: 15px;
     }
 
-    .menyknappV {
-        margin-left: 30px;
-        margin-right: 610px;
-        margin-top: 5px;
-        margin-bottom: 5px;
+  
+
     
-    }
-
-    }
 
 
     </style>
