@@ -26,34 +26,87 @@
     <BSCard CardType="CardType.Card" Class="card-inner">
         <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
         <BSCard CardType="CardType.Body">
-            <BSCard CardType="CardType.Title">Hus 27a</BSCard>
-            <BSCard CardType="CardType.Subtitle">180 kvm - 4 000 000kr</BSCard>
-            <BSCard CardType="CardType.Text">Some quick example text to build on the ca rd title and make ddddddddddasdas  d  asdasdasdasdasdasda sdasdasdasdasdup ddd ddddddddddd ddddddddd  ddddddddddddddddddddddddddddd dddddddddthe bulk of the cards content.Some quick exampsadddddddddddddddddddddddddddddddddddddddle text to build on the card title and make up the k example text to build on the card title and make up the bulk of the cards content</BSCard>
+            <header class="card-info-header"> Ariktekten har ordet</header>
+            <header class="card-info-text"> @house1.Comments</header>
+            
+                <div >
+                    <header class="card-info-header">Lägenhet nr. </header>
+                    <header class="card-info-header-right">@house1.HouseNumber</header>
+                    <hr />
+
+                </div>
+                <div>
+                    <header class="card-info-header">Pris </header>
+                    <header class="card-info-header-right">@house1.Price</header>
+                    <hr />
+                </div>
+
+                <div>
+                    <header class="card-info-header">Storlek</header>
+                    <header class="card-info-header-right">@house1.Sqm</header>
+                    <hr />
+                </div>
+           
+
         </BSCard>
     </BSCard>
 </div>
 
-<div id="gallery">
-    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
+@*<div id="gallery">
+    TODO: ensure the images below reflect to what is shown in the slideshow
     <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
-</div>
+</div>*@
 
-<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
+@*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
     <GridColumns>
         <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
         <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
         <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
         <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
     </GridColumns>
-</SfGrid>
+</SfGrid>*@
 
 
 
 @code {
-    IList<Item> items = new List<Item> {
+
+
+
+
+
+    public class Houses
+
+    {
+        public double Sqm { get; set; }
+        public string Price { get; set; }
+        public double LandArea { get; set; }
+        public string HouseNumber { get; set; }
+        public string Status { get; set; }
+        public string Comments { get; set; }
+
+
+    }
+
+    Houses house1 = new Houses
+    {
+        Sqm = 152,
+        Price = "5 000 000",
+        LandArea = 380,
+        HouseNumber = "7a",
+        Status = "Ledig",
+        Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+    };
+
+
+
+
+
+
+
+    IList< Item> items = new List<Item> {
         new Item {
             Source = "IMG/imagemapbild.jpg",
             Alt ="First Slide",
@@ -78,7 +131,7 @@
             ActionLink = "https://visivo.se",
             ActionLinkTarget = "_blank"
         }
-    };
+};
 
     class Item
     {
@@ -115,15 +168,18 @@
 <style>
     #slideshow {
         float: left;
-        width: 68%;
+        width: 62%;
         margin-bottom: 10px;
         margin-right: 5px;
+       
     }
 
     #housing_info {
         float: right;
-        width: 30%;
+        width: 37%;
         margin-bottom: 5px;
+        font-family: 'Futura PT';
+        
     }
 
     #gallery {
@@ -135,4 +191,32 @@
         width: 22%;
         margin-right: 10px;
     }
+
+    .card-info-header {
+        font-family: 'Futura PT';
+        font-size: 50px;
+        display: inline;
+        left: -10px;
+    }
+
+    .card-info-text {
+        font-family: 'Futura PT';
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .card-info-header-right {
+        font-family: 'Futura PT';
+        font-size: 50px;
+        display: inline;
+        float:right
+    }
+    .list1 
+    {
+        list-style-type:none;
+    }
+
+   
+   
+
 </style>
