@@ -4,7 +4,7 @@
 
 @using BlazorStrap
 @using Syncfusion.Blazor.Grids
-
+@using Syncfusion.Blazor.Buttons
 
 
 <div id="slideshow">
@@ -24,41 +24,43 @@
 <div id="housing_info">
     @*TODO: have an own block that contains relevant info regarding the selected housing*@
     <BSCard CardType="CardType.Card" Class="card-inner">
-        <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
+        <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Housing image" />
+        <BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />
+        @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
+
         <BSCard CardType="CardType.Body">
             <header class="card-info-header"> Ariktekten har ordet</header>
             <header class="card-info-text"> @house1.Comments</header>
-            
-                <div >
-                    <header class="card-info-header">Lägenhet nr. </header>
-                    <header class="card-info-header-right">@house1.HouseNumber</header>
-                    <hr />
 
-                </div>
-                <div>
-                    <header class="card-info-header">Pris </header>
-                    <header class="card-info-header-right">@house1.Price</header>
-                    <hr />
-                </div>
+            <div>
+                <hr />
+                <header class="card-info-header">Lägenhet nr. </header>
+                <header class="card-info-header-right">@house1.HouseNumber</header>
+            </div>
 
-                <div>
-                    <header class="card-info-header">Storlek</header>
-                    <header class="card-info-header-right">@house1.Sqm</header>
-                    <hr />
-                </div>
-           
+            <div>
+                <hr />
+                <header class="card-info-header">Pris </header>
+                <header class="card-info-header-right">@house1.Price</header>
+            </div>
 
+            <div>
+                <hr />
+                <header class="card-info-header">Storlek</header>
+                <header class="card-info-header-right">@house1.Sqm</header>
+            </div>
         </BSCard>
     </BSCard>
 </div>
 
-@*<div id="gallery">
-    TODO: ensure the images below reflect to what is shown in the slideshow
+<div id="gallery">
+    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
+    @*TODO: enable scrolling if too many images are present to fit the window*@
     <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
     <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
-</div>*@
+</div>
 
 @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
     <GridColumns>
@@ -70,13 +72,7 @@
 </SfGrid>*@
 
 
-
 @code {
-
-
-
-
-
     public class Houses
 
     {
@@ -99,11 +95,6 @@
         Status = "Ledig",
         Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
     };
-
-
-
-
-
 
 
     IList< Item> items = new List<Item> {
@@ -131,7 +122,7 @@
             ActionLink = "https://visivo.se",
             ActionLinkTarget = "_blank"
         }
-};
+    };
 
     class Item
     {
@@ -143,8 +134,14 @@
         public string ActionLinkTarget { get; set; }
     }
 
-    [Parameter]
+
     public List<Order> Orders { get; set; }
+    private bool ShowInfo { get; set; } = true;
+
+    public void ToggleInfo()
+    {
+
+    }
 
     protected override void OnInitialized()
     {
@@ -171,7 +168,6 @@
         width: 62%;
         margin-bottom: 10px;
         margin-right: 5px;
-       
     }
 
     #housing_info {
@@ -179,7 +175,6 @@
         width: 37%;
         margin-bottom: 5px;
         font-family: 'Futura PT';
-        
     }
 
     #gallery {
@@ -187,16 +182,30 @@
         display: inline-block;
     }
 
+    #hide_info {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        transition-duration: 0.4s;
+    }
+
+    #hide_info:hover {
+        width: 50px;
+    }
+
     .gallery-img {
         width: 22%;
         margin-right: 10px;
+    }
+
+    .gallery-img:hover {
+        filter: brightness(110%);
     }
 
     .card-info-header {
         font-family: 'Futura PT';
         font-size: 50px;
         display: inline;
-        left: -10px;
     }
 
     .card-info-text {
@@ -211,12 +220,16 @@
         display: inline;
         float:right
     }
-    .list1 
-    {
+
+    .list1 {
         list-style-type:none;
     }
 
-   
-   
+    e-info-icon::before {
+        content: url(icons/info.png);
+    }
 
+    .icon {
+        width: 32px;
+    }
 </style>

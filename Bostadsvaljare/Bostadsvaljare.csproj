@@ -16,4 +16,12 @@
     <PackageReference Include="Syncfusion.Licensing" Version="18.1.0.53" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\icons\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\IMG\icons\info.png" />
+  </ItemGroup>
+
 </Project>
