@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Bostadsvaljare.Data;
 using Syncfusion.Blazor;
 using BlazorStrap;
 
@@ -32,7 +31,6 @@ namespace Bostadsvaljare
             services.AddSyncfusionBlazor();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             
         }
 
