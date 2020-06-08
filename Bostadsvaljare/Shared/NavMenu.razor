@@ -3,41 +3,53 @@
 @inject IJSRuntime JSRuntime
 
 
-    <div class="topnav">
+<div class="topnav">
+    <NavLink href="" Match="NavLinkMatch.All" style=" margin-right: 610px; display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">Meny</SfButton>
+    </NavLink>
 
-        <NavLink href="" Match="NavLinkMatch.All" style=" margin-right: 610px; display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">Meny</SfButton>
-        </NavLink>
-        <NavLink href="exterior" style="display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
-        </NavLink>
-        <header class="menuslash">/</header>
-        <NavLink href="interior" style=" display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">Interiör</SfButton>
-        </NavLink>
-        <header class="menuslash">/</header>
-        <NavLink href="list" style=" display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">Närområde</SfButton>
-        </NavLink>
-        <header class="menuslash">/</header>
-        <NavLink href="VR-video" style=" display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">VR-video</SfButton>
-        </NavLink>
-        <header class="menuslash">/</header>
-        <NavLink href="360_bilder" style=" display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">360 Bilder</SfButton>
-        </NavLink>
+    <NavLink href="exterior" style="display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
+    </NavLink>
+    <header class="menuslash">/</header>
+    <NavLink href="interior" style=" display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">Interiör</SfButton>
+    </NavLink>
+    <header class="menuslash">/</header>
+    <NavLink href="list" style=" display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">Närområde</SfButton>
+    </NavLink>
+    <header class="menuslash">/</header>
+    <NavLink href="VR-video" style=" display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">VR-video</SfButton>
+    </NavLink>
+    <header class="menuslash">/</header>
+    <NavLink href="360_bilder" style=" display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">360 Bilder</SfButton>
+    </NavLink>
 
+    <div style="float: right;">
+        <SfButton CssClass="e-flat" OnClick="@ToggleFullscreen">FS</SfButton>
     </div>
+</div>
 
 
+@code {
+    private bool Fullscreen { get; set; } = false;
 
+    public async Task ToggleFullscreen()
+    {
+        if (!Fullscreen)
+            await JSRuntime.InvokeVoidAsync("openFullscreen", null);
+        else
+            await JSRuntime.InvokeVoidAsync("closeFullscreen", null);
+
+        Fullscreen = !Fullscreen;
+    }
+}
 
 
 <style>
-
-
-
     .menuslash {
         display: inline-block;
         font-family: 'Futura PT';
