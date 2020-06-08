@@ -1,39 +1,44 @@
 ﻿@page "/fetchdata"
 
-@using Bostadsvaljare.Data
+@inject IJSRuntime JSRuntime
+
 @using BlazorStrap
 @using Syncfusion.Blazor.Grids
 
 
 
-<BSCarousel Class="carousel-inner">
-    <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
-    <div class="carousel-inner">
-        @for (int i = 0; i < items.Count; i++)
-        {
-            <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" ActionLink="@items[i].ActionLink" ActionLinkTarget="@items[i].ActionLinkTarget" ></BSCarouselItem>
-        }
-    </div>
-    <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
-    <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
-</BSCarousel>
+<div id="slideshow">
+    <BSCarousel NumberOfItems="@items.Count">
+        <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
+        <div class="carousel-inner">
+            @for (int i = 0; i < items.Count; i++)
+            {
+                <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" />
+            }
+        </div>
+        <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
+        <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
+    </BSCarousel>
+</div>
 
-<BSCard CardType="CardType.Card" Class="card-inner">
-    <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
-    <BSCard CardType="CardType.Body">
-        <BSCard CardType="CardType.Title">Hus 27a</BSCard>
-        <BSCard CardType="CardType.Subtitle">180 kvm - 4 000 000kr</BSCard>
-        <BSCard CardType="CardType.Text">Some quick example text to build on the ca rd title and make ddddddddddasdas  d  asdasdasdasdasdasda sdasdasdasdasdup ddd ddddddddddd ddddddddd  ddddddddddddddddddddddddddddd dddddddddthe bulk of the cards content.Some quick exampsadddddddddddddddddddddddddddddddddddddddle text to build on the card title and make up the k example text to build on the card title and make up the bulk of the cards content</BSCard>
+<div id="housing_info">
+    @*TODO: have an own block that contains relevant info regarding the selected housing*@
+    <BSCard CardType="CardType.Card" Class="card-inner">
+        <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
+        <BSCard CardType="CardType.Body">
+            <BSCard CardType="CardType.Title">Hus 27a</BSCard>
+            <BSCard CardType="CardType.Subtitle">180 kvm - 4 000 000kr</BSCard>
+            <BSCard CardType="CardType.Text">Some quick example text to build on the ca rd title and make ddddddddddasdas  d  asdasdasdasdasdasda sdasdasdasdasdup ddd ddddddddddd ddddddddd  ddddddddddddddddddddddddddddd dddddddddthe bulk of the cards content.Some quick exampsadddddddddddddddddddddddddddddddddddddddle text to build on the card title and make up the k example text to build on the card title and make up the bulk of the cards content</BSCard>
+        </BSCard>
     </BSCard>
-</BSCard>
+</div>
 
-<div class="blockbelow">
-
-    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
-    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
-    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
-    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
-
+<div id="gallery">
+    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
+    <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
+    <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
+    <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
+    <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
 </div>
 
 <SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
@@ -48,7 +53,6 @@
 
 
 @code {
-    int i = 0;
     IList<Item> items = new List<Item> {
         new Item {
             Source = "IMG/imagemapbild.jpg",
@@ -59,7 +63,7 @@
             ActionLinkTarget = "_blank"
         },
         new Item {
-            Source = "IMG/imagemapbild.jpg",
+            Source = "IMG/PhysCam006.jpg",
             Alt ="Second Slide",
             Caption = "Slide 2",
             Header = "Slide 2 Header",
@@ -86,6 +90,7 @@
         public string ActionLinkTarget { get; set; }
     }
 
+    [Parameter]
     public List<Order> Orders { get; set; }
 
     protected override void OnInitialized()
@@ -105,39 +110,29 @@
         public DateTime? OrderDate { get; set; }
         public double? Freight { get; set; }
     }
-
 }
 
 <style>
-
-
-    .carousel-inner {
-        width: 900px;
+    #slideshow {
+        float: left;
+        width: 68%;
         margin-bottom: 10px;
         margin-right: 5px;
-        display: inline-block;
-        float: left;
     }
 
-    .card-inner {
-
+    #housing_info {
         float: right;
-        width: 340px;
+        width: 30%;
         margin-bottom: 5px;
-        display: inline-block;
-        float: right;
     }
 
-    .Imgbelowcarousel {
-       width: 22%;
-        margin-right: 10px;
-      
-    }
-
-    .blockbelow {
+    #gallery {
         clear: both;
         display: inline-block;
     }
 
-  
+    .gallery-img {
+        width: 22%;
+        margin-right: 10px;
+    }
 </style>
