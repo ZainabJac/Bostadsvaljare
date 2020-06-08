@@ -29,7 +29,7 @@
 
 
 <SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true">
-    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
+    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
     <GridColumns>
         <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer" ></GridColumn>
         <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek"></GridColumn>

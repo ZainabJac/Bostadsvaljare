@@ -1,0 +1,19 @@
+{
+  "colors": {
+    "available": "5bcb24",
+    "sold": "d32626",
+    "booked": "dfd431"
+  },
+  "map": [
+    {
+      "view": 0,
+      "image": "IMG/Imagemapbild.jpg",
+      "housings": [
+        {
+          "housing_1": [ 1468, 899, 1479, 825, 1154, 813, 1127, 854, 1270, 899, 1369, 900 ],
+          "status": "available"
+        }
+      ]
+    }
+  ]
+}

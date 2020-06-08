@@ -10,12 +10,14 @@
     <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
     <div class="carousel-inner">
         @for (int i = 0; i < items.Count; i++)
-        {<BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" ActionLink="@items[i].ActionLink" ActionLinkTarget="@items[i].ActionLinkTarget"></BSCarouselItem>
+        {
+            <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" ActionLink="@items[i].ActionLink" ActionLinkTarget="@items[i].ActionLinkTarget" ></BSCarouselItem>
         }
     </div>
     <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
     <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
 </BSCarousel>
+
 <BSCard CardType="CardType.Card" Class="card-inner">
     <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Card image cap" />
     <BSCard CardType="CardType.Body">
@@ -25,15 +27,14 @@
     </BSCard>
 </BSCard>
 
+<div class="blockbelow">
 
+    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
+    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
+    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
+    <BSImage src="IMG/Imagemapbild.jpg" Class="Imgbelowcarousel"></BSImage>
 
-
-<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
-<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
-<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
-<BSImage src="IMG/FramsidaExt.jpg" Style="width:290px;height:200px;margin-right:10px;clear:both;"></BSImage>
-
-
+</div>
 
 <SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
     <GridColumns>
@@ -48,11 +49,9 @@
 
 @code {
     int i = 0;
-    IList<Item>
-    items = new List<Item>
-        {
+    IList<Item> items = new List<Item> {
         new Item {
-            Source = "IMG/FramsidaExt.jpg",
+            Source = "IMG/imagemapbild.jpg",
             Alt ="First Slide",
             Caption = "Slide 1",
             Header = "Slide 1 Header",
@@ -60,7 +59,7 @@
             ActionLinkTarget = "_blank"
         },
         new Item {
-            Source = "IMG/FramsidaExt.jpg",
+            Source = "IMG/imagemapbild.jpg",
             Alt ="Second Slide",
             Caption = "Slide 2",
             Header = "Slide 2 Header",
@@ -68,14 +67,14 @@
             ActionLinkTarget = "_blank"
         },
         new Item {
-            Source = "IMG/FramsidaExt.jpg",
+            Source = "IMG/imagemapbild.jpg",
             Alt ="Third Slide",
             Caption = "Slide 3",
             Header = "Slide 3 Header",
             ActionLink = "https://visivo.se",
             ActionLinkTarget = "_blank"
         }
-                                };
+    };
 
     class Item
     {
@@ -91,8 +90,7 @@
 
     protected override void OnInitialized()
     {
-        Orders = Enumerable.Range(1, 75).Select(x => new Order()
-        {
+        Orders = Enumerable.Range(1, 75).Select(x => new Order() {
             OrderID = 1000 + x,
             CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
             Freight = 2.1 * x,
@@ -114,16 +112,32 @@
 
 
     .carousel-inner {
-        width: 1200px;
+        width: 900px;
         margin-bottom: 10px;
         margin-right: 5px;
         display: inline-block;
+        float: left;
     }
 
     .card-inner {
+
         float: right;
         width: 340px;
         margin-bottom: 5px;
         display: inline-block;
+        float: right;
     }
+
+    .Imgbelowcarousel {
+       width: 22%;
+        margin-right: 10px;
+      
+    }
+
+    .blockbelow {
+        clear: both;
+        display: inline-block;
+    }
+
+  
 </style>
