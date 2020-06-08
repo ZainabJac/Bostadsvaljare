@@ -10,7 +10,6 @@ let view;
 
 
 function init() {
-    console.log("ImageMap.start");
     let housingsData = document.getElementById("overview_im");
     view = 0;
 
