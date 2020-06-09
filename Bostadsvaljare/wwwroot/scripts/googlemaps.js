@@ -8,20 +8,22 @@ function toggleBounce() {
     }
 }
 
-function initAutocomplete() {
+function initAutocomplete(lat, lng) {
+    var destination = new google.maps.LatLng({ lat: lat, lng: lng });
+    var image = 'IMG/icons/pngwave.png';
+
     var map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 59.332491, lng: 18.068093 },
+        center: destination,
         zoom: 13,
-        mapTypeId: 'roadmap'
+        mapTypeId: 'roadmap',
     });
 
-    var image = 'IMG/icons/pngwave.png';
     var beachMarker = new google.maps.Marker({
         position: { lat: -33.890, lng: 151.274 },
         map: map,
         icon: image,
         animation: google.maps.Animation.DROP,
-        position: { lat: 59.332491, lng: 18.068093 }
+        position: destination,
     });
 
     // Create the search box and link it to the UI element.
@@ -44,6 +46,12 @@ function initAutocomplete() {
             return;
         }
 
+        // Clear out the old markers.
+        markers.forEach(function (marker) {
+            marker.setMap(null);
+        });
+        markers = [];
+
         // For each place, get the icon, name and location.
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function (place) {
@@ -64,7 +72,7 @@ function initAutocomplete() {
                 map: map,
                 icon: icon,
                 title: place.name,
-                position: place.geometry.location
+                position: place.geometry.location,
             }));
 
             if (place.geometry.viewport) {
@@ -79,7 +87,7 @@ function initAutocomplete() {
 
             var directionsService = new google.maps.DirectionsService();
             var request = {
-                origin: map.getCenter(),
+                origin: destination,
                 destination: place.geometry.location,
                 travelMode: google.maps.TravelMode.DRIVING
             };
@@ -92,7 +100,7 @@ function initAutocomplete() {
 
             var service = new google.maps.DistanceMatrixService();
             service.getDistanceMatrix({
-                origins: [map.getCenter()],
+                origins: [destination],
                 destinations: [place.geometry.location],
                 travelMode: google.maps.TravelMode.DRIVING
             }, callback);
@@ -110,12 +118,6 @@ function initAutocomplete() {
                     }
                 }
             }
-
-            // Clear out the old markers.
-            markers.forEach(function (marker) {
-                marker.setMap(null);
-            });
-            markers = [];
         });
         map.fitBounds(bounds);
     });
