@@ -1,23 +1,69 @@
 ﻿@page "/"
 @using System.Net.Http;
+@using Syncfusion.Blazor.Grids
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 
 
-
-
-
 <div id="selector">
-
     <img src=@overviewImg usemap="#overview_image-map" id="overview" />
     <map name="overview_image-map" id="overview_im">
         <area name="housing_1" href="#" status="available" @onclick="Select" @onmouseover="Hover" coords="1468,899,1479,825,1154,813,1127,854,1270,899,1369,900" shape="poly">
     </map>
 </div>
 
+<div id="housing_list" hidden="@(!HousingSelected)">
+    <SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
+        <GridPageSettings PageSize="18" />
+        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
+        <GridColumns>
+            <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer" />
+            <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek" />
+            <GridColumn Field="@nameof(Houses.Price)" Format="C2" HeaderText="Pris" />
+            <GridColumn Field="@nameof(Houses.LandArea)" HeaderText="Tomtstorlek" />
+            <GridColumn Field="@nameof(Houses.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
+                <Template>
+                    @{
+                        var House = (context as Houses);
+                        <div class="image">
+                            @if (House.Status == "Såld")
+                            {
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
+                                     height="25"
+                                     width="25" />
+                            }
+                            @if (House.Status == "Reserverad")
+                            {
+                                <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
+                                     height="25"
+                                     width="25" />
+                            }
+                            @if (House.Status == "Ledig")
+                            {
+                                <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
+                                     height="25"
+                                     width="25" />
+                            }
+                            <span id="Emptext">@House.Status</span>
+                        </div>
+                    }
+                </Template>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+</div>
+
 
 @code {
-    string overviewImg = "IMG/Imagemapbild.jpg";
+    private string overviewImg = "IMG/Imagemapbild.jpg";
+    private bool HousingSelected { get; set; } = false;
+    public List<Houses> dataSource { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.dataSource = Houses.GetHouseData();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -27,12 +73,90 @@
         }
     }
 
-    public async Task Select() {
+    public async Task Select()
+    {
         await JSRuntime.InvokeVoidAsync("click", null);
     }
 
-    public async Task Hover() {
+    public async Task Hover()
+    {
         await JSRuntime.InvokeVoidAsync("hover", null);
+    }
+
+    public class Houses
+    {
+        public double Sqm { get; set; }
+        public string Price { get; set; }
+        public double LandArea { get; set; }
+        public string HouseNumber { get; set; }
+        public string Status { get; set; }
+
+        public static List<Houses> GetHouseData()
+        {
+            List<Houses> HouseData = new List<Houses>();
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+
+            return HouseData;
+        }
     }
 }
 
@@ -47,5 +171,15 @@
 
     #overview {
         width: 30%;
+    }
+
+    #housing_list {
+        width: 49%;
+        display: inline-block;
+        float: right;
+    }
+
+    .hidden {
+        display: none;
     }
 </style>
