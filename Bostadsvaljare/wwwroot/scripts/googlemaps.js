@@ -37,6 +37,8 @@ function initAutocomplete(lat, lng) {
     });
 
     var markers = [];
+    var directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
+        directionsDisplay.setMap(map); // map should be already initialized.
     // Listen for the event fired when the user selects a prediction and retrieve
     // more details for that place.
     searchBox.addListener('places_changed', function () {
@@ -82,9 +84,6 @@ function initAutocomplete(lat, lng) {
                 bounds.extend(place.geometry.location);
             }
 
-            var directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
-                directionsDisplay.setMap(map); // map should be already initialized.
-
             var directionsService = new google.maps.DirectionsService();
             var request = {
                 origin: destination,
@@ -94,6 +93,7 @@ function initAutocomplete(lat, lng) {
 
             directionsService.route(request, function (response, status) {
                 if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.set('directions', null); // Remove previous directions
                     directionsDisplay.setDirections(response);
                 }
             });
