@@ -15,7 +15,7 @@
 
 <div class="List">
     <SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
-        <GridPageSettings PageSize="18"> </GridPageSettings>
+        <GridPageSettings PageSize="23"> </GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
         <GridColumns>
             <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer"></GridColumn>
@@ -55,6 +55,12 @@
     </SfGrid>
 </div>
 
+<div>
+    <BSImage src="IMG/imagemapbild.jpg" Class="Underbild"></BSImage>
+    <BSImage src="IMG/imagemapbild.jpg" Class="Underbild"></BSImage>
+    <BSImage src="IMG/imagemapbild.jpg" Class="Underbild"></BSImage>
+    <BSImage src="IMG/imagemapbild.jpg" Class="Underbildright"></BSImage>
+</div>
 
 @code{
 
@@ -210,4 +216,16 @@
         display: inline-block;
         float: right;
     }
+
+    .Underbild {
+        width: 12%;
+        margin-right: 0.5%;
+    }
+
+    .Underbildright {
+        
+        width: 12%;
+        
+    }
+  
 </style>

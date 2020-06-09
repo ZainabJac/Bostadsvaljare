@@ -3,7 +3,7 @@
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Layouts
 @using Syncfusion.Blazor.Navigations
-@using Syncfusion.Blazor.Maps
+
 @using Syncfusion.Blazor.Inputs;
 @using Syncfusion.Blazor.DropDowns;
 @using SFInputs = Syncfusion.Blazor.Inputs
@@ -14,161 +14,70 @@
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Spinner
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject IJSRuntime JSRuntime
 
-
-<div class="col-lg-8 control-section sb-property-border">
-    <div class="content-wrapper">
-
-        <div class="sliderwrap">
-            <label class="userselect">Ange kvadratmeter</label>
-            <SfSlider Type=SliderType.Range @bind-Value="@Range" ShowButtons="@ShowButtons" ID="dynamic_color_slider" CssClass="@DynamicColor">
-                <SliderTicksData Placement="@Syncfusion.Blazor.Inputs.Placement.After" LargeStep="20" SmallStep="5" ShowSmallTicks="true"></SliderTicksData>
-                <SliderTooltipData IsVisible="true" Placement="CurrentTooltipPlacement" ShowOn="@CurrentTooltipShowOn"></SliderTooltipData>
-            </SfSlider>
-        </div>
-    </div>
-</div>
-
-<SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true">
-    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
-    <GridColumns>
-        <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer"></GridColumn>
-        <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek"></GridColumn>
-        <GridColumn Field="@nameof(Houses.Price)" Format="C2" HeaderText="Pris"></GridColumn>
-        <GridColumn Field="@nameof(Houses.LandArea)" HeaderText="Tomtstorlek"></GridColumn>
-        <GridColumn Field="@nameof(Houses.Status)" HeaderText="Status" customAttributes=@(new { @class="e-attr" } )>
-            <Template>
-                @{
-                    var House = (context as Houses);
-                    <div class="image">
-                        @if (House.Status == "Sålt")
-                        {
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
-                                 height="25"
-                                 width="25" />
-                        }
-                        @if (House.Status == "Reserverad")
-                        {
-                            <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
-                                 height="25"
-                                 width="25" />
-                        }
-                        @if (House.Status == "Ledig")
-                        {
-                            <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
-                                 height="25"
-                                 width="25" />
-                        }
-                        <span id="Emptext">@House.Status</span>
-                    </div>
-                }
-            </Template>
-        </GridColumn>
-
-    </GridColumns>
-</SfGrid>
+<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+<div id="map" style="width:1000px; height:800px;"></div>
 
 
 
 @code{
-    int[] Range = new int[] { 30, 190 };
-    bool ShowButtons = false;
-    string DynamicColor = "e-slider-royalblue";
-    SFInputs.TooltipPlacement CurrentTooltipPlacement;
-    SFInputs.TooltipShowOn CurrentTooltipShowOn;
-    List<DropDownModel> TooltipType = new List<DropDownModel>()
-{
-        new DropDownModel { Text = "Before", Value = "0" },
-        new DropDownModel { Text = "After", Value = "1" },
-    };
-    List<DropDownModel> ShowOnType = new List<DropDownModel>()
-{
-        new DropDownModel { Text = "Focus", Value = "0" },
-        new DropDownModel { Text = "Hover", Value = "1" },
-        new DropDownModel { Text = "Always", Value = "2" },
-        new DropDownModel { Text = "Auto", Value = "3" },
-    };
-    class DropDownModel
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        public string Id { get; set; }
-        public string Text { get; set; }
-        public string Value { get; set; }
-    }
-
-
-    public List<Houses> dataSource { get; set; }
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this.dataSource = Houses.GetHouseData();
-    }
-
-    public class Houses
-
-    {
-        public double Sqm { get; set; }
-        public string Price { get; set; }
-        public double LandArea { get; set; }
-        public string HouseNumber { get; set; }
-        public string Status { get; set; }
-
-        public static List<Houses> GetHouseData()
-
+        if (firstRender)
         {
-            List<Houses> HouseData = new List<Houses>();
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            await JSRuntime.InvokeVoidAsync("initAutocomplete", null);
+            
 
-            return HouseData;
 
         }
-
-
-
     }
-
-
 }
+
+
 <style>
     #dynamic_color_slider.e-slider-royalblue .e-handle {
         background-color: royalblue;
     }
+
     #dynamic_color_slider.e-slider-royalblue .e-range {
         background-color: royalblue;
     }
+
     .slider-content-wrapper {
         width: 40%;
         margin: 0 auto;
         min-width: 185px;
     }
+
     .content-wrapper {
         width: 20%;
         margin: 0 auto;
         min-width: 185px;
     }
+
     .sliderwrap {
         margin-top: 45px;
         margin-left: -20%;
     }
+
         .sliderwrap label {
             padding-bottom: 26px;
             font-size: 13px;
             font-weight: 500;
             margin-top: 15px;
         }
+
     .e-attr {
-       
         font-family: 'Segoe UI';
-       
     }
+
     .userselect {
         -webkit-user-select: none; /* Safari 3.1+ */
         -moz-user-select: none; /* Firefox 2+ */
         -ms-user-select: none; /* IE 10+ */
         user-select: none; /* Standard syntax */
     }
+
+
 </style>
