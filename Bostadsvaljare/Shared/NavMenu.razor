@@ -3,10 +3,10 @@
 @inject IJSRuntime JSRuntime
 
 
-    <div class="topnav">
-        <NavLink href="" Match="NavLinkMatch.All" style=" margin-right: 610px; display: inline-block;">
-            <SfButton IsPrimary="true" CssClass="e-flat">Meny</SfButton>
-        </NavLink>
+<div id="topnav">
+    <NavLink href="" Match="NavLinkMatch.All" style=" margin-right: 610px; display: inline-block;">
+        <SfButton IsPrimary="true" CssClass="e-flat">Meny</SfButton>
+    </NavLink>
 
         <NavLink href="exterior" style="display: inline-block;">
             <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
@@ -43,12 +43,12 @@
 
     public async Task ToggleFullscreen()
     {
-        if (!Fullscreen)
-            await JSRuntime.InvokeVoidAsync("openFullscreen", null);
-        else
-            await JSRuntime.InvokeVoidAsync("closeFullscreen", null);
-
         Fullscreen = !Fullscreen;
+
+        if (Fullscreen)
+            await JSRuntime.InvokeVoidAsync("openFullscreen");
+        else
+            await JSRuntime.InvokeVoidAsync("closeFullscreen");
     }
 }
 
@@ -61,11 +61,12 @@
         font-size: 15px;
     }
 
-    .topnav {
-        overflow: hidden;
-        background-color: white;
+    #topnav {
         position: fixed;
         width: 100%;
+        z-index: 1000;
+        overflow: hidden;
+        background-color: white;
         border-bottom: 1px solid black;
     }
 
