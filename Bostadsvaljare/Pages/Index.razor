@@ -12,6 +12,16 @@
     </map>
 </div>
 
+<BSImage src="IMG/imagemapbild.jpg"
+         hidden="@(!HousingSelected)"
+         Style="
+             width: 50%;
+             margin-bottom: 10px;
+             margin-right: 5px;
+             display: inline-block;
+         ">
+</BSImage>
+
 <div id="housing_list" hidden="@(!HousingSelected)">
     <SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
         <GridPageSettings PageSize="18" />
@@ -167,6 +177,7 @@
         width: 100%;
         left: 0px;
         top: 0px;
+        margin-bottom: 5px;
     }
 
     #overview {
