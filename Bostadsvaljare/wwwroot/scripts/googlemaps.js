@@ -1,7 +1,5 @@
 ﻿[script.js]
 
-
-
 function toggleBounce() {
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
@@ -12,7 +10,7 @@ function toggleBounce() {
 
 function initAutocomplete() {
     var map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 59.332491, lng: 18.068093},
+        center: { lat: 59.332491, lng: 18.068093 },
         zoom: 13,
         mapTypeId: 'roadmap'
     });
@@ -46,8 +44,6 @@ function initAutocomplete() {
             return;
         }
 
-    
-
         // For each place, get the icon, name and location.
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function (place) {
@@ -78,33 +74,28 @@ function initAutocomplete() {
                 bounds.extend(place.geometry.location);
             }
 
-
-            var endlat = place.geometry.location.lat()
-            var endlng = place.geometry.location.lng()
-
             var directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
                 directionsDisplay.setMap(map); // map should be already initialized.
 
+            var directionsService = new google.maps.DirectionsService();
             var request = {
-                origin: new google.maps.LatLng(59.332491, 18.068093),
-                destination: new google.maps.LatLng(endlat,endlng),
-                    travelMode: google.maps.TravelMode.DRIVING
-                };
-                var directionsService = new google.maps.DirectionsService();
-                directionsService.route(request, function (response, status) {
-                    if (status == google.maps.DirectionsStatus.OK) {
-                        directionsDisplay.setDirections(response);
-                    }
-                });
+                origin: map.getCenter(),
+                destination: place.geometry.location,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, function (response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                }
+            });
 
             var service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix(
-                {
-                    origins: [new google.maps.LatLng(59.332491, 18.068093)],
-                    destinations: [new google.maps.LatLng(endlat, endlng)],
-                    travelMode: 'DRIVING',
-                  
-                }, callback);
+            service.getDistanceMatrix({
+                origins: [map.getCenter()],
+                destinations: [place.geometry.location],
+                travelMode: google.maps.TravelMode.DRIVING
+            }, callback);
 
             function callback(response, status) {
                 if (status == 'OK') {
@@ -115,24 +106,17 @@ function initAutocomplete() {
                         var results = response.rows[i].elements;
                         for (var j = 0; j < results.length; j++) {
                             var element = results[j];
-                      
                         }
                     }
                 }
             }
 
-         
             // Clear out the old markers.
             markers.forEach(function (marker) {
                 marker.setMap(null);
             });
             markers = [];
-            
         });
         map.fitBounds(bounds);
     });
-
-
 }
-
-
