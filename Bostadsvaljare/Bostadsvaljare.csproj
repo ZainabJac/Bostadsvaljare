@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\icons\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="wwwroot\IMG\icons\info.png" />
   </ItemGroup>
 
