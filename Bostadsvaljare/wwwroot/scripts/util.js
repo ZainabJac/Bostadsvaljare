@@ -29,15 +29,10 @@
         },
 
         addMapHilights: function () {
-            $('#overview').maphilight({
-                fillColor: '5bcb24',
-                fillOpacity: 0.4,
-                stroke: false,
-            });
-            /*$('#overview').mapster({
+            $('#overview').mapster({
                 staticState: false,
                 fill: true,
-                mapKey: 'class',
+                mapKey: 'status',
                 areas: [{
                     key: 'available',
                     fillColor: '5bcb24'
@@ -50,7 +45,7 @@
                     key: 'sold',
                     fillColor: 'dfd431'
                 }]
-            });*/
+            });
             /*$('#overview').mapster({
                 staticState: false,
                 singleSelect: true,

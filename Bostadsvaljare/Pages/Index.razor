@@ -10,33 +10,13 @@
     <img id="overview" src="/IMG/Imagemapbild.jpg" usemap="#housingmap">
 </div>
 <map name="housingmap" id="map">
-    <area class="available" href="#" @onmouseover="@(e => ShowTooltip(e, "A table!"))" @onmouseout="HideTooltip" shape="poly" coords="1468,899,1479,825,1154,813,1127,854,1270,899,1369,900">
+    <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, "A table!"))" @onmouseout="HideTooltip" shape="poly" coords="1468,899,1479,825,1154,813,1127,854,1270,899,1369,900">
     @*<area shape="rect" coords="34,44,270,350" alt="Computer" href="https://www.newegg.com/" @onmouseover="@(e => ShowTooltip(e, "This is my computer"))" @onmouseout="HideTooltip" id="rm1" @onclick="@(e => SelectColorChange(e, "rm1"))">
     <area shape="rect" coords="290,172,333,250" alt="Phone" href="https://www.samsung.com/us/mobile/phones/" @onmouseover="@(e => ShowTooltip(e, "This is my phone."))" @onmouseout="HideTooltip" id="rm2" @onclick="@(e => SelectColorChange(e, "rm2"))">
     <area shape="circle" coords="337,300,44" alt="Cup of coffee" href="https://colorlib.com/wp/coffee-shop-websites/" @onmouseover="@(e => ShowTooltip(e, "This is my cup of the coffee."))" @onmouseout="HideTooltip" id="rm3" @onclick="@(e => SelectColorChange(e, "rm3"))">*@
 </map>
 
 <div id="tipmsg"></div>
-@if (showDynamicPopup)
-{
-    <div style="display:block" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Blazor Dynamic Popup</h4>
-                    <button type="button"
-                            class="close"
-                            @onclick="HideDynamicPopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
-}
 
 <BSImage src="IMG/imagemapbild.jpg"
          hidden="@(!HousingSelected)"
@@ -114,9 +94,6 @@
         new SunStudyData() {Name = "Kväll", ImagePath = "IMG/20200128_PhysCamera001.jpg"}
     };
 
-    private ElementReference modalBody; // reference to the DIV
-    private bool showDynamicPopup = false;
-
     private string OverviewImg { get; set; }
     private bool HousingSelected { get; set; } = false;
     public List<Houses> DataSource { get; set; }
@@ -130,12 +107,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync(
-            "util.addMapHilights"
-        );
-        // This will set the content of the Div
-        // to the content of the server Login page
-        await setDivContent(modalBody);
+        if (firstRender) {
+            await JSRuntime.InvokeVoidAsync(
+                "util.addMapHilights"
+            );
+        }
     }
 
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args)
@@ -161,35 +137,6 @@
         await JSRuntime.InvokeAsync<string>(
             "util.hideTooltip"
         );
-    }
-
-    public async void ModalShow()
-    {
-        await JSRuntime.InvokeAsync<string>(
-            "util.changeColor"
-        );
-    }
-
-    public async Task setDivContent(ElementReference elementRef)
-    {
-        // Call the popupJsFunctions.populateDiv
-        // JavaScript method, passing it an instance of
-        // the DIV element from the page (elementRef)
-        // This DIV will be populated with the HTML content
-        // Of the page retrieved
-        await JSRuntime.InvokeAsync<object>(
-            "popup.populateDiv", elementRef
-        );
-    }
-
-    void ShowDynamicPopup()
-    {
-        showDynamicPopup = true;
-    }
-
-    void HideDynamicPopup()
-    {
-        showDynamicPopup = false;
     }
 
     public class Houses
@@ -284,33 +231,6 @@
         left: 0px;
         top: 0px;
         margin-bottom: 5px;
-    }
-
-    img[usemap] {
-        outline-color: blue;
-        flood-color: #5bcb24;
-    }
-
-    .available {
-        background-color: #5bcb24;
-        outline-color: green;
-        opacity: 0;
-    }
-
-    .booked {
-        background-color: #dfd431;
-        outline-color: green;
-        opacity: 0;
-    }
-
-    .sold {
-        background-color: #d32626;
-        outline-color: green;
-        opacity: 0;
-    }
-
-    map area[shape]:hover {
-        opacity: 0.3;
     }
 
     @*#overview {
