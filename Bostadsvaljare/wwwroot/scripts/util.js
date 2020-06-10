@@ -68,6 +68,10 @@
             });
         },
 
+        changeMapImage: function (imagePath) {
+            $('img.mapster_el')[0].src = imagePath;
+        },
+
         showTooltip: function (positionX, positionY, msg) {
             var tooltip = $('#tipmsg');
             tooltip.text(msg);
