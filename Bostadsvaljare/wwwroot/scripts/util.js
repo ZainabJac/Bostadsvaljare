@@ -37,14 +37,90 @@
                     key: 'available',
                     fillColor: '5bcb24'
                 },
+                    {
+                        key: 'available1',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available2',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available3',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available4',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available5',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available6',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available7',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available8',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available9',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available10',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available11',
+                        fillColor: '5bcb24'
+                    },
+                    {
+                        key: 'available12',
+                        fillColor: '5bcb24'
+                    },
                 {
                     key: 'booked',
                     fillColor: 'd32626'
-                },
-                {
+                    },
+                    {
+                        key: 'booked1',
+                        fillColor: 'd32626'
+                    },
+                    {
+                        key: 'booked2',
+                        fillColor: 'd32626'
+                    },
+                    {
+                        key: 'booked3',
+                        fillColor: 'd32626'
+                    },
+                    {
+                        key: 'booked4',
+                        fillColor: 'd32626'
+                    },
+                    {
                     key: 'sold',
                     fillColor: 'dfd431'
-                }]
+                    },
+                    {
+                        key: 'sold2',
+                        fillColor: 'dfd431'
+                    },
+                    {
+                        key: 'sold3',
+                        fillColor: 'dfd431'
+                    },
+                  {
+                        key: 'sold1',
+                        fillColor: 'dfd431'
+                    }]
             });
             /*$('#overview').mapster({
                 staticState: false,
@@ -84,5 +160,7 @@
         hideTooltip: function () {
             $('#tipmsg').hide();
         }
+
+
     };
 })();
