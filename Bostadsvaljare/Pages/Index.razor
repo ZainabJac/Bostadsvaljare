@@ -144,7 +144,10 @@
 
     private void HousingClicked(string housing)
     {
-        navManager.NavigateTo("/interior/"+ housing);
+        if (housing != "")
+            navManager.NavigateTo("/interior/"+ housing);
+        else
+            navManager.NavigateTo("/interior");
     }
 
     public class Houses
