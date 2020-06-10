@@ -46,6 +46,11 @@
                     fillColor: 'dfd431'
                 }],
                 wrapClass: 'center',
+                onConfigured: function () {
+                    $('#overview').css({
+                        width: '100%',
+                    });
+                },
             });
             /*$('#overview').mapster({
                 staticState: false,
@@ -64,9 +69,6 @@
                     $(this).mapster('set', false);
                 },
             });*/
-            $('#overview').css({
-                width: '100%',
-            });
         },
 
         changeMapImage: function (imagePath) {
