@@ -15,13 +15,13 @@
 
 <div class="List">
     <SfGrid DataSource="dataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
-        <GridPageSettings PageSize="23"> </GridPageSettings>
+        <GridPageSettings PageSize="18"> </GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
         <GridColumns>
-            <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer"></GridColumn>
-            <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek"></GridColumn>
+            <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
+            <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Boarea"></GridColumn>
             <GridColumn Field="@nameof(Houses.Price)" Format="C2" HeaderText="Pris"></GridColumn>
-            <GridColumn Field="@nameof(Houses.LandArea)" HeaderText="Tomtstorlek"></GridColumn>
+            <GridColumn Field="@nameof(Houses.Manadsavgift)" Format="C2" HeaderText="Mån. avgift"></GridColumn>
             <GridColumn Field="@nameof(Houses.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" } )>
                 <Template>
                     @{
@@ -77,7 +77,7 @@
     {
         public double Sqm { get; set; }
         public string Price { get; set; }
-        public double LandArea { get; set; }
+        public string Manadsavgift { get; set; }
         public string HouseNumber { get; set; }
         public string Status { get; set; }
 
@@ -85,66 +85,66 @@
 
         {
             List<Houses> HouseData = new List<Houses>();
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7a", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "7b", Status = "Ledig" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8a", Status = "Reserverad" });
-            HouseData.Add(new Houses { Sqm = 152, Price = "5 000 000", LandArea = 380, HouseNumber = "8b", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 160, Price = "5 500 000", LandArea = 490, HouseNumber = "9a", Status = "Sålt" });
-            HouseData.Add(new Houses { Sqm = 170, Price = "5 600 000", LandArea = 440, HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "1b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "3a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "9b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "10a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "27b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "Ledig" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "Reserverad" });
+            HouseData.Add(new Houses { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "Sålt" });
+            HouseData.Add(new Houses { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "Sålt" });
 
             return HouseData;
 
