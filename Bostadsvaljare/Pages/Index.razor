@@ -21,57 +21,6 @@
 
 <div id="tipmsg"></div>
 
-<BSImage src="IMG/imagemapbild.jpg"
-         hidden="@(!HousingSelected)"
-         Style="
-             width: 50%;
-             margin-bottom: 10px;
-             margin-right: 5px;
-             display: inline-block;
-         ">
-</BSImage>
-
-<div id="housing_list" hidden="@(!HousingSelected)">
-    <SfGrid DataSource="DataSource" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
-        <GridPageSettings PageSize="18" />
-        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-        <GridColumns>
-            <GridColumn Field="@nameof(Houses.HouseNumber)" HeaderText="Husnummer" />
-            <GridColumn Field="@nameof(Houses.Sqm)" HeaderText="Storlek" />
-            <GridColumn Field="@nameof(Houses.Price)" Format="C2" HeaderText="Pris" />
-            <GridColumn Field="@nameof(Houses.LandArea)" HeaderText="Tomtstorlek" />
-            <GridColumn Field="@nameof(Houses.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
-                <Template>
-                    @{
-                        var House = (context as Houses);
-                        <div class="image">
-                            @if (House.Status == "Såld")
-                            {
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
-                                     height="25"
-                                     width="25" />
-                            }
-                            @if (House.Status == "Reserverad")
-                            {
-                                <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
-                                     height="25"
-                                     width="25" />
-                            }
-                            @if (House.Status == "Ledig")
-                            {
-                                <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
-                                     height="25"
-                                     width="25" />
-                            }
-                            <span id="Emptext">@House.Status</span>
-                        </div>
-                    }
-                </Template>
-            </GridColumn>
-        </GridColumns>
-    </SfGrid>
-</div>
-
 <div id="sun_study">
     <SfDropDownButton IconCss="e-ddb-icons e-profile" CssClass="e-caret-hide e-background">
         <DropDownButtonEvents OnOpen="OpenTop" ItemSelected="ChangeSunStudy" />
@@ -98,7 +47,6 @@
     };
 
     private string OverviewImg { get; set; }
-    private bool HousingSelected { get; set; } = false;
     public List<Houses> DataSource { get; set; }
 
     protected override void OnInitialized()
