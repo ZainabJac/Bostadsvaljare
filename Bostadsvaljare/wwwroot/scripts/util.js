@@ -108,19 +108,13 @@
                     {
                     key: 'sold',
                     fillColor: 'dfd431'
-                    },
-                    {
-                        key: 'sold2',
-                        fillColor: 'dfd431'
-                    },
-                    {
-                        key: 'sold3',
-                        fillColor: 'dfd431'
-                    },
-                  {
-                        key: 'sold1',
-                        fillColor: 'dfd431'
-                    }]
+                }],
+                wrapClass: 'center',
+                onConfigured: function () {
+                    $('#overview').css({
+                        width: '100%',
+                    });
+                },
             });
             /*$('#overview').mapster({
                 staticState: false,
@@ -139,9 +133,6 @@
                     $(this).mapster('set', false);
                 },
             });*/
-            $('#overview').css({
-                width: '100%',
-            });
         },
 
         changeMapImage: function (imagePath) {
