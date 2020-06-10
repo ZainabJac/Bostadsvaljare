@@ -17,26 +17,6 @@
 </map>
 
 <div id="tipmsg"></div>
-@if (showDynamicPopup)
-{
-    <div style="display:block" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Blazor Dynamic Popup</h4>
-                    <button type="button"
-                            class="close"
-                            @onclick="HideDynamicPopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
-}
 
 <BSImage src="IMG/imagemapbild.jpg"
          hidden="@(!HousingSelected)"
@@ -114,9 +94,6 @@
         new SunStudyData() {Name = "Kväll", ImagePath = "IMG/20200128_PhysCamera001.jpg"}
     };
 
-    private ElementReference modalBody; // reference to the DIV
-    private bool showDynamicPopup = false;
-
     private string OverviewImg { get; set; }
     private bool HousingSelected { get; set; } = false;
     public List<Houses> DataSource { get; set; }
@@ -133,9 +110,6 @@
         await JSRuntime.InvokeVoidAsync(
             "util.addMapHilights"
         );
-        // This will set the content of the Div
-        // to the content of the server Login page
-        await setDivContent(modalBody);
     }
 
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args)
@@ -161,35 +135,6 @@
         await JSRuntime.InvokeAsync<string>(
             "util.hideTooltip"
         );
-    }
-
-    public async void ModalShow()
-    {
-        await JSRuntime.InvokeAsync<string>(
-            "util.changeColor"
-        );
-    }
-
-    public async Task setDivContent(ElementReference elementRef)
-    {
-        // Call the popupJsFunctions.populateDiv
-        // JavaScript method, passing it an instance of
-        // the DIV element from the page (elementRef)
-        // This DIV will be populated with the HTML content
-        // Of the page retrieved
-        await JSRuntime.InvokeAsync<object>(
-            "popup.populateDiv", elementRef
-        );
-    }
-
-    void ShowDynamicPopup()
-    {
-        showDynamicPopup = true;
-    }
-
-    void HideDynamicPopup()
-    {
-        showDynamicPopup = false;
     }
 
     public class Houses
