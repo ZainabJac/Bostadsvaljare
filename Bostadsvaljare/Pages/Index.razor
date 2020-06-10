@@ -96,11 +96,13 @@
         args.Element.SetAttribute("style", "margin:-169px -115px");
     }
 
-    public void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         int ind = int.Parse(args.Element.ID);
         this.OverviewImg = SunStudies[ind].ImagePath;
-
+        await JSRuntime.InvokeVoidAsync(
+            "util.changeMapImage", this.OverviewImg
+        );
     }
 
     public async void ShowTooltip(MouseEventArgs e, String buttonNumber)
