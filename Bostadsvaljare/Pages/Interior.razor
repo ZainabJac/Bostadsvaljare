@@ -1,5 +1,6 @@
 ﻿@page "/interior"
 
+
 @inject IJSRuntime JSRuntime
 
 @using BlazorStrap
@@ -23,62 +24,92 @@
 
 <div id="housing_info">
     @*TODO: have an own block that contains relevant info regarding the selected housing*@
-    <BSCard CardType="CardType.Card" Class="card-inner">
-        <BSCard CardType="CardType.Image" src="IMG/FramsidaExt.jpg" alt="Housing image" />
-        <BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />
-        @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
-        <BSCard CardType="CardType.Body">
-            <header class="card-info-header"> Ariktekten har ordet</header>
-            <header class="card-info-text"> @house1.Comments</header>
+    <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
+    <BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />
+    @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
-            <div>
-                <hr />
-                <header class="card-info-header">Lägenhet nr. </header>
-                <header class="card-info-header-right">@house1.HouseNumber</header>
-            </div>
+    <div id="gallery">
+        @*TODO: ensure the images below reflect to what is shown in the slideshow*@
+        @*TODO: enable scrolling if too many images are present to fit the window*@
+        <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
+        <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
+        <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
+        <BSImage src="IMG/PhysCam006.jpg" Class="gallery-imgR"></BSImage>
 
-            <div>
-                <hr />
-                <header class="card-info-header">Pris </header>
-                <header class="card-info-header-right">@house1.Price</header>
-            </div>
+    </div>
 
-            <div>
-                <hr />
-                <header class="card-info-header">Storlek</header>
-                <header class="card-info-header-right">@house1.Sqm</header>
-            </div>
-        </BSCard>
-    </BSCard>
+
+
+
+
+
+    @*<div>
+            <hr />
+            <header class="card-info-header">Lägenhet nr. </header>
+            <header class="card-info-header-right">@house1.HouseNumber</header>
+        </div>*@
+
+    <div style="float:left ; width:45%; ">
+
+        <header class="card-info-header" style="margin-bottom:5%;">3 RoK</header>
+        <div>
+
+            <header class="card-info-header">Pris </header>
+            <header class="card-info-header-right">@house1.Price</header>
+            <hr />
+        </div>
+
+        <div style="display: inline;">
+
+            <header class="card-info-header">Boarea</header>
+            <header class="card-info-header-right">@house1.Sqm</header>
+            <hr />
+        </div>
+
+
+        <div style="display: inline;">
+
+            <header class="card-info-header">Lgh nr.</header>
+            <header class="card-info-header-right">@house1.HouseNumber</header>
+        </div>
+    </div>
+
+    <div style="float:right; width:45%">
+
+        <header class="card-info-header" style="margin-bottom:5%;">Arkitekten har ordet</header>
+
+        <header class="card-info-text" style="font-style:italic;"> "@house1.Comments"</header>
+
+    </div>
+
+    <div style="width:100%; margin-top:20%; clear:both;">
+        <div style=" margin-top:5%; float:left; padding-left:12%;"> <SfButton> Bofaktablad </SfButton> </div>
+        <div style=" margin-top:5%; float:right; padding-right:12%"> <SfButton IsPrimary="true"> Anmäl intresse </SfButton> </div>
+    </div>
 </div>
 
-<div id="gallery">
-    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
-    @*TODO: enable scrolling if too many images are present to fit the window*@
-    <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
-    <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
-    <BSImage src="IMG/Imagemapbild.jpg" Class="gallery-img"></BSImage>
-    <BSImage src="IMG/PhysCam006.jpg" Class="gallery-img"></BSImage>
-</div>
+
+
+
 
 @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-    <GridColumns>
-        <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-        <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-        <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-    </GridColumns>
-</SfGrid>*@
+        <GridColumns>
+            <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+            <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+            <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+        </GridColumns>
+    </SfGrid>*@
 
 
 @code {
     public class Houses
 
     {
-        public double Sqm { get; set; }
+        public string Sqm { get; set; }
         public string Price { get; set; }
-        public double LandArea { get; set; }
+        public string LandArea { get; set; }
         public string HouseNumber { get; set; }
         public string Status { get; set; }
         public string Comments { get; set; }
@@ -88,16 +119,17 @@
 
     Houses house1 = new Houses
     {
-        Sqm = 152,
+        Sqm = "152m²",
         Price = "5 000 000",
-        LandArea = 380,
+
         HouseNumber = "7a",
         Status = "Ledig",
         Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+
     };
 
 
-    IList< Item> items = new List<Item> {
+    IList<Item> items = new List<Item> {
         new Item {
             Source = "IMG/imagemapbild.jpg",
             Alt ="First Slide",
@@ -145,7 +177,8 @@
 
     protected override void OnInitialized()
     {
-        Orders = Enumerable.Range(1, 75).Select(x => new Order() {
+        Orders = Enumerable.Range(1, 75).Select(x => new Order()
+        {
             OrderID = 1000 + x,
             CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
             Freight = 2.1 * x,
@@ -165,14 +198,14 @@
 <style>
     #slideshow {
         float: left;
-        width: 62%;
+        width: 64%;
         margin-bottom: 10px;
         margin-right: 5px;
     }
 
     #housing_info {
         float: right;
-        width: 37%;
+        width: 33%;
         margin-bottom: 5px;
         font-family: 'Futura PT';
     }
@@ -189,13 +222,20 @@
         transition-duration: 0.4s;
     }
 
-    #hide_info:hover {
-        width: 50px;
-    }
+        #hide_info:hover {
+            width: 50px;
+        }
 
     .gallery-img {
-        width: 22%;
-        margin-right: 10px;
+        width: 23%;
+        margin-right: 2%;
+        margin-bottom: 2%
+    }
+
+    .gallery-imgR {
+        width: 23%;
+        margin-bottom: 2%
+        
     }
 
     .gallery-img:hover {
@@ -204,25 +244,24 @@
 
     .card-info-header {
         font-family: 'Futura PT';
-        font-size: 50px;
-        display: inline;
+        font-size: 25px;
+        display: inline-block;
     }
 
     .card-info-text {
         font-family: 'Futura PT';
-        font-size: 22px;
-        margin-bottom: 20px;
+        font-size: 16px;
     }
 
     .card-info-header-right {
         font-family: 'Futura PT';
-        font-size: 50px;
-        display: inline;
-        float:right
+        font-size: 25px;
+        display: inline-block;
+        float: right
     }
 
     .list1 {
-        list-style-type:none;
+        list-style-type: none;
     }
 
     e-info-icon::before {
@@ -233,5 +272,8 @@
         width: 32px;
     }
 
-
+    .planritning {
+        width: 100%;
+        margin-bottom: 2%;
+    }
 </style>
