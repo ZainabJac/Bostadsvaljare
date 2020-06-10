@@ -44,7 +44,8 @@
                 {
                     key: 'sold',
                     fillColor: 'dfd431'
-                }]
+                }],
+                wrapClass: 'center',
             });
             /*$('#overview').mapster({
                 staticState: false,
