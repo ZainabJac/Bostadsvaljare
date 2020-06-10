@@ -1,23 +1,17 @@
 ﻿@page "/"
 
-@using System.Net.Http
-@using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.SplitButtons
 
-@inject HttpClient Http
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
 
 <div id="selector">
-    <img id="overview" src="/IMG/Imagemapbild.jpg" usemap="#housingmap">
+    <img id="overview" src="@OverviewImg" usemap="#housingmap">
+    <map name="housingmap">
+        <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, "A table!"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" shape="poly" coords="1468,899,1479,825,1154,813,1127,854,1270,899,1369,900">
+    </map>
 </div>
-<map name="housingmap" id="map">
-    <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, "A table!"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" shape="poly" coords="1468,899,1479,825,1154,813,1127,854,1270,899,1369,900">
-    @*<area shape="rect" coords="34,44,270,350" alt="Computer" href="https://www.newegg.com/" @onmouseover="@(e => ShowTooltip(e, "This is my computer"))" @onmouseout="HideTooltip" id="rm1" @onclick="@(e => SelectColorChange(e, "rm1"))">
-    <area shape="rect" coords="290,172,333,250" alt="Phone" href="https://www.samsung.com/us/mobile/phones/" @onmouseover="@(e => ShowTooltip(e, "This is my phone."))" @onmouseout="HideTooltip" id="rm2" @onclick="@(e => SelectColorChange(e, "rm2"))">
-    <area shape="circle" coords="337,300,44" alt="Cup of coffee" href="https://colorlib.com/wp/coffee-shop-websites/" @onmouseover="@(e => ShowTooltip(e, "This is my cup of the coffee."))" @onmouseout="HideTooltip" id="rm3" @onclick="@(e => SelectColorChange(e, "rm3"))">*@
-</map>
 
 <div id="tipmsg"></div>
 
@@ -185,16 +179,12 @@
     }
 
     #selector {
-        position: relative;
-        width: 100%;
-        left: 0px;
-        top: 0px;
         margin-bottom: 5px;
     }
 
-    @*#overview {
+    #overview {
         width: 80%;
-    }*@
+    }
 
     #housing_list {
         width: 49%;
