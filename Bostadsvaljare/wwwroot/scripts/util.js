@@ -63,6 +63,9 @@
                     $(this).mapster('set', false);
                 },
             });*/
+            $('#overview').css({
+                width: '100%',
+            });
         },
 
         showTooltip: function (positionX, positionY, msg) {
