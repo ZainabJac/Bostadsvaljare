@@ -84,7 +84,7 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync(
-                "util.addMapHighlights"
+                "mapster.addMapHighlights"
             );
         }
     }
@@ -104,7 +104,7 @@
         int ind = int.Parse(args.Element.ID);
         this.OverviewImg = SunStudies[ind].ImagePath;
         await JSRuntime.InvokeVoidAsync(
-            "util.changeMapImage", this.OverviewImg
+            "mapster.changeMapImage", this.OverviewImg
         );
     }
 
