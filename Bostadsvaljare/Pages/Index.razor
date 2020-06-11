@@ -29,29 +29,29 @@
 
 @*<img src="IMG/Vy till Phille.png" usemap="#image-map">
     <area target="" alt="1" title="1" href="" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
-        <area target="" alt="2" title="2" href="" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
-        <area target="" alt="3" title="3" href="" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
-        <area target="" alt="4" title="4" href="" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
-        <area target="" alt="5" title="5" href="" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
-        <area target="" alt="6" title="6" href="" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
-        <area target="" alt="7" title="7" href="" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
-        <area target="" alt="11" title="11" href="" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
-        <area target="" alt="9" title="9" href="" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
-        <area target="" alt="10" title="10" href="" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
-        <area target="" alt="11" title="11" href="" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
-        <area target="" alt="12" title="12" href="" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
-        <area target="" alt="13" title="13" href="" coords="944,609,1387,620,1389,796,944,780" shape="poly">
-    </map>*@
+    <area target="" alt="2" title="2" href="" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
+    <area target="" alt="3" title="3" href="" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
+    <area target="" alt="4" title="4" href="" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
+    <area target="" alt="5" title="5" href="" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
+    <area target="" alt="6" title="6" href="" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
+    <area target="" alt="7" title="7" href="" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
+    <area target="" alt="8" title="8" href="" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
+    <area target="" alt="9" title="9" href="" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
+    <area target="" alt="10" title="10" href="" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
+    <area target="" alt="11" title="11" href="" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
+    <area target="" alt="12" title="12" href="" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
+    <area target="" alt="13" title="13" href="" coords="944,609,1387,620,1389,796,944,780" shape="poly">
+</map>*@
 
 <div id="tipmsg"></div>
 
 <div id="sun_study">
     <SfDropDownButton IconCss="e-ddb-icons e-profile" CssClass="e-caret-hide e-background">
-        <DropDownButtonEvents OnOpen="OpenTop" ItemSelected="ChangeSunStudy" />
+        <DropDownButtonEvents OnOpen="OpenTop" OnItemRender="RenderSunStudyItem" ItemSelected="ChangeSunStudy" />
         <DropDownButtonItems>
-            <DropDownButtonItem Id="0" Text="Morgon" IconCss="e-ddb-icons"></DropDownButtonItem>
-            <DropDownButtonItem Id="1" Text="Mitt på dagen" IconCss="e-ddb-icons"></DropDownButtonItem>
-            <DropDownButtonItem Id="2" Text="Kväll" IconCss="e-ddb-icons"></DropDownButtonItem>
+            <DropDownButtonItem Id="0" Text="Morgon"></DropDownButtonItem>
+            <DropDownButtonItem Id="1" Text="Mitt på dagen"></DropDownButtonItem>
+            <DropDownButtonItem Id="2" Text="Kväll"></DropDownButtonItem>
         </DropDownButtonItems>
     </SfDropDownButton>
 </div>
@@ -93,6 +93,11 @@
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args)
     {
         args.Element.SetAttribute("style", "margin:-169px -115px");
+    }
+
+    private void RenderSunStudyItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    {
+        args.Element.AddClass(new string[] { "item-background" });
     }
 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
@@ -217,8 +222,7 @@
     }
 
     #overview {
-        width: 50%;
-
+        width: 60%;
     }
 
     #housing_list {
@@ -262,13 +266,18 @@
         transition-duration: 0.4s;
     }
 
+    .item-background {
+        background: white;
+    }
+
     .e-background {
         width: 50px;
+        background: white;
     }
 
     .e-ddb-icons {
         font-family: 'e-ddb-icons';
-        font-size: 45px;
+        font-size: 55px;
         font-style: normal;
         font-weight: normal;
         font-variant: normal;
