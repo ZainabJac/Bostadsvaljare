@@ -28,111 +28,48 @@
             }
         },
 
-        addMapHilights: function () {
-            $('#overview').mapster({
+        addMapHighlights: function () {
+            var colors = {
+                available: '5bcb24',
+                booked: 'dfd431',
+                sold: 'd32626',
+            };
+
+            var options = {
                 staticState: false,
                 fill: true,
                 mapKey: 'status',
-                areas: [{
-                    key: 'available',
-                    fillColor: '5bcb24'
-                },
-                    {
-                        key: 'available1',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available2',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available3',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available4',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available5',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available6',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available7',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available8',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available9',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available10',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available11',
-                        fillColor: '5bcb24'
-                    },
-                    {
-                        key: 'available12',
-                        fillColor: '5bcb24'
-                    },
-                {
-                    key: 'booked',
-                    fillColor: 'd32626'
-                    },
-                    {
-                        key: 'booked1',
-                        fillColor: 'd32626'
-                    },
-                    {
-                        key: 'booked2',
-                        fillColor: 'd32626'
-                    },
-                    {
-                        key: 'booked3',
-                        fillColor: 'd32626'
-                    },
-                    {
-                        key: 'booked4',
-                        fillColor: 'd32626'
-                    },
-                    {
-                    key: 'sold',
-                    fillColor: 'dfd431'
-                }],
                 wrapClass: 'center',
-                onConfigured: function () {
-                    $('#overview').css({
+            };
+
+            var initialOptions = options;
+            initialOptions.onConfigured = function (success) {
+                if (success) {
+                    var statuses = { available: 0, booked: 0, sold: 0 };
+                    options.areas = [];
+
+                    var mapAreas = $('#housing_map')[0].areas
+                    for (var i = 0; i < mapAreas.length; i++) {
+                        var area = mapAreas[i];
+                        var status = area.attributes.status.value;
+                        area.attributes.status.value = status + statuses[status];
+                        options.areas.push({
+                            key: status + statuses[status],
+                            fillColor: colors[status],
+                        });
+                        console.log(status + statuses[status]);
+                        statuses[status] += 1;
+                    }
+
+                    this.mapster('rebind', options);
+
+                    this.css({
                         width: '100%',
                     });
-                },
-            });
-            /*$('#overview').mapster({
-                staticState: false,
-                singleSelect: true,
-                fill: true,
-                fillOpacity: 0.4,
-                fillColor: '5bcb24',
-                hilight: true,
-                render_hilight: {
+                }
+            };
 
-                },
-                onMouseover: function (e) {
-                    $(this).mapster('set', false).mapster('set', true);
-                },
-                onMouseout: function (e) {
-                    $(this).mapster('set', false);
-                },
-            });*/
+            $('#overview').mapster(initialOptions);
         },
 
         changeMapImage: function (imagePath) {
@@ -151,7 +88,5 @@
         hideTooltip: function () {
             $('#tipmsg').hide();
         }
-
-
     };
 })();
