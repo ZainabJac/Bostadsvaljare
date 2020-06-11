@@ -7,8 +7,8 @@
 
 
 <div id="selector">
-    <img id="overview" src="@OverviewImg" usemap="#housingmap">
-    <map id="housing_map" name="housingmap">
+    <img id="overview" src="@OverviewImg" usemap="#@Views[View].ImageMapName" @onload="OnLoadIM">
+    <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
         <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
@@ -23,10 +23,21 @@
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
     </map>
+    <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
+        <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
+        <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
+        <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
+        <area status="booked" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
+        <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
+        <area status="booked" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
+        <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
+        <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
+        <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
+    </map>
 </div>
 
 
-@*<img src="IMG/Vy till Phille.png" usemap="#image-map">
+@*<img src="IMG/Vy till Phille.png" usemap="#image-map"> <map name="image-map">
     <area target="" alt="1" title="1" href="" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
     <area target="" alt="2" title="2" href="" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
     <area target="" alt="3" title="3" href="" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
@@ -41,12 +52,33 @@
     <area target="" alt="12" title="12" href="" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
     <area target="" alt="13" title="13" href="" coords="944,609,1387,620,1389,796,944,780" shape="poly">
 </map>*@
+@*<map name="image-map">
+    <area target="" alt="1" title="1" href="#" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
+    <area target="" alt="2" title="2" href="#" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
+    <area target="" alt="3" title="3" href="#" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
+    <area target="" alt="4" title="4" href="#" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
+    <area target="" alt="5" title="5" href="#" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
+    <area target="" alt="5" title="6" href="#" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
+    <area target="" alt="6" title="7" href="#" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
+    <area target="" alt="7" title="8" href="#" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
+    <area target="" alt="8" title="9" href="#" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
+</map>*@
 
 <div id="tipmsg"></div>
 
-<div id="sun_study">
-    <SfDropDownButton IconCss="e-ddb-icons e-profile" CssClass="e-caret-hide e-background">
-        <DropDownButtonEvents OnOpen="OpenTop" OnItemRender="RenderSunStudyItem" ItemSelected="ChangeSunStudy" />
+<div id="view_menu">
+    <SfDropDownButton IconCss="e-ddb-icons e-view" CssClass="e-caret-hide e-background">
+        <DropDownButtonEvents OnOpen="OpenTop" OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
+        <DropDownButtonItems>
+            <DropDownButtonItem Id="0" Text="Vy 1"></DropDownButtonItem>
+            <DropDownButtonItem Id="1" Text="Vy 2"></DropDownButtonItem>
+        </DropDownButtonItems>
+    </SfDropDownButton>
+</div>
+
+<div id="sun_study_menu">
+    <SfDropDownButton IconCss="e-ddb-icons e-sun-study" CssClass="e-caret-hide e-background">
+        <DropDownButtonEvents OnOpen="OpenTop" OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
         <DropDownButtonItems>
             <DropDownButtonItem Id="0" Text="Morgon"></DropDownButtonItem>
             <DropDownButtonItem Id="1" Text="Mitt på dagen"></DropDownButtonItem>
@@ -63,12 +95,36 @@
         public string ImagePath { get; set; }
     }
 
-    List<SunStudyData> SunStudies = new List<SunStudyData> {
-        new SunStudyData() {Name = "Morgon", ImagePath = "IMG/Dag.jpg"},
-        new SunStudyData() {Name = "Mitt på dagen", ImagePath = "IMG/Imagemap.jpg"},
-        new SunStudyData() {Name = "Kväll", ImagePath = "IMG/Natt.jpg"}
+    public class ViewData
+    {
+        public string Name { get; set; }
+        public string ImageMapName { get; set; }
+        public List<SunStudyData> SunStudies { get; set; }
+    }
+
+    List<ViewData> Views = new List<ViewData> {
+        new ViewData() {
+            Name = "Vy 1",
+            ImageMapName = "imagemap-1",
+            SunStudies = new List<SunStudyData> {
+                new SunStudyData() {Name = "Morgon", ImagePath = "IMG/Dag.jpg"},
+                new SunStudyData() {Name = "Mitt på dagen", ImagePath = "IMG/Imagemap.jpg"},
+                new SunStudyData() {Name = "Kväll", ImagePath = "IMG/Natt.jpg"},
+            },
+        },
+        new ViewData() {
+            Name = "Vy 2",
+            ImageMapName = "imagemap-2",
+            SunStudies = new List<SunStudyData> {
+                new SunStudyData() {Name = "Morgon", ImagePath = "IMG/ext. 2.jpg"},
+                new SunStudyData() {Name = "Mitt på dagen", ImagePath = "IMG/ext. 2.jpg"},
+                new SunStudyData() {Name = "Kväll", ImagePath = "IMG/ext. 2.jpg"},
+            },
+        },
     };
 
+    private int View { get; set; } = 0;
+    private bool viewChanged = true;
     private string OverviewImg { get; set; }
     public List<Houses> DataSource { get; set; }
 
@@ -76,17 +132,17 @@
     {
         base.OnInitialized();
         this.DataSource = Houses.GetHouseData();
-        this.OverviewImg = SunStudies[1].ImagePath;
+        this.OverviewImg = Views[View].SunStudies[1].ImagePath;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
     {
-        if (firstRender)
-        {
+        if (viewChanged)
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights"
+                "mapster.addMapHighlights", "overview", Views[View].ImageMapName
             );
-        }
+
+        viewChanged = false;
     }
 
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args)
@@ -94,17 +150,28 @@
         args.Element.SetAttribute("style", "margin:-169px -115px");
     }
 
-    private void RenderSunStudyItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         args.Element.AddClass(new string[] { "item-background" });
+    }
+
+    public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    {
+        int ind = int.Parse(args.Element.ID);
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.changeImageAndMap", "overview"
+        );
+        this.View = ind;
+        this.viewChanged = true;
+        this.OverviewImg = Views[1].SunStudies[1].ImagePath;
     }
 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         int ind = int.Parse(args.Element.ID);
-        this.OverviewImg = SunStudies[ind].ImagePath;
+        this.OverviewImg = Views[View].SunStudies[ind].ImagePath;
         await JSRuntime.InvokeVoidAsync(
-            "mapster.changeMapImage", this.OverviewImg
+            "mapster.changeImage", "selector", this.OverviewImg
         );
     }
 
@@ -242,7 +309,13 @@
         pointer-events: none;
     }
 
-    #sun_study {
+    #view_menu {
+        position: fixed;
+        bottom: 0px;
+        right: 50px;
+    }
+
+    #sun_study_menu {
         position: fixed;
         bottom: 0px;
         right: 0px;
@@ -283,7 +356,11 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
-    .e-profile::before {
+    .e-view::before {
+        content: url(IMG/icons/sundial_tiny.png);
+    }
+
+    .e-sun-study::before {
         content: url(IMG/icons/sundial_tiny.png);
     }
 </style>

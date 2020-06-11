@@ -1,6 +1,6 @@
 ﻿(function () {
     window.mapster = {
-        addMapHighlights: function () {
+        addMapHighlights: function (imageID, mapID) {
             var colors = {
                 available: '5bcb24',
                 booked: 'dfd431',
@@ -20,7 +20,7 @@
                     var statuses = { available: 0, booked: 0, sold: 0 };
                     options.areas = [];
 
-                    var mapAreas = $('#housing_map')[0].areas
+                    var mapAreas = $('#'+ mapID)[0].areas
                     for (var i = 0; i < mapAreas.length; i++) {
                         var area = mapAreas[i];
                         var status = area.attributes.status.value;
@@ -29,7 +29,6 @@
                             key: status + statuses[status],
                             fillColor: colors[status],
                         });
-                        console.log(status + statuses[status]);
                         statuses[status] += 1;
                     }
 
@@ -41,11 +40,15 @@
                 }
             };
 
-            $('#overview').mapster(initialOptions);
+            $('#'+ imageID).mapster(initialOptions);
         },
 
-        changeMapImage: function (imagePath) {
-            $('img.mapster_el')[0].src = imagePath;
+        changeImage: function (elementID, imagePath) {
+            $('#'+ elementID +' img.mapster_el')[0].src = imagePath;
+        },
+
+        changeImageAndMap: function (imageID) {
+            $('#'+ imageID).mapster('unbind');
         },
     };
 })();
