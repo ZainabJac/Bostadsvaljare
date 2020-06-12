@@ -1,6 +1,6 @@
 ﻿(function () {
     window.mapster = {
-        addMapHighlights: function (imageID, mapID) {
+        addMapHighlights: function (elementID, imageID, mapID) {
             var colors = {
                 available: '5bcb24',
                 booked: 'dfd431',
@@ -40,15 +40,11 @@
                 }
             };
 
-            $('#'+ imageID).mapster(initialOptions);
+            $('#'+ elementID +' #'+ imageID).mapster(initialOptions);
         },
 
         changeImage: function (elementID, imagePath) {
             $('#'+ elementID +' img.mapster_el')[0].src = imagePath;
-        },
-
-        changeImageAndMap: function (imageID) {
-            $('#'+ imageID).mapster('unbind');
         },
     };
 })();

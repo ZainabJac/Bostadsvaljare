@@ -6,8 +6,8 @@
 @inject NavigationManager navManager
 
 
-<div id="selector">
-    <img id="overview" src="@OverviewImg" usemap="#@Views[View].ImageMapName" @onload="OnLoadIM">
+<div id="@Views[0].ID" style="margin-bottom: 5px; @(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;")">
+    <img id="exterior" src="@ExteriorImgPaths[0]" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
     <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
         <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
@@ -23,6 +23,9 @@
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
     </map>
+</div>
+<div id="@Views[1].ID" style="margin-bottom: 5px; @(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;")">
+    <img id="exterior" src="@ExteriorImgPaths[1]" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
     <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
         <area status="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
@@ -68,10 +71,11 @@
 
 <div id="view_menu">
     <SfDropDownButton IconCss="e-icons e-view" CssClass="e-caret-hide e-background">
-        <DropDownButtonEvents OnOpen="@(e => OpenTop(e, 2))" OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
+        <DropDownButtonEvents OnOpen="@(e => OpenTop(e, Views.Count))" OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
         <DropDownButtonItems>
-            <DropDownButtonItem Id="0" Text="Vy 1"></DropDownButtonItem>
-            <DropDownButtonItem Id="1" Text="Vy 2"></DropDownButtonItem>
+            @for (int i=0; i < Views.Count; i++) {
+                <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+            }
         </DropDownButtonItems>
     </SfDropDownButton>
 </div>
@@ -80,69 +84,69 @@
     <SfDropDownButton IconCss="e-icons e-sun-study" CssClass="e-caret-hide e-background">
         <DropDownButtonEvents OnOpen="@(e => OpenTop(e, 3))" OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
         <DropDownButtonItems>
-            <DropDownButtonItem Id="0" Text="Morgon"></DropDownButtonItem>
-            <DropDownButtonItem Id="1" Text="Mitt på dagen"></DropDownButtonItem>
-            <DropDownButtonItem Id="2" Text="Kväll"></DropDownButtonItem>
+            <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
+            <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
+            <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
         </DropDownButtonItems>
     </SfDropDownButton>
 </div>
 
 
 @code {
-    public class SunStudyData
-    {
-        public string Name { get; set; }
-        public string ImagePath { get; set; }
-    }
-
     public class ViewData
     {
+        public string ID { get; set; }
         public string Name { get; set; }
         public string ImageMapName { get; set; }
-        public List<SunStudyData> SunStudies { get; set; }
+        public Dictionary<string, string> SunStudies { get; set; }
+        public bool Initialized { get; set; } = false;
     }
 
     List<ViewData> Views = new List<ViewData> {
         new ViewData() {
+            ID = "view-1",
             Name = "Vy 1",
             ImageMapName = "imagemap-1",
-            SunStudies = new List<SunStudyData> {
-                new SunStudyData() {Name = "Morgon", ImagePath = "IMG/Dag.jpg"},
-                new SunStudyData() {Name = "Mitt på dagen", ImagePath = "IMG/Imagemap.jpg"},
-                new SunStudyData() {Name = "Kväll", ImagePath = "IMG/Natt.jpg"},
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Dag.jpg" },
+                { "midday", "IMG/Imagemap.jpg" },
+                { "evening", "IMG/Natt.jpg" },
             },
         },
         new ViewData() {
+            ID = "view-2",
             Name = "Vy 2",
             ImageMapName = "imagemap-2",
-            SunStudies = new List<SunStudyData> {
-                new SunStudyData() {Name = "Morgon", ImagePath = "IMG/ext. 2.jpg"},
-                new SunStudyData() {Name = "Mitt på dagen", ImagePath = "IMG/ext. 2.jpg"},
-                new SunStudyData() {Name = "Kväll", ImagePath = "IMG/ext. 2.jpg"},
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/ext. 2.jpg" },
+                { "midday", "IMG/ext. 2.jpg" },
+                { "evening", "IMG/ext. 2.jpg" },
             },
         },
     };
 
-    private int View { get; set; } = 0;
-    private bool viewChanged = true;
-    private string OverviewImg { get; set; }
+    private int CurrentView { get; set; } = 0;
+    private string[] ExteriorImgPaths { get; set; }
     public List<Houses> DataSource { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         this.DataSource = Houses.GetHouseData();
-        this.OverviewImg = Views[View].SunStudies[1].ImagePath;
+        this.ExteriorImgPaths = new string[this.Views.Count];
+        for (int i=0; i < this.Views.Count; i++) {
+            this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
+        }
     }
 
-    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
+    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        if (viewChanged)
+        if (!Views[view].Initialized)
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", "overview", Views[View].ImageMapName
+                "mapster.addMapHighlights", Views[view].ID, "exterior", Views[view].ImageMapName
             );
 
-        viewChanged = false;
+        Views[view].Initialized = true;
     }
 
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args, int itemNr)
@@ -156,23 +160,18 @@
         args.Element.AddClass(new string[] { "item-background" });
     }
 
-    public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    public void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
-        int ind = int.Parse(args.Element.ID);
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImageAndMap", "overview"
-        );
-        this.View = ind;
-        this.viewChanged = true;
-        this.OverviewImg = Views[1].SunStudies[1].ImagePath;
+        this.CurrentView = int.Parse(args.Element.ID);
     }
 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
-        int ind = int.Parse(args.Element.ID);
-        this.OverviewImg = Views[View].SunStudies[ind].ImagePath;
+        for (int i=0; i < this.Views.Count; i++) {
+            this.ExteriorImgPaths[i] = this.Views[i].SunStudies[args.Element.ID];
+        }
         await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImage", "selector", this.OverviewImg
+            "mapster.changeImage", Views[CurrentView].ID, this.ExteriorImgPaths[CurrentView]
         );
     }
 
@@ -277,11 +276,7 @@
 
 
 <style>
-    #selector {
-        margin-bottom: 5px;
-    }
-
-    #overview {
+    #exterior {
         width: 60%;
     }
 
