@@ -129,6 +129,13 @@
                     googlemaps.directionsDisplay.set('directions', null); // Remove previous directions
                     googlemaps.directionsDisplay.setDirections(response);
                     googlemaps.displayingDirections = true;
+
+                    // Show travel data
+                    var routeLeg = response.routes[0].legs[0];
+                    var travelDistance = document.getElementById('travel-distance');
+                    travelDistance.innerHTML = routeLeg.distance.text;
+                    var travelTime = document.getElementById('travel-time');
+                    travelTime.innerHTML = routeLeg.duration.text;
                 }
             });
         },

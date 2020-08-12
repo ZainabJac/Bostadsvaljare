@@ -2,14 +2,18 @@
 @using Syncfusion.Blazor.Buttons
 @inject IJSRuntime JSRuntime
 
-<div style="margin: auto; width: 1000px; height: 75px; background-color: cornflowerblue">
-    <div style="margin: auto; padding-top: 3px; width: 300px;">
+<div style="margin: auto; width: 1000px; padding: 3px 3px 5px 3px; background-color: cornflowerblue">
+    <div>
         <input id="pac-input" class="controls" type="text" placeholder="Ange utgångspunkt">
+        <span style="float: right;">
+            <SfRadioButton Label="Bil" Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+            <SfRadioButton Label="Cykel" Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+            <SfRadioButton Label="Kollektivtrafik" Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+        </span>
     </div>
-    <div style="margin: auto; width: 300px; height: 50px;">
-        <SfRadioButton Label="Bil" Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-        <SfRadioButton Label="Cykel" Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-        <SfRadioButton Label="Kollektivtrafik" Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+    <div id="travel-data">
+        <a id="travel-distance"></a>
+        <a id="travel-time"></a>
     </div>
 </div>
 <div id="map"></div>
@@ -18,7 +22,8 @@
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) {
+        if (firstRender)
+        {
             await JSRuntime.InvokeVoidAsync(
                 "googlemaps.initAutocomplete", 59.332491, 18.068093
             );
@@ -42,7 +47,6 @@
     }
 
     #pac-input {
-        margin: auto;
         width: 300px;
     }
 </style>
