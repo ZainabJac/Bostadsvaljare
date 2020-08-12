@@ -1,5 +1,13 @@
 ﻿(function () {
     window.googlemaps = {
+        displayingDirections: false,
+        directionsDisplay: null,
+        request: {
+            origin: null,
+            destination: null,
+            travelMode: '',
+        },
+
         toggleBounce: function () {
             if (marker.getAnimation() !== null) {
                 marker.setAnimation(null);
@@ -11,6 +19,7 @@
         initAutocomplete: function (lat, lng) {
             var destination = new google.maps.LatLng({ lat: lat, lng: lng });
             var image = 'IMG/icons/pngwave.png';
+            googlemaps.request.travelMode = google.maps.TravelMode.DRIVING;
 
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: destination,
@@ -29,7 +38,6 @@
             // Create the search box and link it to the UI element.
             var input = document.getElementById('pac-input');
             var searchBox = new google.maps.places.SearchBox(input);
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
             // Bias the SearchBox results towards current map's viewport.
             map.addListener('bounds_changed', function () {
@@ -37,8 +45,8 @@
             });
 
             var markers = [];
-            var directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
-            directionsDisplay.setMap(map); // map should be already initialized.
+            googlemaps.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
+            googlemaps.directionsDisplay.setMap(map); // map should be already initialized.
             // Listen for the event fired when the user selects a prediction and retrieve
             // more details for that place.
             searchBox.addListener('places_changed', function () {
@@ -84,25 +92,15 @@
                         bounds.extend(place.geometry.location);
                     }
 
-                    var directionsService = new google.maps.DirectionsService();
-                    var request = {
-                        origin: destination,
-                        destination: place.geometry.location,
-                        travelMode: google.maps.TravelMode.DRIVING
-                    };
-
-                    directionsService.route(request, function (response, status) {
-                        if (status == google.maps.DirectionsStatus.OK) {
-                            directionsDisplay.set('directions', null); // Remove previous directions
-                            directionsDisplay.setDirections(response);
-                        }
-                    });
+                    googlemaps.request.origin = place.geometry.location;
+                    googlemaps.request.destination = destination;
+                    googlemaps.setRoute();
 
                     var service = new google.maps.DistanceMatrixService();
                     service.getDistanceMatrix({
-                        origins: [destination],
-                        destinations: [place.geometry.location],
-                        travelMode: google.maps.TravelMode.DRIVING
+                        origins: [place.geometry.location],
+                        destinations: [destination],
+                        travelMode: googlemaps.request.travelMode
                     }, callback);
 
                     function callback(response, status) {
@@ -121,6 +119,34 @@
                 });
                 map.fitBounds(bounds);
             });
+        },
+
+        setRoute: function () {
+            var directionsService = new google.maps.DirectionsService();
+
+            directionsService.route(googlemaps.request, function (response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    googlemaps.directionsDisplay.set('directions', null); // Remove previous directions
+                    googlemaps.directionsDisplay.setDirections(response);
+                    googlemaps.displayingDirections = true;
+                }
+            });
+        },
+
+        setTravelMode: function (value) {
+            switch (value) {
+                case 'car':
+                    googlemaps.request.travelMode = google.maps.TravelMode.DRIVING;
+                    break;
+                case 'bike':
+                    googlemaps.request.travelMode = google.maps.TravelMode.BICYCLING;
+                    break;
+                case 'public':
+                    googlemaps.request.travelMode = google.maps.TravelMode.TRANSIT;
+                    break;
+            }
+            if (googlemaps.displayingDirections)
+                googlemaps.setRoute();
         },
     };
 })();
