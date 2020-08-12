@@ -8,9 +8,10 @@
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("initAutocomplete", 59.332491, 18.068093);
+        if (firstRender) {
+            await JSRuntime.InvokeVoidAsync(
+                "googlemaps.initAutocomplete", 59.332491, 18.068093
+            );
         }
     }
 }
