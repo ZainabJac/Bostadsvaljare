@@ -175,7 +175,7 @@
         );
     }
 
-    public async void ShowTooltip(MouseEventArgs e, String buttonNumber)
+    public async void ShowTooltip(MouseEventArgs e, string buttonNumber)
     {
         await JSRuntime.InvokeAsync<string>(
             "util.showTooltip", e.ClientX, e.ClientY, buttonNumber
