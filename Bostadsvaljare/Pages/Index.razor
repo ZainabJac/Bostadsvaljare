@@ -141,7 +141,7 @@
     {
         if (!Views[view].Initialized)
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", Views[view].ID, "exterior", Views[view].ImageMapName
+                "mapster.addMapHighlights", Views[view].ID, "exterior", Views[view].ImageMapName, "center"
             );
 
         Views[view].Initialized = true;

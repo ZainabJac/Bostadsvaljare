@@ -1,6 +1,6 @@
 ﻿(function () {
     window.mapster = {
-        addMapHighlights: function (elementID, imageID, mapID) {
+        addMapHighlights: function (elementID, imageID, mapID, classList) {
             var colors = {
                 available: '5bcb24',
                 booked: 'dfd431',
@@ -11,7 +11,7 @@
                 staticState: false,
                 fill: true,
                 mapKey: 'status',
-                wrapClass: 'center',
+                wrapClass: classList,
             };
 
             var initialOptions = options;
