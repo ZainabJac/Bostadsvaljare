@@ -11,10 +11,11 @@
                 staticState: false,
                 fill: true,
                 mapKey: 'status',
-                wrapClass: classList,
             };
+            if (classList !== "")
+                options.wrapClass = classList;
 
-            var initialOptions = options;
+            var initialOptions = { ...options };
             initialOptions.onConfigured = function (success) {
                 if (success) {
                     var statuses = { available: 0, booked: 0, sold: 0 };
