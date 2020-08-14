@@ -4,37 +4,35 @@
 
 
 <div id="topnav">
-    <div>
-        <div style="display: inline-block;">
-            <NavLink href="" Match="NavLinkMatch.All" style="  display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
-            </NavLink>
-            <header class="menuslash">/</header>
-            <NavLink href="interior" style="display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat">Interiör</SfButton>
-            </NavLink>
-            <header class="menuslash">/</header>
-            <NavLink href="Lgh._lista" style="display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat">Lgh lista</SfButton>
-            </NavLink>
-            <header class="menuslash">/</header>
-            <NavLink href="närområde" style="display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat"> Närområde </SfButton>
-            </NavLink>
-            <header class="menuslash">/</header>
-            <NavLink href="VR-video" style="display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat">VR-video</SfButton>
-            </NavLink>
-            <header class="menuslash">/</header>
-            <NavLink href="360_bilder" style="display: inline-block;">
-                <SfButton IsPrimary="true" CssClass="e-flat">360 Bilder</SfButton>
-            </NavLink>
-        </div>
+    <span>
+        <NavLink href="" Match="NavLinkMatch.All">
+            <SfButton IsPrimary="true" CssClass="e-flat">Exteriör</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="interior">
+            <SfButton IsPrimary="true" CssClass="e-flat">Interiör</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="Lgh._lista">
+            <SfButton IsPrimary="true" CssClass="e-flat">Lgh lista</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="närområde">
+            <SfButton IsPrimary="true" CssClass="e-flat"> Närområde </SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="VR-video">
+            <SfButton IsPrimary="true" CssClass="e-flat">VR-video</SfButton>
+        </NavLink>
+        <header class="menuslash">/</header>
+        <NavLink href="360_bilder">
+            <SfButton IsPrimary="true" CssClass="e-flat">360 Bilder</SfButton>
+        </NavLink>
+    </span>
 
-        <div style="float: right; display:inline-block;">
-            <SfButton CssClass="e-flat" IconCss="e-icons e-search" OnClick="@ToggleFullscreen"></SfButton>
-        </div>
-    </div>
+    <span style="float: right;">
+        <SfButton CssClass="e-flat" IconCss="e-icons e-search" OnClick="@ToggleFullscreen"></SfButton>
+    </span>
 </div>
 
 

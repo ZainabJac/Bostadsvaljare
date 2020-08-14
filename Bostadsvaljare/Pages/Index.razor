@@ -6,7 +6,7 @@
 @inject NavigationManager navManager
 
 
-<div id="@Views[0].ID" style="margin-bottom: 5px; @(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;")">
+<div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;")">
     <img id="exterior" src="@ExteriorImgPaths[0]" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
     <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
@@ -24,7 +24,7 @@
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
     </map>
 </div>
-<div id="@Views[1].ID" style="margin-bottom: 5px; @(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;")">
+<div id="@Views[1].ID" style="@(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;")">
     <img id="exterior" src="@ExteriorImgPaths[1]" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
     <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
         <area status="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
@@ -66,8 +66,6 @@
     <area target="" alt="7" title="8" href="#" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
     <area target="" alt="8" title="9" href="#" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
 </map>*@
-
-<div id="tipmsg"></div>
 
 <div id="view_menu">
     <SfDropDownButton IconCss="e-icons e-view" CssClass="e-caret-hide e-background">
@@ -175,16 +173,16 @@
         );
     }
 
-    public async void ShowTooltip(MouseEventArgs e, string buttonNumber)
+    public async void ShowTooltip(MouseEventArgs e, string msg)
     {
-        await JSRuntime.InvokeAsync<string>(
-            "util.showTooltip", e.ClientX, e.ClientY, buttonNumber
+        await JSRuntime.InvokeVoidAsync(
+            "util.showTooltip", e.ClientX, e.ClientY, msg
         );
     }
 
-    public async void HideTooltip()
+    public async void HideTooltip(MouseEventArgs e)
     {
-        await JSRuntime.InvokeAsync<string>(
+        await JSRuntime.InvokeVoidAsync(
             "util.hideTooltip"
         );
     }
@@ -284,18 +282,6 @@
         width: 49%;
         display: inline-block;
         float: right;
-    }
-
-    #tipmsg {
-        display: none;
-        position: absolute;
-        background-color: #F0F0F0;
-        color: black;
-        padding-left: 5px;
-        padding-right: 5px;
-        border-radius: 7px;
-        white-space: pre-wrap;
-        pointer-events: none;
     }
 
     #view_menu {
