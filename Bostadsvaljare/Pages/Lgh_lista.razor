@@ -1,0 +1,298 @@
+﻿@page "/lgh_lista"
+
+@using BlazorStrap
+@using Syncfusion.Blazor.Grids
+
+@inject IJSRuntime JSRuntime
+
+<div>
+    <div style="width: 51.3%; margin-right: 0.3%; display: inline-block;">
+        <div id="house-main" style="margin-bottom: 0.7%;">
+            <img id="house-main-img" src="IMG/Imagemap.jpg" style="width: 100%;" usemap="#apt-list" @onload="OnLoadImage">
+            <map id="apt-list" name="apt-list">
+                @foreach (HouseImage image in ImageData) {
+                    <area id="@GetHouseStatus(image.HouseNumber)" href="#"
+                          @onmouseover="@(e => ShowTooltip(e, image.HouseNumber))" @onmouseout="HideTooltip" @onclick="() => HousingClicked(image.HouseNumber)"
+                          coords="@image.IMCoords" shape="poly">
+                }
+            </map>
+        </div>
+
+        <div>
+            <BSImage src="IMG/imagemap.jpg" Class="underbild underbild-space"></BSImage>
+            <BSImage src="IMG/Dag.jpg" Class="underbild underbild-space"></BSImage>
+            <BSImage src="IMG/ext. 2.jpg" Class="underbild underbild-space"></BSImage>
+            <BSImage src="IMG/Natt.jpg" Class="underbild"></BSImage>
+        </div>
+    </div>
+
+    <div class="housing-list">
+        <SfGrid @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
+            <GridPageSettings PageSize="18"></GridPageSettings>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
+            <GridEvents RowSelected="GetSelectedHouse" TValue="House"></GridEvents>
+            <GridColumns>
+                <GridColumn Field="@nameof(House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
+                <GridColumn Field="@nameof(House.Sqm)" HeaderText="Boarea"></GridColumn>
+                <GridColumn Field="@nameof(House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
+                <GridColumn Field="@nameof(House.Manadsavgift)" Format="C2" HeaderText="Mån. avgift"></GridColumn>
+                <GridColumn Field="@nameof(House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
+                    <Template>
+                        @{
+                            House house = (context as House);
+                            <div>
+                                @if (house.Status == "sold") {
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
+                                         height="25"
+                                         width="25" />
+                                    <span>Såld</span>
+                                }
+                                @if (house.Status == "booked") {
+                                    <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
+                                         height="25"
+                                         width="25" />
+                                    <span>Reserverad</span>
+                                }
+                                @if (house.Status == "available") {
+                                    <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
+                                         height="25"
+                                         width="25" />
+                                    <span>Ledig</span>
+                                }
+                            </div>
+                        }
+                    </Template>
+                </GridColumn>
+            </GridColumns>
+        </SfGrid>
+    </div>
+</div>
+
+@code{
+    private SfGrid<House> HouseList;
+    private Dictionary<string, string> HouseToArea;
+
+    public List<House> HouseData { get; set; }
+    public List<HouseImage> ImageData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.HouseData = House.GetHouseData();
+        this.ImageData = HouseImage.GetImageData();
+        this.HouseToArea = new Dictionary<string, string>();
+    }
+
+    private async void OnLoadImage(ProgressEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.addMapHighlights", "house-main", "house-main-img", "apt-list", ""
+        );
+
+        Dictionary<string, int> statuses = new Dictionary<string, int> {
+            { "available", 0 },
+            { "booked", 0 },
+            { "sold", 0 },
+        };
+        foreach (HouseImage img in ImageData) {
+            string status = HouseData.Find(x => x.HouseNumber == img.HouseNumber).Status;
+            HouseToArea.Add(img.HouseNumber,
+                            status + statuses[status]++);
+        }
+    }
+
+    private string GetHouseStatus(string houseNumber)
+    {
+        foreach (House house in HouseData) {
+            if (house.HouseNumber == houseNumber)
+                return house.Status;
+        }
+        return "";
+    }
+
+    private async void ShowTooltip(MouseEventArgs e, string houseNumber)
+    {
+        string msg;
+        House house = null;
+        foreach (House h in HouseData) {
+            if (h.HouseNumber == houseNumber) {
+                house = h;
+                break;
+            }
+        }
+
+        switch (house.Status) {
+            case "sold":
+                msg = "Såld";
+                break;
+            case "booked":
+                msg = "Reserverad";
+                break;
+            default:
+                msg = "Lgh nr.\t" + houseNumber +
+                    "\nBoarea:\t" + house.Sqm + "m²" +
+                    "\nPris:\t\t" + house.Price;
+                break;
+        }
+
+        await JSRuntime.InvokeVoidAsync(
+            "util.showTooltip", e.ClientX, e.ClientY, msg
+        );
+    }
+
+    private async void HideTooltip(MouseEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+    }
+
+    public async void GetSelectedHouse(RowSelectEventArgs<House> args)
+    {
+        await JSRuntime.InvokeVoidAsync("mapster.deselect");
+
+        House selectedHouse = (await this.HouseList.GetSelectedRecords())[0];
+        if (this.ImageData.Exists(x => x.HouseNumber == selectedHouse.HouseNumber)) {
+            string areaID = HouseToArea[selectedHouse.HouseNumber];
+            await JSRuntime.InvokeVoidAsync("mapster.select", areaID);
+        }
+    }
+
+    private async void HousingClicked(string houseNumber)
+    {
+        bool continuePaging = true;
+
+        for (int i=1; i <= this.HouseList.PageSettings.PageCount; i+=1) {
+            List<House> page = await this.HouseList.GetCurrentViewRecords();
+            for (int j=0; j < page.Count; j+=1) {
+                if (page[j].HouseNumber == houseNumber) {
+                    await this.HouseList.SelectRow(j);
+                    continuePaging = false;
+                    break;
+                }
+            }
+            if (continuePaging)
+                await this.HouseList.GoToPage(i + 1);
+            else
+                break;
+        }
+    }
+
+    public class House
+    {
+        public double Sqm { get; set; }
+        public string Price { get; set; }
+        public string Manadsavgift { get; set; }
+        public string HouseNumber { get; set; }
+        public string Status { get; set; }
+        public string IMCoords { get; set; }
+
+        public static List<House> GetHouseData()
+        {
+            List<House> houseData = new List<House>();
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "1b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "3a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9b", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7c", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9c", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9d", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7d", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "9b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "10a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "27b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+
+            return houseData;
+        }
+    }
+
+    public class HouseImage
+    {
+        public string HouseNumber { get; set; }
+        public string IMCoords { get; set; }
+
+        public static List<HouseImage> GetImageData()
+        {
+            List<HouseImage> imageData = new List<HouseImage>();
+            imageData.Add(new HouseImage { HouseNumber = "7a", IMCoords = "558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" });
+            imageData.Add(new HouseImage { HouseNumber = "7b", IMCoords = "311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" });
+            imageData.Add(new HouseImage { HouseNumber = "9a", IMCoords = "574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" });
+            imageData.Add(new HouseImage { HouseNumber = "9b", IMCoords = "313,607,583,611,576,701,551,712,553,766,313,753" });
+            imageData.Add(new HouseImage { HouseNumber = "9c", IMCoords = "580,885,576,773,544,764,313,753,311,870,437,879" });
+            imageData.Add(new HouseImage { HouseNumber = "8a", IMCoords = "578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" });
+            imageData.Add(new HouseImage { HouseNumber = "8b", IMCoords = "578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" });
+            imageData.Add(new HouseImage { HouseNumber = "1b", IMCoords = "576,463,942,456,942,616,578,611,553,602,553,546,574,537" });
+            imageData.Add(new HouseImage { HouseNumber = "3a", IMCoords = "583,613,947,616,944,784,574,771,551,766,551,710,576,699" });
+            imageData.Add(new HouseImage { HouseNumber = "4a", IMCoords = "940,63,953,97,1387,70,1389,281,953,292,940,274" });
+            imageData.Add(new HouseImage { HouseNumber = "4b", IMCoords = "940,283,953,290,1387,279,1387,458,956,456,944,456" });
+            imageData.Add(new HouseImage { HouseNumber = "7c", IMCoords = "942,456,953,458,1389,458,1387,618,956,609,942,607" });
+            imageData.Add(new HouseImage { HouseNumber = "7d", IMCoords = "944,609,1387,620,1389,796,944,780" });
+
+            return imageData;
+        }
+    }
+}
+
+
+<style>
+    .housing-list {
+        width: 48%;
+        display: inline-block;
+        float: right;
+    }
+
+    .underbild {
+        width: 24.535%;
+    }
+
+    .underbild-space {
+        margin-right: 0.1%;
+    }
+</style>

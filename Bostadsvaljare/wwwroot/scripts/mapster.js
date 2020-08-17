@@ -47,5 +47,13 @@
         changeImage: function (elementID, imagePath) {
             $('#'+ elementID +' img.mapster_el')[0].src = imagePath;
         },
+
+        select: function (areaID) {
+            $('area#'+ areaID).mapster('select');
+        },
+
+        deselect: function () {
+            $('area').mapster('deselect');
+        },
     };
 })();
