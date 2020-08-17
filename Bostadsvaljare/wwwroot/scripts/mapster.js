@@ -10,7 +10,7 @@
             var options = {
                 staticState: false,
                 fill: true,
-                mapKey: 'status',
+                mapKey: 'id',
             };
             if (classList !== "")
                 options.wrapClass = classList;
@@ -24,8 +24,8 @@
                     var mapAreas = $('#'+ mapID)[0].areas
                     for (var i = 0; i < mapAreas.length; i++) {
                         var area = mapAreas[i];
-                        var status = area.attributes.status.value;
-                        area.attributes.status.value = status + statuses[status];
+                        var status = area.attributes.id.value;
+                        area.attributes.id.value = status + statuses[status];
                         options.areas.push({
                             key: status + statuses[status],
                             fillColor: colors[status],
