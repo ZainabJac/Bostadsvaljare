@@ -45,7 +45,10 @@
             });
 
             var markers = [];
-            googlemaps.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });// also, constructor can get "DirectionsRendererOptions" object
+            googlemaps.directionsDisplay = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                suppressBicyclingLayer: true,
+            });// also, constructor can get "DirectionsRendererOptions" object
             googlemaps.directionsDisplay.setMap(map); // map should be already initialized.
             // Listen for the event fired when the user selects a prediction and retrieve
             // more details for that place.
