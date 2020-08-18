@@ -20,4 +20,9 @@
     <None Include="wwwroot\IMG\icons\info.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\IMG\icons\pan\" />
+    <Folder Include="wwwroot\IMG\apts\" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,844 @@
+﻿var camera, scene, renderer, skybox, container, canvas;
+var cameraHUD, sceneHUD;
+var clock = new THREE.Clock();
+var isUserInteracting = false,
+    onMouseDownMouseX = 0, onMouseDownMouseY = 0,
+    lon = 180, lastLon = 0, onMouseDownLon = 0,
+    lat = 0, lastLat = 0, onMouseDownLat = 0,
+    phi = 0, theta = 0;
+var autoRotate = true,
+    autoRotateTimeout,
+    lonAcc = new Accumulator(20, true),
+    latAcc = new Accumulator(20, true),
+    velCam = new THREE.Vector2(),
+    maxVelLon = panData.camera.auto_rotate.x_max_velocity,
+    maxVelLat = panData.camera.auto_rotate.y_max_velocity,
+    decRotationRate = 0;
+var isMouseover = false,
+    isFullscreen = false,
+    isShowingMeasurements = false,
+    containerWidth = 0;
+var mapSprite, currentRoom;
+var raycaster = new THREE.Raycaster(),
+    mouseVector = new THREE.Vector2(),
+    hotspotGroup = new THREE.Group(),
+    HUDGroup = new THREE.Group(),
+    hoveredHUDEl, hoveredHotspot,
+    latestMouseProjection,
+    tooltipDisplayTimeout,
+    hoveringObj;
+var elem = document.documentElement;
+
+var constants = {
+    CONTAINER: 'pan_container',
+    TOOLTIP: 'pan_tooltip',
+    MAP: 'map',
+    MAP_ICON: 'map_icon',
+    MINIMIZE: 'minimize',
+    FULLSCREEN: 'fullscreen',
+    MEASUREMENTS: 'measurements',
+    IMAGE_TYPE: {
+        IMAGE: 'image',
+        NINE_GRID: '9-grid',
+        DEFAULT: 'image',
+    },
+    PAN_TYPE: {
+        SPHERE: 'sphere',
+        CUBE: 'cube',
+    },
+};
+
+(function () {
+    window.pan_viewer = {
+        start: function () {
+            //TODO: attempting to preload images to avoid loading them each time to change images,
+            //      but something is not quite right with the end result... The webGLShader "couldn't compile."
+            // preloadImages(panData, 'image');
+            // preloadImages(apData, 'panorama');
+
+            this.init();
+            this.animate();
+        },
+
+        /*preloadImages: function (data, key) {
+           for (var k in data) {
+              if (data.hasOwnProperty(k)) {
+                 if (k === key) {
+                    data[key] = new THREE.TextureLoader().load(data[key]);
+                 } else if (data[k] === Object(data[k])) {
+                   preloadImages(data[k], key);
+                 }
+              }
+           }
+        },*/
+
+        init: function () {
+            canvas = document.createElement("canvas");
+            container = $('#'+ constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            containerWidth = container.offsetWidth;
+            container.appendChild(canvas);
+
+            // TODO: get aspect of panorama image
+            var aspect = 3 / 2;
+            camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+            camera.target = new THREE.Vector3(0, 0, 0);
+            scene = new THREE.Scene();
+
+            currentRoom = apData.entry;
+            var pan = this.getPanorama(currentRoom);
+            skybox = new THREE.Mesh(pan.geometry, pan.material);
+            scene.add(skybox);
+            this.addHotspots();
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas });
+            renderer.autoClear = false;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // TODO: set size to match panorama image aspect
+            this.resetSize(containerWidth, containerWidth * 0.6);
+
+            this.initHUD();
+
+            // Map setup
+            var transform = this.getTransform(apData.map.transform);
+            transform.pos.z = -10;
+            mapSprite = this.createHUDElement(apData.map,
+                constants.MAP,
+                transform,
+                undefined,
+                this.initMap);
+
+            // Map button setup
+            // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
+            //       Need to make sure the background is clickable as well (to bring up the map)
+            var mapData = panData.map_icon;
+            var transform = this.getTransform(mapData.transform);
+            this.createHUDElement(mapData,
+                constants.MAP_ICON,
+                transform,
+                this.showMap);
+
+            // Fullscreen button setup
+            var fullscreenData = panData.fullscreen_icon;
+            var transform = this.getTransform(fullscreenData.transform);
+            this.createHUDElement(fullscreenData,
+                constants.FULLSCREEN,
+                transform,
+                this.toggleFullscreen);
+
+            // Measurements button setup
+            // TODO: Be able to show apartment measurements on walls, etc.
+            // TODO: Make a different icon
+            /*var measurementsData = panData.measurements_icon;
+            var transform = this.getTransform(measurementsData.transform);
+            this.createHUDElement(measurementsData,
+                constants.MEASUREMENTS,
+                transform,
+                pan_viewer.toggleMeasurements);*/
+
+            // Adding event listeners
+            document.addEventListener('mouseover', this.onMouseover, false);
+            document.addEventListener('mouseout', this.onMouseout, false);
+            document.addEventListener('mousedown', this.onPointerStart, false);
+            document.addEventListener('mousemove', this.onPointerMove, false);
+            document.addEventListener('mouseup', this.onPointerUp, false);
+
+            document.addEventListener('touchstart', this.onPointerStart, false);
+            document.addEventListener('touchmove', this.onPointerMove, false);
+            document.addEventListener('touchend', this.onPointerUp, false);
+
+            document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
+        },
+
+        initHUD: function () {
+            var canvasData = canvas.getBoundingClientRect();
+            var width = canvasData.width, height = canvasData.height;
+            var halfWidth = width * 0.5, halfHeight = height * 0.5;
+
+            // We will use 2D canvas element to render our HUD
+            var canvasHUD = document.createElement("canvas");
+
+            // Again, set dimensions to fit the screen
+            canvasHUD.width = width;
+            canvasHUD.height = height;
+
+            // Create the camera and set the viewport to match the screen dimensions
+            cameraHUD = new THREE.OrthographicCamera(-halfWidth, halfWidth, halfHeight, -halfHeight, 0, 30);
+
+            // Create also a custom scene for HUD
+            sceneHUD = new THREE.Scene();
+
+            // Create texture from rendered graphics
+            var textureHUD = new THREE.Texture(canvasHUD);
+            textureHUD.needsUpdate = true;
+
+            // Create HUD material
+            var materialHUD = new THREE.MeshBasicMaterial({ map: textureHUD });
+            materialHUD.transparent = true;
+
+            // Create plane to render the HUD. This plane fills the whole screen
+            var planeGeometry = new THREE.PlaneBufferGeometry(width, height);
+            var plane = new THREE.Mesh(planeGeometry, materialHUD);
+            sceneHUD.add(plane);
+            sceneHUD.add(HUDGroup);
+        },
+
+        initMap: function () {
+            var mapImg = mapSprite.material.map.image;
+            var origHeight = mapImg.height;
+            mapImg.height = canvas.offsetHeight * apData.map.size;
+            var sizeOffset = mapImg.height / origHeight;
+            mapImg.width = mapImg.width * sizeOffset;
+
+            var imgWidth = mapImg.width,
+                imgHeight = mapImg.height;
+
+            mapSprite.scale.set(imgWidth, imgHeight, 1);
+
+            // Add hotspots for each explorable room
+            for (var room in apData.map.room_locations) {
+                var hotspotData = panData.map_hotspot;
+                var loc = apData.map.room_locations[room];
+                var x = (loc.x * sizeOffset - imgWidth) / imgWidth,
+                    y = (imgHeight - loc.y * sizeOffset) / imgHeight;
+                var w = hotspotData.transform.size.width / imgWidth,
+                    h = hotspotData.transform.size.height / imgHeight;
+
+                if (!hotspotData.start_invisible)
+                    hotspotData.start_invisible = apData.map.start_invisible;
+                if (room === currentRoom) {
+                    if (!hotspotData.current.color)
+                        hotspotData.current.color = hotspotData.color;
+                    if (!hotspotData.current.start_invisible)
+                        hotspotData.current.start_invisible = hotspotData.start_invisible;
+                    hotspotData = hotspotData.current;
+                }
+
+                var transform = {
+                    pos: new THREE.Vector3(x, y, 5),
+                    scale: new THREE.Vector3(w, h, 1)
+                };
+                var hotspotSprite = pan_viewer.createHUDElement(hotspotData,
+                    room,
+                    transform,
+                    function () { pan_viewer.changeRoom(this.name); });
+                mapSprite.add(hotspotSprite);
+            }
+
+            // Add button to minimize the map
+            var minData = panData.minimize_icon;
+            var x = 0 * sizeOffset / imgWidth,
+                y = (imgHeight + 0 * sizeOffset) / imgHeight;
+            var w = minData.transform.size.width / imgWidth,
+                h = minData.transform.size.height / imgHeight;
+            if (!minData.start_invisible)
+                minData.start_invisible = apData.map.start_invisible;
+
+            var transform = {
+                pos: new THREE.Vector3(x, y, 5),
+                center: new THREE.Vector2(1, 1),
+                scale: new THREE.Vector3(w, h, 1)
+            };
+            var minSprite = pan_viewer.createHUDElement(minData,
+                constants.MINIMIZE,
+                transform,
+                pan_viewer.hideMap);
+            mapSprite.add(minSprite);
+        },
+
+        createHUDElement: function (matData, name, transform, onclick, onload) {
+            var sprite = new THREE.Sprite(
+                new THREE.SpriteMaterial({
+                    map: new THREE.TextureLoader().load(matData.image, onload),
+                    color: matData.color || '#fff',
+                    opacity: matData.start_invisible ? 0 : 1
+                })
+            );
+            var pos = transform.pos,
+                scale = transform.scale;
+
+            sprite.name = name;
+            if (transform.center) sprite.center = transform.center;
+            sprite.position.set(pos.x, pos.y, pos.z);
+            sprite.scale.set(scale.x, scale.y, scale.z);
+            sprite.onclick = onclick || function () { return false; };
+            HUDGroup.add(sprite);
+            if (matData.background) {
+                var bg = this.createBackground(matData.background, sprite);
+                if (matData.start_invisible)
+                    bg.material.opacity = 0;
+            }
+            return sprite;
+        },
+
+        createBackground: function (bgData, parent) {
+            if (bgData.type === undefined)
+                bgData.type = constants.IMAGE_TYPE.DEFAULT;
+
+            var sprite;
+
+            if (bgData.type === constants.IMAGE_TYPE.IMAGE) {
+                var bgMaterial = new THREE.SpriteMaterial({
+                    map: new THREE.TextureLoader().load(bgData.image),
+                    color: bgData.color || '#fff'
+                });
+                sprite = new THREE.Sprite(bgMaterial);
+            } else if (bgData.type === constants.IMAGE_TYPE.NINE_GRID) {
+                console.warning('Nine Grid system is incomplete; avoid!');
+                sprite = new NineGrid(bgData.image,
+                    bgData.color,
+                    bgData.split_points_hor,
+                    bgData.split_points_ver);
+            } else {
+                console.error('Unavailable background type:', bgData.type);
+            }
+            parent.add(sprite);
+            sprite.center.set(parent.center.x, parent.center.y);
+            sprite.position.set(0, 0, -1);
+
+            return sprite;
+        },
+
+        addHotspots: function () {
+            apData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
+                // Create the hotspot object
+                var planeGeometry = new THREE.PlaneBufferGeometry(
+                    panData.hotspot.transform.size.width,
+                    panData.hotspot.transform.size.height
+                );
+                var hotspotMaterial = new THREE.MeshBasicMaterial({
+                    map: new THREE.TextureLoader().load(panData.hotspot.image),
+                    color: panData.hotspot.color,
+                    side: THREE.DoubleSide,
+                    transparent: true
+                });
+                var hotspotMesh = new THREE.Mesh(planeGeometry, hotspotMaterial);
+                hotspotMesh.name = connectingRoom;
+
+                // Position the hotspot
+                var dist = 250;
+                var xThis = apData.map.room_locations[currentRoom].x,
+                    yThis = apData.map.room_locations[currentRoom].y,
+                    xOther = apData.map.room_locations[connectingRoom].x,
+                    yOther = apData.map.room_locations[connectingRoom].y;
+                var vRel = new THREE.Vector3(xThis - xOther, 0, yThis - yOther);
+                var vRelNorm = vRel.normalize();
+                hotspotMesh.position.set(vRelNorm.z * dist, 0, -vRelNorm.x * dist);
+                hotspotMesh.lookAt(camera.position);
+
+                hotspotGroup.add(hotspotMesh);
+            });
+            scene.add(hotspotGroup);
+        },
+
+        getPanorama: function (roomId) {
+            var geometry, material;
+            var room = apData.rooms[roomId];
+
+            switch (room.panorama.type) {
+                case constants.PAN_TYPE.SPHERE:
+                    geometry = new THREE.SphereBufferGeometry(500, 60, 40);
+                    // invert the geometry on the x-axis so that all of the faces point inward
+                    geometry.scale(-1, 1, 1);
+
+                    material = new THREE.MeshBasicMaterial({
+                        map: new THREE.TextureLoader().load(room.panorama.imageURL)
+                    });
+                    break;
+                case constants.PAN_TYPE.CUBE:
+                    geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+                    geometry.scale(1, 1, -1);
+
+                    var textures = this.getTexturesFromAtlasFile(room.panorama.imageURL, 6);
+                    material = [];
+                    for (var i=0; i < 6; i+=1) {
+                        material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
+                    }
+                    break;
+            }
+
+            return {geometry: geometry, material: material};
+        },
+
+        getTexturesFromAtlasFile: function (atlasImgUrl, tilesNum) {
+            var textures = [];
+            var imageObj = new Image();
+            imageObj.crossOrigin = "anonymous";
+
+            for (var i=0; i < tilesNum; i+=1) {
+                textures[i] = new THREE.Texture();
+            }
+
+            imageObj.onload = function () {
+                var canvas, context;
+                var tileWidth = imageObj.height;
+
+                for (var i=0; i < textures.length; i+=1) {
+                    canvas = document.createElement('canvas');
+                    context = canvas.getContext('2d');
+                    canvas.height = tileWidth;
+                    canvas.width = tileWidth;
+                    context.drawImage(imageObj, tileWidth * i, 0, tileWidth, tileWidth,
+                        0, 0, tileWidth, tileWidth);
+                    textures[i].image = canvas;
+                    textures[i].needsUpdate = true;
+                }
+            };
+
+            imageObj.src = atlasImgUrl;
+
+            return textures;
+        },
+
+        getTransform: function (data) {
+            var pos = new THREE.Vector3();
+            var center = new THREE.Vector2(0.5, 0.5);
+            var size = new THREE.Vector3(1, 1, 1);
+
+            var posData = data.position;
+            if (posData.right) {
+                pos.x = this.rightPos(posData.right);
+            } else {
+                pos.x = this.leftPos(posData.left || 0);
+            }
+            if (posData.bottom) {
+                pos.y = this.bottomPos(posData.bottom);
+            } else {
+                pos.y = this.topPos(posData.top || 0);
+            }
+
+            var centerData = posData.center;
+            if (centerData) {
+                if (centerData.x !== undefined)
+                    center.x = centerData.x;
+                if (centerData.y !== undefined)
+                    center.y = centerData.y;
+            }
+
+            var sizeData = data.size;
+            if (sizeData) {
+                size.x = sizeData.width || 1;
+                size.y = sizeData.height || 1;
+            }
+
+            return { pos: pos, center: center, scale: size };
+        },
+
+        getMousePos: function (event) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+        },
+
+        getFirstValidRCObj: function (intersects) {
+            for (var i = 0; i < intersects.length; i += 1) {
+                if (intersects[i].object && intersects[i].object.material.opacity > 0) {
+                    return intersects[i].object;
+                }
+            }
+            return undefined;
+        },
+
+        resetSize: function (width, height) {
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        },
+
+        // resetHUD: function (width, height) {
+        //    var halfWidth = width*0.5,
+        //        halfHeight = height*0.5;
+
+        //    cameraHUD.left = -halfWidth;
+        //    cameraHUD.right = halfWidth;
+        //    cameraHUD.top = halfHeight;
+        //    cameraHUD.bottom = -halfHeight;
+
+        //    cameraHUD.aspect = width / height;
+        //    cameraHUD.updateProjectionMatrix();
+        // },
+
+        onFullscreenChange: function () {
+            if (!isFullscreen) {
+                pan_viewer.resetSize(window.innerWidth, window.innerHeight);
+                // pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
+
+                container.classList.add(constants.FULLSCREEN);
+
+                // TODO: Change color and background when changing image too
+                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
+                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.off_icon.image);
+                fsMat.color.set(panData.fullscreen_icon.off_icon.color
+                    || panData.fullscreen_icon.color);
+                fsMat.needsUpdate = true;
+                isFullscreen = true;
+            } else {
+                // var canvasData = canvas.getBoundingClientRect();
+                pan_viewer.resetSize(containerWidth, containerWidth * 0.6);
+                // pan_viewer.resetHUD(canvasData.width, canvasData.height);
+
+                container.classList.remove(constants.FULLSCREEN);
+
+                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
+                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
+                fsMat.color.set(panData.fullscreen_icon.color);
+                fsMat.needsUpdate = true;
+                isFullscreen = false;
+            }
+        },
+
+        onMouseover: function (event) {
+            if (event.target === canvas) {
+                isMouseover = true;
+            }
+        },
+
+        onMouseout: function (event) {
+            isMouseover = false;
+        },
+
+        onPointerStart: function (event) {
+            // Raycast the HUD elements
+            raycaster.setFromCamera(mouseVector, cameraHUD);
+            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+
+            // Raycast the hotspot objects
+            raycaster.setFromCamera(mouseVector, camera);
+            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+
+            // TODO: Ignore isMouseover if using a mobile device/touchscreen
+            if (isMouseover && event.clientX && !hoveredHUDEl) {
+                autoRotate = false;
+                decRotationRate = 0.9;
+                isUserInteracting = true;
+
+                var clientX = event.clientX || event.touches[0].clientX;
+                var clientY = event.clientY || event.touches[0].clientY;
+                onMouseDownMouseX = clientX;
+                onMouseDownMouseY = clientY;
+                onMouseDownLon = lastLon = lon;
+                onMouseDownLat = lastLat = lat;
+            }
+        },
+
+        onPointerMove: function (event) {
+            if (isUserInteracting && event.clientX) {
+                var clientX = event.clientX || event.touches[0].clientX;
+                var clientY = event.clientY || event.touches[0].clientY;
+                var rot_speed = panData.camera.rotation_speed
+                lon = (onMouseDownMouseX - clientX) * rot_speed + onMouseDownLon;
+                lat = (clientY - onMouseDownMouseY) * rot_speed + onMouseDownLat;
+            }
+
+            // Update mouseVector for all the raycasting
+            var mousePos = pan_viewer.getMousePos(event);
+            mouseVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
+            mouseVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
+
+            // Raycast the hotspots for the tooltip system
+            hoveringObj = null;
+            raycaster.setFromCamera(mouseVector, camera);
+            var intersects = raycaster.intersectObject(hotspotGroup, true);
+            if (intersects.length > 0) {
+                latestMouseProjection = intersects[0].point;
+                hoveringObj = intersects[0].object;
+            }
+        },
+
+        onPointerUp: function () {
+            raycaster.setFromCamera(mouseVector, cameraHUD);
+            var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            if (obj && obj === hoveredHUDEl) {
+                obj.onclick();
+            }
+
+            if (hoveredHotspot && !obj) {
+                // Raycast again to see if we are still hovering the (same) hotspot
+                raycaster.setFromCamera(mouseVector, camera);
+                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+                if (obj && obj === hoveredHotspot) {
+                    pan_viewer.changeRoom(hoveredHotspot.name);
+                }
+            }
+
+            if (isUserInteracting) {
+                velCam.set(lonAcc.average(), latAcc.average());
+                lonAcc.clear();
+                latAcc.clear();
+            }
+
+            isUserInteracting = false;
+        },
+
+        animate: function () {
+            requestAnimationFrame(pan_viewer.animate);
+            pan_viewer.update();
+        },
+
+        update: function () {
+            var delta = clock.getDelta();
+
+            if (isUserInteracting) {
+                lonAcc.add(lon - lastLon);
+                latAcc.add(lat - lastLat);
+                lastLon = lon, lastLat = lat;
+
+                clearTimeout(autoRotateTimeout);
+                autoRotateTimeout = setTimeout(function () {
+                    autoRotateTimeout = undefined;
+                    velCam.set(0, 0);
+                    autoRotate = true;
+                }, panData.camera.auto_rotate.secs_to_rotate * 1000);
+            } else if (!autoRotate) {
+                if (panData.camera.smooth_out.enable) {
+                    var decRate = 0.1 + decRotationRate;
+                    var smoothOutRate = panData.camera.smooth_out.decrease_rate;
+                    decRotationRate = Math.max(0, decRotationRate - smoothOutRate * delta);
+                    velCam.set(Math.max(0, Math.abs(velCam.x) * decRate) * Math.sign(velCam.x),
+                               Math.max(0, Math.abs(velCam.y) * decRate) * Math.sign(velCam.y));
+
+                    lon += velCam.x;
+                    lat += velCam.y;
+                }
+            } else {
+                if (panData.camera.auto_rotate.enable) {
+                    var smoothLonRate = panData.camera.auto_rotate.smooth_in_x_rate;
+                    var smoothLatRate = panData.camera.auto_rotate.smooth_in_y_rate;
+
+                    // Smooth rotate lon
+                    velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
+
+                    // Smooth lat close into 0
+                    if (Math.abs(lat) > 0.5) {
+                        var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
+                        velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
+                    } else if (Math.abs(velCam.y) > 0.001) {
+                        velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
+                    } else {
+                        velCam.y = 0;
+                    }
+
+                    lon += velCam.x;
+                    lat += velCam.y;
+                }
+            }
+
+            lat = Math.min(Math.max(-85, lat), 85);
+            phi = THREE.Math.degToRad(90 - lat);
+            theta = THREE.Math.degToRad(lon);
+
+            camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
+            camera.target.y = 500 * Math.cos(phi);
+            camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
+            camera.lookAt(camera.target);
+
+            if (tooltipDisplayTimeout && !hoveringObj) {
+                clearTimeout(tooltipDisplayTimeout);
+                tooltipDisplayTimeout = undefined;
+                this.hideTooltip();
+            }
+
+            if (!tooltipDisplayTimeout && latestMouseProjection) {
+                tooltipDisplayTimeout = setTimeout(function () {
+                    tooltipDisplayTimeout = undefined;
+                    pan_viewer.showTooltip();
+                }, 200);
+            }
+
+            renderer.render(scene, camera);
+            renderer.render(sceneHUD, cameraHUD);
+        },
+
+        showTooltip: function () {
+            var tooltipDiv = $('#'+ constants.TOOLTIP)[0];
+
+            if (tooltipDiv && hoveringObj) {
+                tooltipDiv.style.display = "block";
+
+                var canvasData = canvas.getBoundingClientRect();
+                var canvasHalfWidth = canvasData.width * 0.5;
+                var canvasHalfHeight = canvasData.height * 0.5;
+
+                var tooltipPosition = latestMouseProjection.clone().project(camera);
+                tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + canvasData.left;
+                tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + canvasData.top;
+
+                var tootipWidth = tooltipDiv.offsetWidth;
+                var tootipHeight = tooltipDiv.offsetHeight;
+
+                tooltipDiv.style.left = tooltipPosition.x - tootipWidth * 0.5 + 'px';
+                tooltipDiv.style.top = tooltipPosition.y - tootipHeight - 5 + 'px';
+
+                tooltipDiv.innerText = this.prettyString(hoveringObj.name);
+
+                setTimeout(function () {
+                    tooltipDiv.style.opacity = 1.0;
+                }, 25);
+            }
+        },
+
+        hideTooltip: function () {
+            var tooltipDiv = $('#'+ constants.TOOLTIP)[0];
+            if (tooltipDiv) {
+                tooltipDiv.style.display = "none";
+                tooltipDiv.style.opacity = 0.0;
+            }
+        },
+
+        showMap: function () {
+            // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
+            var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
+            pan_viewer.changeOpacity(mapIconSprite, 0);
+            pan_viewer.changeOpacity(mapSprite, 1);
+        },
+
+        hideMap: function () {
+            var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
+            pan_viewer.changeOpacity(mapIconSprite, 1);
+            pan_viewer.changeOpacity(mapSprite, 0);
+        },
+
+        changeOpacity: function (sprite, opacity) {
+            sprite.material.opacity = opacity;
+            sprite.children.forEach(function (childSprite) {
+                childSprite.material.opacity = opacity;
+            });
+        },
+
+        changeRoom: function (roomId) {
+            if (roomId === currentRoom) {
+                return;
+            }
+
+            // Update map hotspot images to show which is the current room
+            var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
+            var newRoomMat = HUDGroup.getObjectByName(roomId).material;
+            prevRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.image);
+            newRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.current.image);
+            prevRoomMat.needsUpdate = true;
+            newRoomMat.needsUpdate = true;
+
+            // Change panorama image
+            // TODO: Some sort of transition, fade in and out of black?
+            var panorama = this.getPanorama(roomId);
+            skybox.geometry = panorama.geometry;
+            skybox.material = panorama.material;
+            currentRoom = roomId;
+
+            // Change the hotspots
+            scene.remove(hotspotGroup);
+            hotspotGroup = new THREE.Group();
+            this.addHotspots();
+
+            this.hideTooltip();
+            hoveringObj = undefined;
+        },
+
+        topPos: function (px) {
+            var canvasData = canvas.getBoundingClientRect();
+            return canvasData.height * 0.5 - px;
+        },
+
+        bottomPos: function (px) {
+            var canvasData = canvas.getBoundingClientRect();
+            return px - canvasData.height * 0.5;
+        },
+
+        leftPos: function (px) {
+            var canvasData = canvas.getBoundingClientRect();
+            return px - canvasData.width * 0.5;
+        },
+
+        rightPos: function (px) {
+            var canvasData = canvas.getBoundingClientRect();
+            return canvasData.width * 0.5 - px;
+        },
+
+        toggleMeasurements: function () {
+            if (isShowingMeasurements) {
+                pan_viewer.hideMeasurements();
+            } else {
+                pan_viewer.showMeasurements();
+            }
+        },
+
+        showMeasurements: function () {
+            //TODO: show measurements of walls, windows, doors, etc.
+            var material = new THREE.MeshBasicMaterial({
+                map: new THREE.TextureLoader.load(apData.rooms[currentRoom].measurements)
+            });
+            var mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            isShowingMeasurements = true;
+        },
+
+        hideMeasurements: function () {
+            //TODO: hide measurements
+
+            isShowingMeasurements = false;
+        },
+
+        toggleFullscreen: function () {
+            if (isFullscreen)
+                pan_viewer.closeFullscreen();
+            else
+                pan_viewer.openFullscreen();
+        },
+
+        openFullscreen: function () {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        },
+
+        closeFullscreen: function () {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        },
+
+        prettyString: function (str, options) {
+            if (str == null || typeof str !== 'string')
+                return str;
+            if (!options)
+                options = {};
+
+            if (options.strip) {
+                var stripArr = options.strip.split('|');
+                $.each(stripArr, function (_, strip) {
+                    str = str.replace(RegExp(strip, 'g'), '');
+                });
+            }
+
+            // Replace underscores with a space
+            str = str.replace(/_/g, ' ');
+
+            // Remove all brackets
+            str = str.replace(/\[/g, '').replace(/\]/g, '');
+
+            // Turn the first character of each word into upper case
+            str = str.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+            });
+
+            return (options.prefix || '')
+                + str
+                + (options.postfix || '');
+        },
+    };
+})();
