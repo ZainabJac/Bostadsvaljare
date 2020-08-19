@@ -261,7 +261,7 @@ var constants = {
             if (transform.center) sprite.center = transform.center;
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.scale.set(scale.x, scale.y, scale.z);
-            sprite.onclick = onclick || function () { return false; };
+            sprite.onclick = onclick || undefined;
             HUDGroup.add(sprite);
             if (matData.background) {
                 var bg = this.createBackground(matData.background, sprite);
@@ -465,26 +465,25 @@ var constants = {
                 pan_viewer.resetSize(window.innerWidth, window.innerHeight);
                 // pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
 
-                container.classList.add(constants.FULLSCREEN);
-
                 // TODO: Change color and background when changing image too
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.off_icon.image);
                 fsMat.color.set(panData.fullscreen_icon.off_icon.color
                     || panData.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
+
+                container.classList.add(constants.FULLSCREEN);
                 isFullscreen = true;
             } else {
-                // var canvasData = canvas.getBoundingClientRect();
                 pan_viewer.resetSize(containerWidth, containerWidth * 0.6);
                 // pan_viewer.resetHUD(canvasData.width, canvasData.height);
-
-                container.classList.remove(constants.FULLSCREEN);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
                 fsMat.color.set(panData.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
+
+                container.classList.remove(constants.FULLSCREEN);
                 isFullscreen = false;
             }
         },
@@ -545,12 +544,24 @@ var constants = {
                 latestMouseProjection = intersects[0].point;
                 hoveringObj = intersects[0].object;
             }
+
+            // Change mouse cursor to 'pointer' when hovering over a clickable element
+            if (hoveringObj) {
+                $('html,body').css('cursor', 'pointer');
+            } else {
+                raycaster.setFromCamera(mouseVector, cameraHUD);
+                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                if (obj && obj.onclick)
+                    $('html,body').css('cursor', 'pointer');
+                else
+                    $('html,body').css('cursor', 'default');
+            }
         },
 
         onPointerUp: function () {
             raycaster.setFromCamera(mouseVector, cameraHUD);
             var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-            if (obj && obj === hoveredHUDEl) {
+            if (obj && obj === hoveredHUDEl && obj.onclick) {
                 obj.onclick();
             }
 
