@@ -28,7 +28,7 @@
         kub_test: {
             panorama: {
                 type: "cube",
-                imageURL: "IMG/apts/96067226_180701243123649_176781072946692096_n.jpg"
+                imageURL: "IMG/apts/6x1 cubemap-1.jpg"
             },
             connections: [],
             measurements: ""
