@@ -12,7 +12,7 @@
             <map id="apt-list" name="apt-list">
                 @foreach (HouseImage image in ImageData) {
                     <area id="@GetHouseStatus(image.HouseNumber)" href="#"
-                          @onmouseover="@(e => ShowTooltip(e, image.HouseNumber))" @onmouseout="HideTooltip" @onclick="() => HousingClicked(image.HouseNumber)"
+                          @onmouseover="@(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(image.HouseNumber)"
                           coords="@image.IMCoords" shape="poly">
                 }
             </map>
@@ -27,10 +27,10 @@
     </div>
 
     <div class="housing-list">
-        <SfGrid @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true">
+        <SfGrid @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
             <GridPageSettings PageSize="18"></GridPageSettings>
             <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-            <GridEvents RowSelected="GetSelectedHouse" TValue="House"></GridEvents>
+            <GridEvents RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
             <GridColumns>
                 <GridColumn Field="@nameof(House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
                 <GridColumn Field="@nameof(House.Sqm)" HeaderText="Boarea"></GridColumn>
@@ -71,6 +71,8 @@
 @code{
     private SfGrid<House> HouseList;
     private Dictionary<string, string> HouseToArea;
+    private bool IsHighlighting { get; set; }
+    private int HighlightedRow { get; set; }
 
     public List<House> HouseData { get; set; }
     public List<HouseImage> ImageData { get; set; }
@@ -81,6 +83,8 @@
         this.HouseData = House.GetHouseData();
         this.ImageData = HouseImage.GetImageData();
         this.HouseToArea = new Dictionary<string, string>();
+        this.IsHighlighting = false;
+        this.HighlightedRow = -1;
     }
 
     private async void OnLoadImage(ProgressEventArgs e)
@@ -110,7 +114,76 @@
         return "";
     }
 
-    private async void ShowTooltip(MouseEventArgs e, string houseNumber)
+    private void OnMouseOverIM(MouseEventArgs e, string houseNumber)
+    {
+        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+        HighlightInList(houseNumber);
+    }
+
+    private void OnMouseOutIM(MouseEventArgs e)
+    {
+        if (IsHighlighting) {
+            HideTooltip();
+            RemoveListHighlight();
+            IsHighlighting = false;
+        }
+    }
+
+    private async void OnMouseOverGrid(MouseEventArgs e)
+    {
+        int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
+        if (rowInd >= 0  &&  this.HighlightedRow != rowInd) {
+            HighlightInImageMap((await this.HouseList.GetCurrentViewRecords())[rowInd].HouseNumber);
+            this.HighlightedRow = rowInd;
+        }
+    }
+
+    private async void OnMouseOutGrid(MouseEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("mapster.deselect");
+    }
+
+    private async void HighlightInList(string houseNumber)
+    {
+        if (await this.HouseList.GetCurrentViewRecords() == null)
+            return;
+
+        await this.HouseList.GoToPage(1);
+        bool continuePaging = true;
+
+        for (int i=1; i <= this.HouseList.PageSettings.PageCount; i+=1) {
+            List<House> page = await this.HouseList.GetCurrentViewRecords();
+            for (int j=0; j < page.Count; j+=1) {
+                if (page[j].HouseNumber == houseNumber) {
+                    await this.HouseList.SelectRow(j);
+                    continuePaging = false;
+                    IsHighlighting = true;
+                    break;
+                }
+            }
+            if (continuePaging)
+                await this.HouseList.GoToPage(i + 1);
+            else
+                break;
+        }
+    }
+
+    private async void RemoveListHighlight()
+    {
+        await this.HouseList.ClearRowSelection();
+    }
+
+    private async void HighlightInImageMap(string houseNumber)
+    {
+        await JSRuntime.InvokeVoidAsync("mapster.deselect");
+
+        if (HouseToArea.ContainsKey(houseNumber)) {
+            string areaID = HouseToArea[houseNumber];
+            await JSRuntime.InvokeVoidAsync("mapster.select", areaID);
+        }
+    }
+
+    private async void ShowTooltip(double x, double y, string houseNumber)
     {
         string msg;
         House house = null;
@@ -136,43 +209,24 @@
         }
 
         await JSRuntime.InvokeVoidAsync(
-            "util.showTooltip", e.ClientX, e.ClientY, msg
+            "util.showTooltip", x, y, msg
         );
     }
 
-    private async void HideTooltip(MouseEventArgs e)
+    private async void HideTooltip()
     {
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
-    public async void GetSelectedHouse(RowSelectEventArgs<House> args)
+    private void HousingClickedIM(string houseNumber)
     {
-        await JSRuntime.InvokeVoidAsync("mapster.deselect");
-
-        House selectedHouse = (await this.HouseList.GetSelectedRecords())[0];
-        if (this.ImageData.Exists(x => x.HouseNumber == selectedHouse.HouseNumber)) {
-            string areaID = HouseToArea[selectedHouse.HouseNumber];
-            await JSRuntime.InvokeVoidAsync("mapster.select", areaID);
-        }
+        //TODO: goto page 'interior' with houseNumber as reference
     }
 
-    private async void HousingClicked(string houseNumber)
+    public void HousingClickedGrid(RowSelectEventArgs<House> args)
     {
-        bool continuePaging = true;
-
-        for (int i=1; i <= this.HouseList.PageSettings.PageCount; i+=1) {
-            List<House> page = await this.HouseList.GetCurrentViewRecords();
-            for (int j=0; j < page.Count; j+=1) {
-                if (page[j].HouseNumber == houseNumber) {
-                    await this.HouseList.SelectRow(j);
-                    continuePaging = false;
-                    break;
-                }
-            }
-            if (continuePaging)
-                await this.HouseList.GoToPage(i + 1);
-            else
-                break;
+        if (args.IsInteracted) {
+            //TODO: goto page 'interior' with houseNumber as reference
         }
     }
 

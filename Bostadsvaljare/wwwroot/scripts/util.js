@@ -40,5 +40,22 @@
         hideTooltip: function () {
             $('#tipmsg').hide();
         },
+
+        getElementFromPoint: function (target) {
+            var list = document.querySelectorAll(':hover');
+            for (i = list.length-1; i >= 0; i--) {
+                if (list[i].localName === target)
+                    return list[i];
+            }
+            return undefined;
+        },
+
+        getSFGridRowIndex: function () {
+            var rowEl = this.getElementFromPoint('tr');
+            if (rowEl  &&  rowEl.className.startsWith('e-row'))
+                return parseInt(rowEl.ariaRowIndex);
+            else
+                return -1;
+        },
     };
 })();
