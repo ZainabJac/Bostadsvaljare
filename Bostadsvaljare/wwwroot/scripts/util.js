@@ -52,7 +52,7 @@
 
         getSFGridRowIndex: function () {
             var rowEl = this.getElementFromPoint('tr');
-            if (rowEl  &&  rowEl.className.startsWith('e-row'))
+            if (rowEl  &&  rowEl.className.includes('e-row'))
                 return parseInt(rowEl.ariaRowIndex);
             else
                 return -1;
