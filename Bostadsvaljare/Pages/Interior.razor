@@ -8,135 +8,158 @@
 @using Syncfusion.Blazor.Buttons
 
 
-<div id="slideshow" class="@(ShowInfo ? "" : "full")">
-    <BSCarousel NumberOfItems="@items.Count">
-        <div class="carousel-inner">
-            @for (int i = 0; i < items.Count; i++)
-            {
-                <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" />
-            }
-        </div>
-        <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
-        <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
-        <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
-    </BSCarousel>
+
+<div class="col-8">
+    <div id="slideshow" class="@(ShowInfo ? "" : "full")">
+        <BSCarousel NumberOfItems="@items.Count">
+            <div class="carousel-inner">
+                @for (int i = 0; i < items.Count; i++)
+                {
+                    <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" />
+                }
+            </div>
+            <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
+            <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
+            <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
+        </BSCarousel>
+    </div>
 </div>
 
-
-<div id="housing_info" class="@(ShowInfo ? "" : "hidden")">
-    @*TODO: have an own block that contains relevant info regarding the selected housing*@
-
+<div class="col-4">
+    <div id="housing_info" class="@(ShowInfo ? "" : "hidden")">
+        @*TODO: have an own block that contains relevant info regarding the selected housing*@
+    </div>
     <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
+</div>
 
     <div id="gallery" style="margin-bottom:1%;">
         @*TODO: ensure the images below reflect to what is shown in the slideshow*@
         @*TODO: enable scrolling if too many images are present to fit the window*@
-        <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
-        <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
-        <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
-        <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
+        <div class="col-1">
+            <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
+        </div>
+        <div class="col-1">
+            <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
+        </div>
+        <div class="col-1">
+            <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
+        </div>
+        <div class="col-1">
+            <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
+        </div>
+
     </div>
 
-    @*<div>
+
+@*<div>
         <hr />
         <header class="card-info-header">Lägenhet nr. </header>
         <header class="card-info-header-right">@house1.HouseNumber</header>
     </div>*@
 
-    <div style="float:left ; width:45%; ">
 
-        <header class="card-info-header" style="margin-bottom:6%;">3 RoK</header>
-        <div>
+<div class="col-2">
+    <header class="card-info-header" style="margin-bottom:6%;">3 RoK</header>
+    <div>
 
-            <header class="card-info-header">Pris </header>
-            <header class="card-info-header-right">@house1.Price</header>
-            <hr />
-        </div>
-
-        <div style="display: inline;">
-
-            <header class="card-info-header">Boarea</header>
-            <header class="card-info-header-right">@house1.Sqm</header>
-            <hr />
-        </div>
-
-
-        <div style="display: inline;">
-
-            <header class="card-info-header">Lgh nr.</header>
-            <header class="card-info-header-right">@house1.HouseNumber</header>
-        </div>
+        <header class="card-info-header">Pris </header>
+        <header class="card-info-header-right">@house1.Price</header>
+        <hr />
     </div>
 
-    <div style="float:right; width:45%">
+    <div style="display: inline;">
 
-        <header class="card-info-header" style="margin-bottom:5%;">Arkitekten har ordet</header>
+        <header class="card-info-header">Boarea</header>
+        <header class="card-info-header-right">@house1.Sqm</header>
+        <hr />
+    </div>
+
+
+    <div style="display: inline;">
+
+        <header class="card-info-header">Lgh nr.</header>
+        <header class="card-info-header-right">@house1.HouseNumber</header>
+    </div>
+
+</div>
+
+<div class="col-2">
+
+
+
+        <header class="card-info-header">Arkitekten har ordet</header>
 
         <header class="card-info-text" style="font-style:italic;"> "@house1.Comments"</header>
 
-    </div>
-
-    <div style="width:100%; margin-top:13%; clear:both;">
-        <div style=" margin-top:5%; float:left; padding-left:12%;"> <SfButton> Bofaktablad </SfButton> </div>
-        <div style=" margin-top:5%; float:right; padding-right:12%"> <SfButton IsPrimary="true"> Anmäl intresse </SfButton> </div>
-    </div>
 </div>
 
-@*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
-@*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
-
-@*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-    <GridColumns>
-        <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-        <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-        <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-    </GridColumns>
-</SfGrid>*@
-
-
-@code {
-    public class Houses
-    {
-        public string Sqm { get; set; }
-        public string Price { get; set; }
-        public string LandArea { get; set; }
-        public string HouseNumber { get; set; }
-        public string Status { get; set; }
-        public string Comments { get; set; }
-    }
-
-    public class Item
-    {
-        public string Source { get; set; }
-        public string Alt { get; set; }
-        public string Caption { get; set; }
-        public string Header { get; set; }
-        public string ActionLink { get; set; }
-        public string ActionLinkTarget { get; set; }
-    }
-
-    public class Order
-    {
-        public int? OrderID { get; set; }
-        public string CustomerID { get; set; }
-        public DateTime? OrderDate { get; set; }
-        public double? Freight { get; set; }
-    }
+<div class="col-2">
+    <div>
+        <div > <SfButton> Bofaktablad </SfButton> </div>
+    </div>
+   </div>
+    <div class="col-2">
+        <div >
+            <div > <SfButton IsPrimary="true"> Anmäl intresse </SfButton> </div>
+        </div>
+    </div>
 
 
-    private Houses house1 = new Houses
-    {
-        Sqm = "152m²",
-        Price = "5 000 000",
+    @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
+    @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
-        HouseNumber = "7a",
-        Status = "Ledig",
-        Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+    @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
+            <GridColumns>
+                <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+                <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+            </GridColumns>
+        </SfGrid>*@
 
-    };
 
-    private IList<Item> items = new List<Item> {
+    @code {
+        public class Houses
+        {
+            public string Sqm { get; set; }
+            public string Price { get; set; }
+            public string LandArea { get; set; }
+            public string HouseNumber { get; set; }
+            public string Status { get; set; }
+            public string Comments { get; set; }
+        }
+
+        public class Item
+        {
+            public string Source { get; set; }
+            public string Alt { get; set; }
+            public string Caption { get; set; }
+            public string Header { get; set; }
+            public string ActionLink { get; set; }
+            public string ActionLinkTarget { get; set; }
+        }
+
+        public class Order
+        {
+            public int? OrderID { get; set; }
+            public string CustomerID { get; set; }
+            public DateTime? OrderDate { get; set; }
+            public double? Freight { get; set; }
+        }
+
+
+        private Houses house1 = new Houses
+        {
+            Sqm = "152m²",
+            Price = "5 000 000",
+
+            HouseNumber = "7a",
+            Status = "Ledig",
+            Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+
+        };
+
+        private IList<Item> items = new List<Item> {
         new Item {
             Source = "IMG/soffavinkel1.jpg",
             Alt ="First Slide",
@@ -171,33 +194,89 @@
         }
     };
 
-    [Parameter]
-    public string Housing { get; set; }
-    public List<Order> Orders { get; set; }
-    private bool ShowInfo { get; set; }
+        [Parameter]
+        public string Housing { get; set; }
+        public List<Order> Orders { get; set; }
+        private bool ShowInfo { get; set; }
 
-    private void ToggleInfo()
-    {
-        ShowInfo = !ShowInfo;
-    }
-
-    protected override void OnInitialized()
-    {
-        Orders = Enumerable.Range(1, 75).Select(x => new Order()
+        private void ToggleInfo()
         {
-            OrderID = 1000 + x,
-            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
-            Freight = 2.1 * x,
-            OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
-        }).ToList();
-        ShowInfo = true;
-    }
-}
+            ShowInfo = !ShowInfo;
+        }
 
-<style>
+        protected override void OnInitialized()
+        {
+            Orders = Enumerable.Range(1, 75).Select(x => new Order()
+            {
+                OrderID = 1000 + x,
+                CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
+                Freight = 2.1 * x,
+                OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
+            }).ToList();
+            ShowInfo = true;
+        }
+    }
+
+    <style>
+
+    .col-1 {
+        width: 8.33%;
+    }
+
+    .col-2 {
+        width: 16.66%;
+    }
+
+    .col-3 {
+        width: 25%;
+    }
+
+    .col-4 {
+        width: 33.33%;
+    }
+
+    .col-5 {
+        width: 41.66%;
+    }
+
+    .col-6 {
+        width: 50%;
+    }
+
+    .col-7 {
+        width: 58.33%;
+    }
+
+    .col-8 {
+        width: 66.66%;
+    }
+
+    .col-9 {
+        width: 75%;
+    }
+
+    .col-10 {
+        width: 83.33%;
+    }
+
+    .col-11 {
+        width: 91.66%;
+    }
+
+    .col-12 {
+        width: 100%;
+    }
+
+    [class*="col-"] {
+        float: left;
+        padding: 15px;
+        border: 1px solid red;
+    }
+
     #slideshow {
         float: left;
-        width: 64%;
+        width: 100%;
+        height: auto;
         margin-bottom: 10px;
         margin-right: 5px;
         transition-duration: 0.15s;
@@ -227,8 +306,7 @@
     }
 
     #gallery {
-        clear: both;
-        display: inline-block;
+       
     }
 
     #hide_info {
@@ -243,9 +321,8 @@
     }
 
     .gallery-img {
-        width: 23%;
-        margin-right: 1.8%;
-        margin-bottom: 1.8%
+        width: 100%;
+       
     }
 
     .gallery-img:hover {
@@ -284,6 +361,6 @@
 
     .planritning {
         width: 100%;
-        margin-bottom: 2%;
+
     }
-</style>
+    </style>
