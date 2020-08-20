@@ -1,13 +1,11 @@
 ﻿(function () {
     window.apartments = {};
     //TODO: get a list of all file names under data/apartments
-    var fileNames = ['apt_data.js'];
+    var fileNames = ['apt_data'];
     fileNames.forEach(fileName => {
-        $.getScript('data/apartments/' + fileName)
+        $.getScript('data/apartments/' + fileName + '.js')
             .then(function (text) {
-                //TODO: get first word to use as an id (which must be a valid js variable name), OR use fileName as the id
-                var id = text.substr(0, text.indexOf(' '));
-                apartments[id] = eval(text);
+                apartments[fileName] = eval(text);
             });
     });
 })();
