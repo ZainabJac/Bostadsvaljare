@@ -14,6 +14,15 @@
             y_max_velocity: 0.05
         }
     },
+    map: {
+        transform: {
+            position: {
+                bottom: 15,
+                right: 15,
+                center: { x: 1, y: 0 }
+            }
+        }
+    },
     map_icon: {
         image: "IMG/icons/pan/map_icon.png",
         color: "#fff",
