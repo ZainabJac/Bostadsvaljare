@@ -1,5 +1,6 @@
 ﻿var options = { ...panOptions };
 var aptData;
+var roomImages;
 var self;
 var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
@@ -60,10 +61,15 @@ var constants = {
             self = this;
             aptData = this.getAptData(aptID);
 
-            //TODO: attempting to preload images to avoid loading them each time to change images,
-            //      but something is not quite right with the end result... The webGLShader "couldn't compile."
-            // preloadImages(options, 'image');
-            // preloadImages(aptData, 'panorama');
+            // Preload images to avoid loading them each time when changing rooms
+            roomImages = {};
+            for (var room in aptData.rooms) {
+                var panorama = aptData.rooms[room].panorama;
+                if (panorama.type === constants.PAN_TYPE.SPHERE)
+                    roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                else if (panorama.type === constants.PAN_TYPE.CUBE)
+                    roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+            }
 
             this.init();
             this.animate();
@@ -72,18 +78,6 @@ var constants = {
         getAptData: function (aptID) {
             return window.apartments[aptID];
         },
-
-        /*preloadImages: function (data, key) {
-            for (var k in data) {
-                if (data.hasOwnProperty(k)) {
-                    if (k === key) {
-                        data[key] = new THREE.TextureLoader().load(data[key]);
-                    } else if (data[k] === Object(data[k])) {
-                        preloadImages(data[k], key);
-                    }
-                }
-            }
-        },*/
 
         init: function () {
             canvas = document.createElement("canvas");
@@ -361,14 +355,14 @@ var constants = {
                     geometry.scale(-1, 1, 1);
 
                     material = new THREE.MeshBasicMaterial({
-                        map: new THREE.TextureLoader().load(room.panorama.imageURL)
+                        map: roomImages[roomId]
                     });
                     break;
                 case constants.PAN_TYPE.CUBE:
                     geometry = new THREE.BoxBufferGeometry(1, 1, 1);
                     geometry.scale(1, 1, -1);
 
-                    var textures = this.getTexturesFromAtlasFile(room.panorama.imageURL, 6);
+                    var textures = roomImages[roomId];
                     material = [];
                     for (var i=0; i < 6; i+=1) {
                         material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
@@ -807,7 +801,7 @@ var constants = {
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader.load(aptData.rooms[currentRoom].measurements)
+                map: roomImages[currentRoom]
             });
             var mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
