@@ -87,8 +87,7 @@ var constants = {
             containerHeight = containerWidth * 0.6;
             container.appendChild(canvas);
 
-            // TODO: get aspect of panorama image
-            var aspect = 3 / 2;
+            var aspect = containerWidth / containerHeight;
             camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
             camera.target = new THREE.Vector3(0, 0, 0);
             scene = new THREE.Scene();
