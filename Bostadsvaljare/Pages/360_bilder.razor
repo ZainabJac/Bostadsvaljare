@@ -16,7 +16,7 @@
     protected override async void OnInitialized() {
         base.OnInitialized();
         await Task.Delay(100);
-        await JSRuntime.InvokeVoidAsync("pan_viewer.start");
+        await JSRuntime.InvokeVoidAsync("pan_viewer.start", "someUniqueHouseID");
     }
 }
 

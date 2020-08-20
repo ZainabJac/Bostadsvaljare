@@ -28,6 +28,7 @@ var raycaster = new THREE.Raycaster(),
     tooltipDisplayTimeout,
     hoveringObj;
 var elem = document.documentElement;
+var aptData;
 
 var constants = {
     CONTAINER: 'pan_container',
@@ -50,26 +51,32 @@ var constants = {
 
 (function () {
     window.pan_viewer = {
-        start: function () {
+        start: function (aptID) {
+            aptData = this.getAptData(aptID);
+
             //TODO: attempting to preload images to avoid loading them each time to change images,
             //      but something is not quite right with the end result... The webGLShader "couldn't compile."
             // preloadImages(panData, 'image');
-            // preloadImages(apData, 'panorama');
+            // preloadImages(aptData, 'panorama');
 
             this.init();
             this.animate();
         },
 
+        getAptData: function (aptID) {
+            return window.apartments[aptID];
+        },
+
         /*preloadImages: function (data, key) {
-           for (var k in data) {
-              if (data.hasOwnProperty(k)) {
-                 if (k === key) {
-                    data[key] = new THREE.TextureLoader().load(data[key]);
-                 } else if (data[k] === Object(data[k])) {
-                   preloadImages(data[k], key);
-                 }
-              }
-           }
+            for (var k in data) {
+                if (data.hasOwnProperty(k)) {
+                    if (k === key) {
+                        data[key] = new THREE.TextureLoader().load(data[key]);
+                    } else if (data[k] === Object(data[k])) {
+                       preloadImages(data[k], key);
+                    }
+                }
+            }
         },*/
 
         init: function () {
@@ -85,7 +92,7 @@ var constants = {
             camera.target = new THREE.Vector3(0, 0, 0);
             scene = new THREE.Scene();
 
-            currentRoom = apData.entry;
+            currentRoom = aptData.entry;
             var pan = this.getPanorama(currentRoom);
             skybox = new THREE.Mesh(pan.geometry, pan.material);
             scene.add(skybox);
@@ -100,9 +107,9 @@ var constants = {
             this.initHUD();
 
             // Map setup
-            var transform = this.getTransform(apData.map.transform);
+            var transform = this.getTransform(aptData.map.transform);
             transform.pos.z = -10;
-            mapSprite = this.createHUDElement(apData.map,
+            mapSprite = this.createHUDElement(aptData.map,
                 constants.MAP,
                 transform,
                 undefined,
@@ -186,7 +193,7 @@ var constants = {
         initMap: function () {
             var mapImg = mapSprite.material.map.image;
             var origHeight = mapImg.height;
-            mapImg.height = canvas.offsetHeight * apData.map.size;
+            mapImg.height = canvas.offsetHeight * aptData.map.size;
             var sizeOffset = mapImg.height / origHeight;
             mapImg.width = mapImg.width * sizeOffset;
 
@@ -196,16 +203,16 @@ var constants = {
             mapSprite.scale.set(imgWidth, imgHeight, 1);
 
             // Add hotspots for each explorable room
-            for (var room in apData.map.room_locations) {
+            for (var room in aptData.map.room_locations) {
                 var hotspotData = panData.map_hotspot;
-                var loc = apData.map.room_locations[room];
+                var loc = aptData.map.room_locations[room];
                 var x = (loc.x * sizeOffset - imgWidth) / imgWidth,
                     y = (imgHeight - loc.y * sizeOffset) / imgHeight;
                 var w = hotspotData.transform.size.width / imgWidth,
                     h = hotspotData.transform.size.height / imgHeight;
 
                 if (!hotspotData.start_invisible)
-                    hotspotData.start_invisible = apData.map.start_invisible;
+                    hotspotData.start_invisible = aptData.map.start_invisible;
                 if (room === currentRoom) {
                     if (!hotspotData.current.color)
                         hotspotData.current.color = hotspotData.color;
@@ -232,7 +239,7 @@ var constants = {
             var w = minData.transform.size.width / imgWidth,
                 h = minData.transform.size.height / imgHeight;
             if (!minData.start_invisible)
-                minData.start_invisible = apData.map.start_invisible;
+                minData.start_invisible = aptData.map.start_invisible;
 
             var transform = {
                 pos: new THREE.Vector3(x, y, 5),
@@ -300,7 +307,7 @@ var constants = {
         },
 
         addHotspots: function () {
-            apData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
+            aptData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
                     panData.hotspot.transform.size.width,
@@ -317,10 +324,10 @@ var constants = {
 
                 // Position the hotspot
                 var dist = 250;
-                var xThis = apData.map.room_locations[currentRoom].x,
-                    yThis = apData.map.room_locations[currentRoom].y,
-                    xOther = apData.map.room_locations[connectingRoom].x,
-                    yOther = apData.map.room_locations[connectingRoom].y;
+                var xThis = aptData.map.room_locations[currentRoom].x,
+                    yThis = aptData.map.room_locations[currentRoom].y,
+                    xOther = aptData.map.room_locations[connectingRoom].x,
+                    yOther = aptData.map.room_locations[connectingRoom].y;
                 var vRel = new THREE.Vector3(xThis - xOther, 0, yThis - yOther);
                 var vRelNorm = vRel.normalize();
                 hotspotMesh.position.set(vRelNorm.z * dist, 0, -vRelNorm.x * dist);
@@ -333,7 +340,7 @@ var constants = {
 
         getPanorama: function (roomId) {
             var geometry, material;
-            var room = apData.rooms[roomId];
+            var room = aptData.rooms[roomId];
 
             switch (room.panorama.type) {
                 case constants.PAN_TYPE.SPHERE:
@@ -778,7 +785,7 @@ var constants = {
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader.load(apData.rooms[currentRoom].measurements)
+                map: new THREE.TextureLoader.load(aptData.rooms[currentRoom].measurements)
             });
             var mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
