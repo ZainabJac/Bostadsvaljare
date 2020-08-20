@@ -32,7 +32,7 @@ var aptData;
 
 var constants = {
     CONTAINER: 'pan_container',
-    TOOLTIP: 'pan_tooltip',
+    TOOLTIP: 'tipmsg',
     MAP: 'map',
     MAP_ICON: 'map_icon',
     MINIMIZE: 'minimize',
@@ -146,12 +146,12 @@ var constants = {
             // Adding event listeners
             document.addEventListener('mouseover', this.onMouseover, false);
             document.addEventListener('mouseout', this.onMouseout, false);
-            document.addEventListener('mousedown', this.onPointerStart, false);
             document.addEventListener('mousemove', this.onPointerMove, false);
+            document.addEventListener('mousedown', this.onPointerDown, false);
             document.addEventListener('mouseup', this.onPointerUp, false);
 
-            document.addEventListener('touchstart', this.onPointerStart, false);
             document.addEventListener('touchmove', this.onPointerMove, false);
+            document.addEventListener('touchstart', this.onPointerDown, false);
             document.addEventListener('touchend', this.onPointerUp, false);
 
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
@@ -454,23 +454,23 @@ var constants = {
             renderer.setSize(width, height);
         },
 
-        // resetHUD: function (width, height) {
-        //    var halfWidth = width*0.5,
-        //        halfHeight = height*0.5;
+        resetHUD: function (width, height) {
+            /*var halfWidth = width*0.5,
+                halfHeight = height*0.5;
 
-        //    cameraHUD.left = -halfWidth;
-        //    cameraHUD.right = halfWidth;
-        //    cameraHUD.top = halfHeight;
-        //    cameraHUD.bottom = -halfHeight;
+            cameraHUD.left = -halfWidth;
+            cameraHUD.right = halfWidth;
+            cameraHUD.top = halfHeight;
+            cameraHUD.bottom = -halfHeight;*/
 
-        //    cameraHUD.aspect = width / height;
-        //    cameraHUD.updateProjectionMatrix();
-        // },
+            cameraHUD.aspect = width / height;
+            cameraHUD.updateProjectionMatrix();
+        },
 
         onFullscreenChange: function () {
             if (!isFullscreen) {
                 pan_viewer.resetSize(window.innerWidth, window.innerHeight);
-                // pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
+                pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
 
                 // TODO: Change color and background when changing image too
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
@@ -483,7 +483,7 @@ var constants = {
                 isFullscreen = true;
             } else {
                 pan_viewer.resetSize(containerWidth, containerWidth * 0.6);
-                // pan_viewer.resetHUD(canvasData.width, canvasData.height);
+                pan_viewer.resetHUD(containerWidth, containerWidth * 0.6);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
@@ -503,30 +503,6 @@ var constants = {
 
         onMouseout: function (event) {
             isMouseover = false;
-        },
-
-        onPointerStart: function (event) {
-            // Raycast the HUD elements
-            raycaster.setFromCamera(mouseVector, cameraHUD);
-            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-
-            // Raycast the hotspot objects
-            raycaster.setFromCamera(mouseVector, camera);
-            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
-
-            // TODO: Ignore isMouseover if using a mobile device/touchscreen
-            if (isMouseover && event.clientX && !hoveredHUDEl) {
-                autoRotate = false;
-                decRotationRate = 0.9;
-                isUserInteracting = true;
-
-                var clientX = event.clientX || event.touches[0].clientX;
-                var clientY = event.clientY || event.touches[0].clientY;
-                onMouseDownMouseX = clientX;
-                onMouseDownMouseY = clientY;
-                onMouseDownLon = lastLon = lon;
-                onMouseDownLat = lastLat = lat;
-            }
         },
 
         onPointerMove: function (event) {
@@ -562,6 +538,30 @@ var constants = {
                     $('html,body').css('cursor', 'pointer');
                 else
                     $('html,body').css('cursor', 'default');
+            }
+        },
+
+        onPointerDown: function (event) {
+            // Raycast the HUD elements
+            raycaster.setFromCamera(mouseVector, cameraHUD);
+            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+
+            // Raycast the hotspot objects
+            raycaster.setFromCamera(mouseVector, camera);
+            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+
+            // TODO: Ignore isMouseover if using a mobile device/touchscreen
+            if (isMouseover && event.clientX && !hoveredHUDEl) {
+                autoRotate = false;
+                decRotationRate = 0.9;
+                isUserInteracting = true;
+
+                var clientX = event.clientX || event.touches[0].clientX;
+                var clientY = event.clientY || event.touches[0].clientY;
+                onMouseDownMouseX = clientX;
+                onMouseDownMouseY = clientY;
+                onMouseDownLon = lastLon = lon;
+                onMouseDownLat = lastLat = lat;
             }
         },
 
@@ -652,17 +652,12 @@ var constants = {
             camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
             camera.lookAt(camera.target);
 
-            if (tooltipDisplayTimeout && !hoveringObj) {
-                clearTimeout(tooltipDisplayTimeout);
-                tooltipDisplayTimeout = undefined;
+            if (!hoveringObj) {
                 this.hideTooltip();
             }
 
-            if (!tooltipDisplayTimeout && latestMouseProjection) {
-                tooltipDisplayTimeout = setTimeout(function () {
-                    tooltipDisplayTimeout = undefined;
-                    pan_viewer.showTooltip();
-                }, 200);
+            if (latestMouseProjection) {
+                pan_viewer.showTooltip();
             }
 
             renderer.render(scene, camera);

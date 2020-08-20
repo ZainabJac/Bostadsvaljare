@@ -3,12 +3,7 @@
 @inject IJSRuntime JSRuntime
 
 
-<!--
-<iframe onload="this.width=screen.width;this.height=screen.height;" scrolling="no" src="https://www.visivo.se/panorama" frameborder="0" overflow:hidden; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen align="middle"></iframe>
--->
-
 <div id="pan_container" class="select-none">
-    <div id="pan_tooltip"></div>
 </div>
 
 
@@ -30,23 +25,5 @@
     #pan_container {
         position: relative;
         width: 50%;
-    }
-
-    #pan_tooltip {
-        position: fixed;
-        left: 0;
-        top: 0;
-        min-width: 100px;
-        text-align: center;
-        padding: 2px 4px;
-        font-family: monospace;
-        font-size: 16px;
-        background: #eeeeee;
-        display: none;
-        opacity: 0;
-        border: 1px solid black;
-        box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
-        transition: opacity 0.15s linear;
-        border-radius: 3px;
     }
 </style>
