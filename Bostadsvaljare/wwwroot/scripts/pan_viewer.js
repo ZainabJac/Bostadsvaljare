@@ -17,7 +17,7 @@ var autoRotate = true,
 var isMouseover = false,
     isFullscreen = false,
     isShowingMeasurements = false,
-    containerWidth = 0;
+    containerWidth = 0, containerHeight = 0;
 var mapSprite, currentRoom;
 var raycaster = new THREE.Raycaster(),
     mouseVector = new THREE.Vector2(),
@@ -32,12 +32,15 @@ var aptData;
 
 var constants = {
     CONTAINER: 'pan_container',
-    TOOLTIP: 'pan_tooltip',
+    TOOLTIP: 'tipmsg',
     MAP: 'map',
     MAP_ICON: 'map_icon',
     MINIMIZE: 'minimize',
+    MINIMIZE_ICON: 'minimize_icon',
     FULLSCREEN: 'fullscreen',
+    FULLSCREEN_ICON: 'fullscreen_icon',
     MEASUREMENTS: 'measurements',
+    MEASUREMENTS_ICON: 'measurements_icon',
     IMAGE_TYPE: {
         IMAGE: 'image',
         NINE_GRID: '9-grid',
@@ -73,7 +76,7 @@ var constants = {
                     if (k === key) {
                         data[key] = new THREE.TextureLoader().load(data[key]);
                     } else if (data[k] === Object(data[k])) {
-                       preloadImages(data[k], key);
+                        preloadImages(data[k], key);
                     }
                 }
             }
@@ -84,6 +87,7 @@ var constants = {
             container = $('#'+ constants.CONTAINER)[0];
             container.oncontextmenu = function () { return false; };
             containerWidth = container.offsetWidth;
+            containerHeight = containerWidth * 0.6;
             container.appendChild(canvas);
 
             // TODO: get aspect of panorama image
@@ -102,12 +106,12 @@ var constants = {
             renderer.autoClear = false;
             renderer.setPixelRatio(window.devicePixelRatio);
             // TODO: set size to match panorama image aspect
-            this.resetSize(containerWidth, containerWidth * 0.6);
+            this.resetSize(containerWidth, containerHeight);
 
             this.initHUD();
 
             // Map setup
-            var transform = this.getTransform(aptData.map.transform);
+            var transform = this.getTransform(panData.map.transform);
             transform.pos.z = -10;
             mapSprite = this.createHUDElement(aptData.map,
                 constants.MAP,
@@ -129,7 +133,7 @@ var constants = {
             var fullscreenData = panData.fullscreen_icon;
             var transform = this.getTransform(fullscreenData.transform);
             this.createHUDElement(fullscreenData,
-                constants.FULLSCREEN,
+                constants.FULLSCREEN_ICON,
                 transform,
                 this.toggleFullscreen);
 
@@ -139,19 +143,19 @@ var constants = {
             /*var measurementsData = panData.measurements_icon;
             var transform = this.getTransform(measurementsData.transform);
             this.createHUDElement(measurementsData,
-                constants.MEASUREMENTS,
+                constants.MEASUREMENTS_ICON,
                 transform,
                 pan_viewer.toggleMeasurements);*/
 
             // Adding event listeners
             document.addEventListener('mouseover', this.onMouseover, false);
             document.addEventListener('mouseout', this.onMouseout, false);
-            document.addEventListener('mousedown', this.onPointerStart, false);
             document.addEventListener('mousemove', this.onPointerMove, false);
+            document.addEventListener('mousedown', this.onPointerDown, false);
             document.addEventListener('mouseup', this.onPointerUp, false);
 
-            document.addEventListener('touchstart', this.onPointerStart, false);
             document.addEventListener('touchmove', this.onPointerMove, false);
+            document.addEventListener('touchstart', this.onPointerDown, false);
             document.addEventListener('touchend', this.onPointerUp, false);
 
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
@@ -200,6 +204,11 @@ var constants = {
             var imgWidth = mapImg.width,
                 imgHeight = mapImg.height;
 
+            panData.map.transform.size = {
+                width: imgWidth,
+                height: imgHeight,
+            };
+
             mapSprite.scale.set(imgWidth, imgHeight, 1);
 
             // Add hotspots for each explorable room
@@ -211,13 +220,13 @@ var constants = {
                 var w = hotspotData.transform.size.width / imgWidth,
                     h = hotspotData.transform.size.height / imgHeight;
 
-                if (!hotspotData.start_invisible)
-                    hotspotData.start_invisible = aptData.map.start_invisible;
+                if (!hotspotData.hidden_at_start)
+                    hotspotData.hidden_at_start = aptData.map.hidden_at_start;
                 if (room === currentRoom) {
                     if (!hotspotData.current.color)
                         hotspotData.current.color = hotspotData.color;
-                    if (!hotspotData.current.start_invisible)
-                        hotspotData.current.start_invisible = hotspotData.start_invisible;
+                    if (!hotspotData.current.hidden_at_start)
+                        hotspotData.current.hidden_at_start = hotspotData.hidden_at_start;
                     hotspotData = hotspotData.current;
                 }
 
@@ -238,8 +247,8 @@ var constants = {
                 y = (imgHeight + 0 * sizeOffset) / imgHeight;
             var w = minData.transform.size.width / imgWidth,
                 h = minData.transform.size.height / imgHeight;
-            if (!minData.start_invisible)
-                minData.start_invisible = aptData.map.start_invisible;
+            if (!minData.hidden_at_start)
+                minData.hidden_at_start = aptData.map.hidden_at_start;
 
             var transform = {
                 pos: new THREE.Vector3(x, y, 5),
@@ -247,7 +256,7 @@ var constants = {
                 scale: new THREE.Vector3(w, h, 1)
             };
             var minSprite = pan_viewer.createHUDElement(minData,
-                constants.MINIMIZE,
+                constants.MINIMIZE_ICON,
                 transform,
                 pan_viewer.hideMap);
             mapSprite.add(minSprite);
@@ -258,7 +267,7 @@ var constants = {
                 new THREE.SpriteMaterial({
                     map: new THREE.TextureLoader().load(matData.image, onload),
                     color: matData.color || '#fff',
-                    opacity: matData.start_invisible ? 0 : 1
+                    opacity: matData.hidden_at_start ? 0 : 1
                 })
             );
             var pos = transform.pos,
@@ -272,7 +281,7 @@ var constants = {
             HUDGroup.add(sprite);
             if (matData.background) {
                 var bg = this.createBackground(matData.background, sprite);
-                if (matData.start_invisible)
+                if (matData.hidden_at_start)
                     bg.material.opacity = 0;
             }
             return sprite;
@@ -398,11 +407,16 @@ var constants = {
         },
 
         getTransform: function (data) {
-            var pos = new THREE.Vector3();
-            var center = new THREE.Vector2(0.5, 0.5);
-            var size = new THREE.Vector3(1, 1, 1);
+            return {
+                pos: this.getPosition(data.position),
+                center: this.getCenter(data.position.center),
+                scale: this.getSize(data.size),
+            };
+        },
 
-            var posData = data.position;
+        getPosition: function (posData) {
+            var pos = new THREE.Vector3();
+
             if (posData.right) {
                 pos.x = this.rightPos(posData.right);
             } else {
@@ -414,7 +428,12 @@ var constants = {
                 pos.y = this.topPos(posData.top || 0);
             }
 
-            var centerData = posData.center;
+            return pos;
+        },
+
+        getCenter: function (centerData) {
+            var center = new THREE.Vector2(0.5, 0.5);
+
             if (centerData) {
                 if (centerData.x !== undefined)
                     center.x = centerData.x;
@@ -422,13 +441,18 @@ var constants = {
                     center.y = centerData.y;
             }
 
-            var sizeData = data.size;
+            return center;
+        },
+
+        getSize: function (sizeData) {
+            var size = new THREE.Vector3(1, 1, 1);
+
             if (sizeData) {
                 size.x = sizeData.width || 1;
                 size.y = sizeData.height || 1;
             }
 
-            return { pos: pos, center: center, scale: size };
+            return size;
         },
 
         getMousePos: function (event) {
@@ -454,44 +478,44 @@ var constants = {
             renderer.setSize(width, height);
         },
 
-        // resetHUD: function (width, height) {
-        //    var halfWidth = width*0.5,
-        //        halfHeight = height*0.5;
+        resetHUD: function (width, height) {
+            var scaleDiffW = containerWidth / width;
+            var scaleDiffH = containerHeight / height;
 
-        //    cameraHUD.left = -halfWidth;
-        //    cameraHUD.right = halfWidth;
-        //    cameraHUD.top = halfHeight;
-        //    cameraHUD.bottom = -halfHeight;
+            HUDGroup.children.forEach(function (hudEl) {
+                var scale = pan_viewer.getSize(panData[hudEl.name].transform.size);
+                hudEl.scale.x = scale.x * scaleDiffW;
+                hudEl.scale.y = scale.y * scaleDiffH;
+            });
 
-        //    cameraHUD.aspect = width / height;
-        //    cameraHUD.updateProjectionMatrix();
-        // },
+            cameraHUD.aspect = width / height;
+            cameraHUD.updateProjectionMatrix();
+        },
 
         onFullscreenChange: function () {
-            if (!isFullscreen) {
+            isFullscreen = !isFullscreen;
+            if (isFullscreen) {
                 pan_viewer.resetSize(window.innerWidth, window.innerHeight);
-                // pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
+                pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
 
                 // TODO: Change color and background when changing image too
-                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
+                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.off_icon.image);
                 fsMat.color.set(panData.fullscreen_icon.off_icon.color
                     || panData.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.add(constants.FULLSCREEN);
-                isFullscreen = true;
             } else {
-                pan_viewer.resetSize(containerWidth, containerWidth * 0.6);
-                // pan_viewer.resetHUD(canvasData.width, canvasData.height);
+                pan_viewer.resetSize(containerWidth, containerHeight);
+                pan_viewer.resetHUD(containerWidth, containerHeight);
 
-                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN).material;
+                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
                 fsMat.color.set(panData.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.remove(constants.FULLSCREEN);
-                isFullscreen = false;
             }
         },
 
@@ -503,30 +527,6 @@ var constants = {
 
         onMouseout: function (event) {
             isMouseover = false;
-        },
-
-        onPointerStart: function (event) {
-            // Raycast the HUD elements
-            raycaster.setFromCamera(mouseVector, cameraHUD);
-            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-
-            // Raycast the hotspot objects
-            raycaster.setFromCamera(mouseVector, camera);
-            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
-
-            // TODO: Ignore isMouseover if using a mobile device/touchscreen
-            if (isMouseover && event.clientX && !hoveredHUDEl) {
-                autoRotate = false;
-                decRotationRate = 0.9;
-                isUserInteracting = true;
-
-                var clientX = event.clientX || event.touches[0].clientX;
-                var clientY = event.clientY || event.touches[0].clientY;
-                onMouseDownMouseX = clientX;
-                onMouseDownMouseY = clientY;
-                onMouseDownLon = lastLon = lon;
-                onMouseDownLat = lastLat = lat;
-            }
         },
 
         onPointerMove: function (event) {
@@ -562,6 +562,30 @@ var constants = {
                     $('html,body').css('cursor', 'pointer');
                 else
                     $('html,body').css('cursor', 'default');
+            }
+        },
+
+        onPointerDown: function (event) {
+            // Raycast the HUD elements
+            raycaster.setFromCamera(mouseVector, cameraHUD);
+            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+
+            // Raycast the hotspot objects
+            raycaster.setFromCamera(mouseVector, camera);
+            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+
+            // TODO: Ignore isMouseover if using a mobile device/touchscreen
+            if (isMouseover && event.clientX && !hoveredHUDEl) {
+                autoRotate = false;
+                decRotationRate = 0.9;
+                isUserInteracting = true;
+
+                var clientX = event.clientX || event.touches[0].clientX;
+                var clientY = event.clientY || event.touches[0].clientY;
+                onMouseDownMouseX = clientX;
+                onMouseDownMouseY = clientY;
+                onMouseDownLon = lastLon = lon;
+                onMouseDownLat = lastLat = lat;
             }
         },
 
@@ -652,17 +676,12 @@ var constants = {
             camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
             camera.lookAt(camera.target);
 
-            if (tooltipDisplayTimeout && !hoveringObj) {
-                clearTimeout(tooltipDisplayTimeout);
-                tooltipDisplayTimeout = undefined;
+            if (!hoveringObj) {
                 this.hideTooltip();
             }
 
-            if (!tooltipDisplayTimeout && latestMouseProjection) {
-                tooltipDisplayTimeout = setTimeout(function () {
-                    tooltipDisplayTimeout = undefined;
-                    pan_viewer.showTooltip();
-                }, 200);
+            if (latestMouseProjection) {
+                pan_viewer.showTooltip();
             }
 
             renderer.render(scene, camera);

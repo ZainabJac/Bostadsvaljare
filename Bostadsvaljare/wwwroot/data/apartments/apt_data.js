@@ -7,15 +7,8 @@
             image: "IMG/apts/bg.png",
             color: "#1fa2a7"
         },
-        transform: {
-            position: {
-                bottom: 15,
-                right: 15,
-                center: { x: 1, y: 0 }
-            }
-        },
         size: 0.6,
-        start_invisible: true,
+        hidden_at_start: true,
         room_locations: {
             sovrum_1: { x: 85, y: 330 },
             vardagsrum: { x: 185, y: 215 },
