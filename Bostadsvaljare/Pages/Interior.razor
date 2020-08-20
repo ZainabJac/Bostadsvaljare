@@ -8,8 +8,8 @@
 @using Syncfusion.Blazor.Buttons
 
 
-
-<div class="col-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="line-8">
     <div id="slideshow" class="@(ShowInfo ? "" : "full")">
         <BSCarousel NumberOfItems="@items.Count">
             <div class="carousel-inner">
@@ -25,26 +25,26 @@
     </div>
 </div>
 
-<div class="col-4">
+<div class="line-4">
     <div id="housing_info" class="@(ShowInfo ? "" : "hidden")">
         @*TODO: have an own block that contains relevant info regarding the selected housing*@
     </div>
     <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
 </div>
 
-    <div id="gallery" style="margin-bottom:1%;">
+    <div id="gallery">
         @*TODO: ensure the images below reflect to what is shown in the slideshow*@
         @*TODO: enable scrolling if too many images are present to fit the window*@
-        <div class="col-1">
+        <div class="line-1">
             <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
         </div>
-        <div class="col-1">
+        <div class="line-1">
             <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
         </div>
-        <div class="col-1">
+        <div class="line-1">
             <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
         </div>
-        <div class="col-1">
+        <div class="line-1">
             <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
         </div>
 
@@ -58,8 +58,8 @@
     </div>*@
 
 
-<div class="col-2">
-    <header class="card-info-header" style="margin-bottom:6%;">3 RoK</header>
+<div class="line-2">
+    <header class="card-info-header">3 RoK</header>
     <div>
 
         <header class="card-info-header">Pris </header>
@@ -67,7 +67,7 @@
         <hr />
     </div>
 
-    <div style="display: inline;">
+    <div>
 
         <header class="card-info-header">Boarea</header>
         <header class="card-info-header-right">@house1.Sqm</header>
@@ -75,7 +75,7 @@
     </div>
 
 
-    <div style="display: inline;">
+    <div>
 
         <header class="card-info-header">Lgh nr.</header>
         <header class="card-info-header-right">@house1.HouseNumber</header>
@@ -83,7 +83,7 @@
 
 </div>
 
-<div class="col-2">
+<div class="line-2">
 
 
 
@@ -93,13 +93,14 @@
 
 </div>
 
-<div class="col-2">
+<div class="line-2knapp" >
     <div>
         <div > <SfButton> Bofaktablad </SfButton> </div>
     </div>
    </div>
-    <div class="col-2">
+    <div class="line-2knapp" >
         <div >
+           
             <div > <SfButton IsPrimary="true"> Anmäl intresse </SfButton> </div>
         </div>
     </div>
@@ -219,66 +220,71 @@
 
     <style>
 
-    .col-1 {
-        width: 8.33%;
-    }
+        .line-1 {
+            width: 8.33%;
+        }
 
-    .col-2 {
-        width: 16.66%;
-    }
+        .line-2 {
+            width: 16.66%;
+        }
 
-    .col-3 {
-        width: 25%;
-    }
+        .line-2knapp {
+            width: 16%;
+            margin: auto;
+            display: inline-block;
+        }
 
-    .col-4 {
-        width: 33.33%;
-    }
+        .line-3 {
+            width: 25%;
+        }
 
-    .col-5 {
+        .line-4 {
+            width: 33.33%;
+        }
+
+    .line-5 {
         width: 41.66%;
     }
 
-    .col-6 {
+    .line-6 {
         width: 50%;
     }
 
-    .col-7 {
+    .line-7 {
         width: 58.33%;
     }
 
-    .col-8 {
+    .line-8 {
         width: 66.66%;
     }
 
-    .col-9 {
+    .line-9 {
         width: 75%;
     }
 
-    .col-10 {
+    .line-10 {
         width: 83.33%;
     }
 
-    .col-11 {
+    .line-11 {
         width: 91.66%;
     }
 
-    .col-12 {
+    .line-12 {
         width: 100%;
     }
 
-    [class*="col-"] {
+    [class*="line-"] {
         float: left;
         padding: 15px;
-        border: 1px solid red;
+       
     }
 
     #slideshow {
         float: left;
         width: 100%;
         height: auto;
-        margin-bottom: 10px;
-        margin-right: 5px;
+
         transition-duration: 0.15s;
     }
 
@@ -290,7 +296,7 @@
     #housing_info {
         float: right;
         width: 33%;
-        margin-bottom: 5px;
+    
         font-family: 'Segoe UI';
         transition: width 0.1s 0.5s, opacity 0.4s 0.5s, display 0.5s 0.5s;
         @*transition-duration: 0.35s;*@
@@ -329,21 +335,22 @@
         filter: brightness(110%);
     }
 
-    .card-info-header {
-        font-family: 'Segoe UI';
-        font-size: 24px;
-        display: inline-block;
-    }
+        .card-info-header {
+            font-family: 'Segoe UI';
+            font-size: 24px;
+            display: inline-block;
+        }
 
-    .card-info-text {
-        font-family: 'Segoe UI';
-        font-size: 15px;
-    }
+        .card-info-text {
+            font-family: 'Segoe UI';
+            font-size: 15px;
+            display: inline-block;
+        }
 
     .card-info-header-right {
         font-family: 'Segoe UI';
         font-size: 24px;
-        display: inline-block;
+      display:inline-block;
         float: right
     }
 
@@ -363,4 +370,92 @@
         width: 100%;
 
     }
+
+
+        @@media (max-width: 48em) {
+
+
+            .card-info-header-right {
+                font-family: 'Segoe UI';
+                font-size: 14px;
+                float: right;
+                display:inline-block;
+            }
+
+
+            .card-info-header {
+                font-family: 'Segoe UI';
+                font-size: 14px;
+                display: inline-block;
+            }
+
+
+            .card-info-text {
+                font-family: 'Segoe UI';
+                font-size: 10px;
+                display: inline-block;
+            }
+
+
+            .line-1 {
+                width: 25%;
+            }
+
+            .line-2 {
+                width: 100%;
+            }
+
+            .line-2knapp {
+                width: 50%;
+                margin: auto;
+            }
+
+            .line-3 {
+                width: 25%;
+            }
+
+            .line-4 {
+                width: 50%;
+            }
+
+            .line-5 {
+                width: 50%;
+            }
+
+            .line-6 {
+                width: 50%;
+            }
+
+            .line-7 {
+                width: 100%;
+            }
+
+            .line-8 {
+                width: 100%;
+            }
+
+            .line-9 {
+                width: 100%;
+            }
+
+            .line-10 {
+                width: 100%;
+            }
+
+            .line-11 {
+                width: 100%;
+            }
+
+            .line-12 {
+                width: 100%;
+            }
+
+            [class*="line-"] {
+                float: left;
+                padding: 5px;
+               
+                
+            }
+        
+        }
     </style>
