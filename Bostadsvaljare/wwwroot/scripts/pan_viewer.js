@@ -1,4 +1,5 @@
-﻿var camera, scene, renderer, skybox, container, canvas;
+﻿var self;
+var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
 var clock = new THREE.Clock();
 var isUserInteracting = false,
@@ -55,6 +56,7 @@ var constants = {
 (function () {
     window.pan_viewer = {
         start: function (aptID) {
+            self = this;
             aptData = this.getAptData(aptID);
 
             //TODO: attempting to preload images to avoid loading them each time to change images,
@@ -145,7 +147,7 @@ var constants = {
             this.createHUDElement(measurementsData,
                 constants.MEASUREMENTS_ICON,
                 transform,
-                pan_viewer.toggleMeasurements);*/
+                this.toggleMeasurements);*/
 
             // Adding event listeners
             document.addEventListener('mouseover', this.onMouseover, false);
@@ -234,10 +236,10 @@ var constants = {
                     pos: new THREE.Vector3(x, y, 5),
                     scale: new THREE.Vector3(w, h, 1)
                 };
-                var hotspotSprite = pan_viewer.createHUDElement(hotspotData,
+                var hotspotSprite = self.createHUDElement(hotspotData,
                     room,
                     transform,
-                    function () { pan_viewer.changeRoom(this.name); });
+                    function () { self.changeRoom(this.name); });
                 mapSprite.add(hotspotSprite);
             }
 
@@ -255,10 +257,10 @@ var constants = {
                 center: new THREE.Vector2(1, 1),
                 scale: new THREE.Vector3(w, h, 1)
             };
-            var minSprite = pan_viewer.createHUDElement(minData,
+            var minSprite = self.createHUDElement(minData,
                 constants.MINIMIZE_ICON,
                 transform,
-                pan_viewer.hideMap);
+                self.hideMap);
             mapSprite.add(minSprite);
         },
 
@@ -483,7 +485,7 @@ var constants = {
             var scaleDiffH = containerHeight / height;
 
             HUDGroup.children.forEach(function (hudEl) {
-                var scale = pan_viewer.getSize(panData[hudEl.name].transform.size);
+                var scale = self.getSize(panData[hudEl.name].transform.size);
                 hudEl.scale.x = scale.x * scaleDiffW;
                 hudEl.scale.y = scale.y * scaleDiffH;
             });
@@ -495,8 +497,8 @@ var constants = {
         onFullscreenChange: function () {
             isFullscreen = !isFullscreen;
             if (isFullscreen) {
-                pan_viewer.resetSize(window.innerWidth, window.innerHeight);
-                pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
+                self.resetSize(window.innerWidth, window.innerHeight);
+                self.resetHUD(window.innerWidth, window.innerHeight);
 
                 // TODO: Change color and background when changing image too
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -507,8 +509,8 @@ var constants = {
 
                 container.classList.add(constants.FULLSCREEN);
             } else {
-                pan_viewer.resetSize(containerWidth, containerHeight);
-                pan_viewer.resetHUD(containerWidth, containerHeight);
+                self.resetSize(containerWidth, containerHeight);
+                self.resetHUD(containerWidth, containerHeight);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
@@ -539,7 +541,7 @@ var constants = {
             }
 
             // Update mouseVector for all the raycasting
-            var mousePos = pan_viewer.getMousePos(event);
+            var mousePos = self.getMousePos(event);
             mouseVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
             mouseVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
 
@@ -557,7 +559,7 @@ var constants = {
                 $('html,body').css('cursor', 'pointer');
             } else {
                 raycaster.setFromCamera(mouseVector, cameraHUD);
-                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
                 if (obj && obj.onclick)
                     $('html,body').css('cursor', 'pointer');
                 else
@@ -568,11 +570,11 @@ var constants = {
         onPointerDown: function (event) {
             // Raycast the HUD elements
             raycaster.setFromCamera(mouseVector, cameraHUD);
-            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
 
             // Raycast the hotspot objects
             raycaster.setFromCamera(mouseVector, camera);
-            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
 
             // TODO: Ignore isMouseover if using a mobile device/touchscreen
             if (isMouseover && event.clientX && !hoveredHUDEl) {
@@ -591,7 +593,7 @@ var constants = {
 
         onPointerUp: function () {
             raycaster.setFromCamera(mouseVector, cameraHUD);
-            var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
             if (obj && obj === hoveredHUDEl && obj.onclick) {
                 obj.onclick();
             }
@@ -599,9 +601,9 @@ var constants = {
             if (hoveredHotspot && !obj) {
                 // Raycast again to see if we are still hovering the (same) hotspot
                 raycaster.setFromCamera(mouseVector, camera);
-                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
                 if (obj && obj === hoveredHotspot) {
-                    pan_viewer.changeRoom(hoveredHotspot.name);
+                    self.changeRoom(hoveredHotspot.name);
                 }
             }
 
@@ -615,8 +617,8 @@ var constants = {
         },
 
         animate: function () {
-            requestAnimationFrame(pan_viewer.animate);
-            pan_viewer.update();
+            requestAnimationFrame(self.animate);
+            self.update();
         },
 
         update: function () {
@@ -681,7 +683,7 @@ var constants = {
             }
 
             if (latestMouseProjection) {
-                pan_viewer.showTooltip();
+                this.showTooltip();
             }
 
             renderer.render(scene, camera);
@@ -727,14 +729,14 @@ var constants = {
         showMap: function () {
             // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
             var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            pan_viewer.changeOpacity(mapIconSprite, 0);
-            pan_viewer.changeOpacity(mapSprite, 1);
+            self.changeOpacity(mapIconSprite, 0);
+            self.changeOpacity(mapSprite, 1);
         },
 
         hideMap: function () {
             var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            pan_viewer.changeOpacity(mapIconSprite, 1);
-            pan_viewer.changeOpacity(mapSprite, 0);
+            self.changeOpacity(mapIconSprite, 1);
+            self.changeOpacity(mapSprite, 0);
         },
 
         changeOpacity: function (sprite, opacity) {
@@ -795,9 +797,9 @@ var constants = {
 
         toggleMeasurements: function () {
             if (isShowingMeasurements) {
-                pan_viewer.hideMeasurements();
+                self.hideMeasurements();
             } else {
-                pan_viewer.showMeasurements();
+                self.showMeasurements();
             }
         },
 
@@ -820,9 +822,9 @@ var constants = {
 
         toggleFullscreen: function () {
             if (isFullscreen)
-                pan_viewer.closeFullscreen();
+                self.closeFullscreen();
             else
-                pan_viewer.openFullscreen();
+                self.openFullscreen();
         },
 
         openFullscreen: function () {
