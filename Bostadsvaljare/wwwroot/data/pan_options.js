@@ -1,4 +1,4 @@
-﻿panData = {
+﻿panOptions = {
     camera: {
         rotation_speed: 0.075,
         smooth_out: {

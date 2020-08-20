@@ -1,4 +1,6 @@
-﻿var self;
+﻿var options = { ...panOptions };
+var aptData;
+var self;
 var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
 var clock = new THREE.Clock();
@@ -12,8 +14,8 @@ var autoRotate = true,
     lonAcc = new Accumulator(20, true),
     latAcc = new Accumulator(20, true),
     velCam = new THREE.Vector2(),
-    maxVelLon = panData.camera.auto_rotate.x_max_velocity,
-    maxVelLat = panData.camera.auto_rotate.y_max_velocity,
+    maxVelLon = options.camera.auto_rotate.x_max_velocity,
+    maxVelLat = options.camera.auto_rotate.y_max_velocity,
     decRotationRate = 0;
 var isMouseover = false,
     isFullscreen = false,
@@ -29,7 +31,6 @@ var raycaster = new THREE.Raycaster(),
     tooltipDisplayTimeout,
     hoveringObj;
 var elem = document.documentElement;
-var aptData;
 
 var constants = {
     CONTAINER: 'pan_container',
@@ -61,7 +62,7 @@ var constants = {
 
             //TODO: attempting to preload images to avoid loading them each time to change images,
             //      but something is not quite right with the end result... The webGLShader "couldn't compile."
-            // preloadImages(panData, 'image');
+            // preloadImages(options, 'image');
             // preloadImages(aptData, 'panorama');
 
             this.init();
@@ -113,7 +114,7 @@ var constants = {
             this.initHUD();
 
             // Map setup
-            var transform = this.getTransform(panData.map.transform);
+            var transform = this.getTransform(options.map.transform);
             transform.pos.z = -10;
             mapSprite = this.createHUDElement(aptData.map,
                 constants.MAP,
@@ -124,7 +125,7 @@ var constants = {
             // Map button setup
             // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
             //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = panData.map_icon;
+            var mapData = options.map_icon;
             var transform = this.getTransform(mapData.transform);
             this.createHUDElement(mapData,
                 constants.MAP_ICON,
@@ -132,7 +133,7 @@ var constants = {
                 this.showMap);
 
             // Fullscreen button setup
-            var fullscreenData = panData.fullscreen_icon;
+            var fullscreenData = options.fullscreen_icon;
             var transform = this.getTransform(fullscreenData.transform);
             this.createHUDElement(fullscreenData,
                 constants.FULLSCREEN_ICON,
@@ -142,7 +143,7 @@ var constants = {
             // Measurements button setup
             // TODO: Be able to show apartment measurements on walls, etc.
             // TODO: Make a different icon
-            /*var measurementsData = panData.measurements_icon;
+            /*var measurementsData = options.measurements_icon;
             var transform = this.getTransform(measurementsData.transform);
             this.createHUDElement(measurementsData,
                 constants.MEASUREMENTS_ICON,
@@ -206,7 +207,7 @@ var constants = {
             var imgWidth = mapImg.width,
                 imgHeight = mapImg.height;
 
-            panData.map.transform.size = {
+            options.map.transform.size = {
                 width: imgWidth,
                 height: imgHeight,
             };
@@ -215,7 +216,7 @@ var constants = {
 
             // Add hotspots for each explorable room
             for (var room in aptData.map.room_locations) {
-                var hotspotData = panData.map_hotspot;
+                var hotspotData = options.map_hotspot;
                 var loc = aptData.map.room_locations[room];
                 var x = (loc.x * sizeOffset - imgWidth) / imgWidth,
                     y = (imgHeight - loc.y * sizeOffset) / imgHeight;
@@ -244,7 +245,7 @@ var constants = {
             }
 
             // Add button to minimize the map
-            var minData = panData.minimize_icon;
+            var minData = options.minimize_icon;
             var x = 0 * sizeOffset / imgWidth,
                 y = (imgHeight + 0 * sizeOffset) / imgHeight;
             var w = minData.transform.size.width / imgWidth,
@@ -321,12 +322,12 @@ var constants = {
             aptData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
-                    panData.hotspot.transform.size.width,
-                    panData.hotspot.transform.size.height
+                    options.hotspot.transform.size.width,
+                    options.hotspot.transform.size.height
                 );
                 var hotspotMaterial = new THREE.MeshBasicMaterial({
-                    map: new THREE.TextureLoader().load(panData.hotspot.image),
-                    color: panData.hotspot.color,
+                    map: new THREE.TextureLoader().load(options.hotspot.image),
+                    color: options.hotspot.color,
                     side: THREE.DoubleSide,
                     transparent: true
                 });
@@ -485,7 +486,7 @@ var constants = {
             var scaleDiffH = containerHeight / height;
 
             HUDGroup.children.forEach(function (hudEl) {
-                var scale = self.getSize(panData[hudEl.name].transform.size);
+                var scale = self.getSize(options[hudEl.name].transform.size);
                 hudEl.scale.x = scale.x * scaleDiffW;
                 hudEl.scale.y = scale.y * scaleDiffH;
             });
@@ -502,9 +503,9 @@ var constants = {
 
                 // TODO: Change color and background when changing image too
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.off_icon.image);
-                fsMat.color.set(panData.fullscreen_icon.off_icon.color
-                    || panData.fullscreen_icon.color);
+                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.off_icon.image);
+                fsMat.color.set(options.fullscreen_icon.off_icon.color
+                    || options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.add(constants.FULLSCREEN);
@@ -513,8 +514,8 @@ var constants = {
                 self.resetHUD(containerWidth, containerHeight);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
-                fsMat.color.set(panData.fullscreen_icon.color);
+                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.image);
+                fsMat.color.set(options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.remove(constants.FULLSCREEN);
@@ -535,7 +536,7 @@ var constants = {
             if (isUserInteracting && event.clientX) {
                 var clientX = event.clientX || event.touches[0].clientX;
                 var clientY = event.clientY || event.touches[0].clientY;
-                var rot_speed = panData.camera.rotation_speed
+                var rot_speed = options.camera.rotation_speed
                 lon = (onMouseDownMouseX - clientX) * rot_speed + onMouseDownLon;
                 lat = (clientY - onMouseDownMouseY) * rot_speed + onMouseDownLat;
             }
@@ -634,11 +635,11 @@ var constants = {
                     autoRotateTimeout = undefined;
                     velCam.set(0, 0);
                     autoRotate = true;
-                }, panData.camera.auto_rotate.secs_to_rotate * 1000);
+                }, options.camera.auto_rotate.secs_to_rotate * 1000);
             } else if (!autoRotate) {
-                if (panData.camera.smooth_out.enable) {
+                if (options.camera.smooth_out.enable) {
                     var decRate = 0.1 + decRotationRate;
-                    var smoothOutRate = panData.camera.smooth_out.decrease_rate;
+                    var smoothOutRate = options.camera.smooth_out.decrease_rate;
                     decRotationRate = Math.max(0, decRotationRate - smoothOutRate * delta);
                     velCam.set(Math.max(0, Math.abs(velCam.x) * decRate) * Math.sign(velCam.x),
                                Math.max(0, Math.abs(velCam.y) * decRate) * Math.sign(velCam.y));
@@ -647,9 +648,9 @@ var constants = {
                     lat += velCam.y;
                 }
             } else {
-                if (panData.camera.auto_rotate.enable) {
-                    var smoothLonRate = panData.camera.auto_rotate.smooth_in_x_rate;
-                    var smoothLatRate = panData.camera.auto_rotate.smooth_in_y_rate;
+                if (options.camera.auto_rotate.enable) {
+                    var smoothLonRate = options.camera.auto_rotate.smooth_in_x_rate;
+                    var smoothLatRate = options.camera.auto_rotate.smooth_in_y_rate;
 
                     // Smooth rotate lon
                     velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
@@ -754,8 +755,8 @@ var constants = {
             // Update map hotspot images to show which is the current room
             var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
             var newRoomMat = HUDGroup.getObjectByName(roomId).material;
-            prevRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.image);
-            newRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.current.image);
+            prevRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.image);
+            newRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.current.image);
             prevRoomMat.needsUpdate = true;
             newRoomMat.needsUpdate = true;
 
