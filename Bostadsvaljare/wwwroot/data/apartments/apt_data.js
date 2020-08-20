@@ -1,4 +1,4 @@
-﻿apData = {
+﻿someUniqueHouseID = {
     entry: "vardagsrum",
     map: {
         image: "IMG/apts/floor_plan.png",
