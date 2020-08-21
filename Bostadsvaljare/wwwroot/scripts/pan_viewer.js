@@ -2,6 +2,9 @@
 var aptData;
 var roomImages;
 var self;
+var initiated;
+var elem;
+var animation;
 var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
 var clock = new THREE.Clock();
@@ -31,9 +34,8 @@ var raycaster = new THREE.Raycaster(),
     latestMouseProjection,
     tooltipDisplayTimeout,
     hoveringObj;
-var elem = document.documentElement;
 
-var constants = {
+const constants = {
     CONTAINER: 'pan_container',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
@@ -59,30 +61,56 @@ var constants = {
     window.pan_viewer = {
         start: function (aptID) {
             self = this;
-            aptData = this.getAptData(aptID);
+            aptData = window.apartments[aptID];
 
             // Preload images to avoid loading them each time when changing rooms
-            roomImages = {};
-            for (var room in aptData.rooms) {
-                var panorama = aptData.rooms[room].panorama;
-                if (panorama.type === constants.PAN_TYPE.SPHERE)
-                    roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
-                else if (panorama.type === constants.PAN_TYPE.CUBE)
-                    roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+            if (initiated !== aptID) {
+                roomImages = {};
+                for (var room in aptData.rooms) {
+                    var panorama = aptData.rooms[room].panorama;
+                    if (panorama.type === constants.PAN_TYPE.SPHERE)
+                        roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                    else if (panorama.type === constants.PAN_TYPE.CUBE)
+                        roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+                }
             }
 
-            this.init();
+            elem = document.documentElement;
+            container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            if (!initiated)
+                this.init();
+            else
+                this.reset();
+            container.appendChild(canvas);
+
+            // Change room if new apartment type
+            if (initiated !== aptID)
+                this.changeRoom(aptData.entry);
+            initiated = aptID;
+
             this.animate();
         },
 
-        getAptData: function (aptID) {
-            return window.apartments[aptID];
+        reset: function () {
+            // Reset some camera values
+            onMouseDownMouseX = 0, onMouseDownMouseY = 0,
+            lon = 180, lastLon = 0, onMouseDownLon = 0,
+            lat = 0, lastLat = 0, onMouseDownLat = 0,
+            phi = 0, theta = 0;
+            velCam = new THREE.Vector2();
+            autoRotate = true;
+            autoRotateTimeout = undefined;
+
+            // Hide map, which is always shown (for some reason)
+            this.hideMap();
+
+            // Remove previous animation frame request
+            cancelAnimationFrame(animation);
         },
 
         init: function () {
             canvas = document.createElement("canvas");
-            container = $('#'+ constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
             containerWidth = container.offsetWidth;
             containerHeight = containerWidth * 0.6;
             container.appendChild(canvas);
@@ -611,7 +639,7 @@ var constants = {
         },
 
         animate: function () {
-            requestAnimationFrame(self.animate);
+            animation = requestAnimationFrame(self.animate);
             self.update();
         },
 
@@ -640,27 +668,25 @@ var constants = {
                     lon += velCam.x;
                     lat += velCam.y;
                 }
-            } else {
-                if (options.camera.auto_rotate.enable) {
-                    var smoothLonRate = options.camera.auto_rotate.smooth_in_x_rate;
-                    var smoothLatRate = options.camera.auto_rotate.smooth_in_y_rate;
+            } else if (options.camera.auto_rotate.enable) {
+                var smoothLonRate = options.camera.auto_rotate.smooth_in_x_rate;
+                var smoothLatRate = options.camera.auto_rotate.smooth_in_y_rate;
 
-                    // Smooth rotate lon
-                    velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
+                // Smooth rotate lon
+                velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
 
-                    // Smooth lat close into 0
-                    if (Math.abs(lat) > 0.5) {
-                        var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
-                        velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
-                    } else if (Math.abs(velCam.y) > 0.001) {
-                        velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
-                    } else {
-                        velCam.y = 0;
-                    }
-
-                    lon += velCam.x;
-                    lat += velCam.y;
+                // Smooth lat close into 0
+                if (Math.abs(lat) > 0.5) {
+                    var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
+                    velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
+                } else if (Math.abs(velCam.y) > 0.001) {
+                    velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
+                } else {
+                    velCam.y = 0;
                 }
+
+                lon += velCam.x;
+                lat += velCam.y;
             }
 
             lat = Math.min(Math.max(-85, lat), 85);
