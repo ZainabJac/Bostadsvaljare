@@ -41,3 +41,8 @@ Accumulator.prototype.average = function () {
     }
     return sum / this.count;
 }
+
+Accumulator.prototype.toString = function () {
+    var str = '('+ this.count +'/'+ this.maxCount +') ';
+    return str + this.accArr.toString();
+}

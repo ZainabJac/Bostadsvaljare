@@ -1,18 +1,25 @@
-﻿var camera, scene, renderer, skybox, container, canvas;
+﻿var options = { ...panOptions };
+var aptData;
+var roomImages;
+var self;
+var initiated;
+var elem;
+var animation;
+var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
 var clock = new THREE.Clock();
 var isUserInteracting = false,
-    onMouseDownMouseX = 0, onMouseDownMouseY = 0,
-    lon = 180, lastLon = 0, onMouseDownLon = 0,
-    lat = 0, lastLat = 0, onMouseDownLat = 0,
+    clientXStart = 0, clientYStart = 0,
+    lon = 180, lonLast = 0, lonStart = 0,
+    lat = 0, LatLast = 0, latStart = 0,
     phi = 0, theta = 0;
 var autoRotate = true,
     autoRotateTimeout,
     lonAcc = new Accumulator(20, true),
     latAcc = new Accumulator(20, true),
     velCam = new THREE.Vector2(),
-    maxVelLon = panData.camera.auto_rotate.x_max_velocity,
-    maxVelLat = panData.camera.auto_rotate.y_max_velocity,
+    maxVelLon = options.camera.auto_rotate.x_max_velocity,
+    maxVelLat = options.camera.auto_rotate.y_max_velocity,
     decRotationRate = 0;
 var isMouseover = false,
     isFullscreen = false,
@@ -20,17 +27,15 @@ var isMouseover = false,
     containerWidth = 0, containerHeight = 0;
 var mapSprite, currentRoom;
 var raycaster = new THREE.Raycaster(),
-    mouseVector = new THREE.Vector2(),
+    pointerVector = new THREE.Vector2(),
     hotspotGroup = new THREE.Group(),
     HUDGroup = new THREE.Group(),
     hoveredHUDEl, hoveredHotspot,
-    latestMouseProjection,
+    latestPointerProjection,
     tooltipDisplayTimeout,
     hoveringObj;
-var elem = document.documentElement;
-var aptData;
 
-var constants = {
+const constants = {
     CONTAINER: 'pan_container',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
@@ -55,43 +60,62 @@ var constants = {
 (function () {
     window.pan_viewer = {
         start: function (aptID) {
-            aptData = this.getAptData(aptID);
+            self = this;
+            aptData = window.apartments[aptID];
 
-            //TODO: attempting to preload images to avoid loading them each time to change images,
-            //      but something is not quite right with the end result... The webGLShader "couldn't compile."
-            // preloadImages(panData, 'image');
-            // preloadImages(aptData, 'panorama');
+            // Preload images to avoid loading them each time when changing rooms
+            if (initiated !== aptID) {
+                roomImages = {};
+                for (var room in aptData.rooms) {
+                    var panorama = aptData.rooms[room].panorama;
+                    if (panorama.type === constants.PAN_TYPE.SPHERE)
+                        roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                    else if (panorama.type === constants.PAN_TYPE.CUBE)
+                        roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+                }
+            }
 
-            this.init();
+            elem = document.documentElement;
+            container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            if (!initiated)
+                this.init();
+            else
+                this.reset();
+            container.appendChild(canvas);
+
+            // Change room if new apartment type
+            if (initiated !== aptID)
+                this.changeRoom(aptData.entry);
+            initiated = aptID;
+
             this.animate();
         },
 
-        getAptData: function (aptID) {
-            return window.apartments[aptID];
-        },
+        reset: function () {
+            // Reset some camera values
+            clientXStart = 0, clientYStart = 0,
+            lon = 180, lonLast = 0, lonStart = 0,
+            lat = 0, LatLast = 0, latStart = 0,
+            phi = 0, theta = 0;
+            velCam = new THREE.Vector2();
+            autoRotate = true;
+            autoRotateTimeout = undefined;
 
-        /*preloadImages: function (data, key) {
-            for (var k in data) {
-                if (data.hasOwnProperty(k)) {
-                    if (k === key) {
-                        data[key] = new THREE.TextureLoader().load(data[key]);
-                    } else if (data[k] === Object(data[k])) {
-                        preloadImages(data[k], key);
-                    }
-                }
-            }
-        },*/
+            // Hide map, which is always shown (for some reason)
+            this.hideMap();
+
+            // Remove previous animation frame request
+            cancelAnimationFrame(animation);
+        },
 
         init: function () {
             canvas = document.createElement("canvas");
-            container = $('#'+ constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
             containerWidth = container.offsetWidth;
             containerHeight = containerWidth * 0.6;
             container.appendChild(canvas);
 
-            // TODO: get aspect of panorama image
-            var aspect = 3 / 2;
+            var aspect = containerWidth / containerHeight;
             camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
             camera.target = new THREE.Vector3(0, 0, 0);
             scene = new THREE.Scene();
@@ -111,7 +135,7 @@ var constants = {
             this.initHUD();
 
             // Map setup
-            var transform = this.getTransform(panData.map.transform);
+            var transform = this.getTransform(options.map.transform);
             transform.pos.z = -10;
             mapSprite = this.createHUDElement(aptData.map,
                 constants.MAP,
@@ -122,7 +146,7 @@ var constants = {
             // Map button setup
             // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
             //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = panData.map_icon;
+            var mapData = options.map_icon;
             var transform = this.getTransform(mapData.transform);
             this.createHUDElement(mapData,
                 constants.MAP_ICON,
@@ -130,7 +154,7 @@ var constants = {
                 this.showMap);
 
             // Fullscreen button setup
-            var fullscreenData = panData.fullscreen_icon;
+            var fullscreenData = options.fullscreen_icon;
             var transform = this.getTransform(fullscreenData.transform);
             this.createHUDElement(fullscreenData,
                 constants.FULLSCREEN_ICON,
@@ -140,12 +164,12 @@ var constants = {
             // Measurements button setup
             // TODO: Be able to show apartment measurements on walls, etc.
             // TODO: Make a different icon
-            /*var measurementsData = panData.measurements_icon;
+            /*var measurementsData = options.measurements_icon;
             var transform = this.getTransform(measurementsData.transform);
             this.createHUDElement(measurementsData,
                 constants.MEASUREMENTS_ICON,
                 transform,
-                pan_viewer.toggleMeasurements);*/
+                this.toggleMeasurements);*/
 
             // Adding event listeners
             document.addEventListener('mouseover', this.onMouseover, false);
@@ -154,9 +178,9 @@ var constants = {
             document.addEventListener('mousedown', this.onPointerDown, false);
             document.addEventListener('mouseup', this.onPointerUp, false);
 
-            document.addEventListener('touchmove', this.onPointerMove, false);
-            document.addEventListener('touchstart', this.onPointerDown, false);
-            document.addEventListener('touchend', this.onPointerUp, false);
+            document.addEventListener('touchmove', this.onTouchMove, false);
+            document.addEventListener('touchstart', this.onTouchStart, false);
+            document.addEventListener('touchend', this.onTouchEnd, false);
 
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
         },
@@ -204,7 +228,7 @@ var constants = {
             var imgWidth = mapImg.width,
                 imgHeight = mapImg.height;
 
-            panData.map.transform.size = {
+            options.map.transform.size = {
                 width: imgWidth,
                 height: imgHeight,
             };
@@ -213,7 +237,7 @@ var constants = {
 
             // Add hotspots for each explorable room
             for (var room in aptData.map.room_locations) {
-                var hotspotData = panData.map_hotspot;
+                var hotspotData = options.map_hotspot;
                 var loc = aptData.map.room_locations[room];
                 var x = (loc.x * sizeOffset - imgWidth) / imgWidth,
                     y = (imgHeight - loc.y * sizeOffset) / imgHeight;
@@ -234,15 +258,15 @@ var constants = {
                     pos: new THREE.Vector3(x, y, 5),
                     scale: new THREE.Vector3(w, h, 1)
                 };
-                var hotspotSprite = pan_viewer.createHUDElement(hotspotData,
+                var hotspotSprite = self.createHUDElement(hotspotData,
                     room,
                     transform,
-                    function () { pan_viewer.changeRoom(this.name); });
+                    function () { self.changeRoom(this.name); });
                 mapSprite.add(hotspotSprite);
             }
 
             // Add button to minimize the map
-            var minData = panData.minimize_icon;
+            var minData = options.minimize_icon;
             var x = 0 * sizeOffset / imgWidth,
                 y = (imgHeight + 0 * sizeOffset) / imgHeight;
             var w = minData.transform.size.width / imgWidth,
@@ -255,10 +279,10 @@ var constants = {
                 center: new THREE.Vector2(1, 1),
                 scale: new THREE.Vector3(w, h, 1)
             };
-            var minSprite = pan_viewer.createHUDElement(minData,
+            var minSprite = self.createHUDElement(minData,
                 constants.MINIMIZE_ICON,
                 transform,
-                pan_viewer.hideMap);
+                self.hideMap);
             mapSprite.add(minSprite);
         },
 
@@ -271,12 +295,13 @@ var constants = {
                 })
             );
             var pos = transform.pos,
-                scale = transform.scale;
+                scale = transform.scale,
+                sizeAlt = this.getSizeAlt();
 
             sprite.name = name;
             if (transform.center) sprite.center = transform.center;
             sprite.position.set(pos.x, pos.y, pos.z);
-            sprite.scale.set(scale.x, scale.y, scale.z);
+            sprite.scale.set(scale.x*sizeAlt, scale.y*sizeAlt, scale.z*sizeAlt);
             sprite.onclick = onclick || undefined;
             HUDGroup.add(sprite);
             if (matData.background) {
@@ -285,6 +310,13 @@ var constants = {
                     bg.material.opacity = 0;
             }
             return sprite;
+        },
+
+        getSizeAlt: function () {
+            var sizeAlt = 1;
+            if (containerWidth <= options.hud.mobile.width_at_most)
+                sizeAlt = options.hud.mobile.size_alt;
+            return sizeAlt;
         },
 
         createBackground: function (bgData, parent) {
@@ -319,12 +351,12 @@ var constants = {
             aptData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
-                    panData.hotspot.transform.size.width,
-                    panData.hotspot.transform.size.height
+                    options.hotspot.transform.size.width,
+                    options.hotspot.transform.size.height
                 );
                 var hotspotMaterial = new THREE.MeshBasicMaterial({
-                    map: new THREE.TextureLoader().load(panData.hotspot.image),
-                    color: panData.hotspot.color,
+                    map: new THREE.TextureLoader().load(options.hotspot.image),
+                    color: options.hotspot.color,
                     side: THREE.DoubleSide,
                     transparent: true
                 });
@@ -358,14 +390,14 @@ var constants = {
                     geometry.scale(-1, 1, 1);
 
                     material = new THREE.MeshBasicMaterial({
-                        map: new THREE.TextureLoader().load(room.panorama.imageURL)
+                        map: roomImages[roomId]
                     });
                     break;
                 case constants.PAN_TYPE.CUBE:
                     geometry = new THREE.BoxBufferGeometry(1, 1, 1);
                     geometry.scale(1, 1, -1);
 
-                    var textures = this.getTexturesFromAtlasFile(room.panorama.imageURL, 6);
+                    var textures = roomImages[roomId];
                     material = [];
                     for (var i=0; i < 6; i+=1) {
                         material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
@@ -455,11 +487,13 @@ var constants = {
             return size;
         },
 
-        getMousePos: function (event) {
+        getPointerEventPos: function (event) {
             var rect = canvas.getBoundingClientRect();
+            var clientX = event.clientX || event.touches[0].clientX;
+            var clientY = event.clientY || event.touches[0].clientY;
             return {
-                x: event.clientX - rect.left,
-                y: event.clientY - rect.top
+                x: clientX - rect.left,
+                y: clientY - rect.top
             };
         },
 
@@ -483,9 +517,12 @@ var constants = {
             var scaleDiffH = containerHeight / height;
 
             HUDGroup.children.forEach(function (hudEl) {
-                var scale = pan_viewer.getSize(panData[hudEl.name].transform.size);
-                hudEl.scale.x = scale.x * scaleDiffW;
-                hudEl.scale.y = scale.y * scaleDiffH;
+                var scale = self.getSize(options[hudEl.name].transform.size);
+                var sizeAlt = self.getSizeAlt();
+                if (hudEl.name === 'map')
+                    sizeAlt = 1;
+                hudEl.scale.x = scale.x * scaleDiffW * sizeAlt;
+                hudEl.scale.y = scale.y * scaleDiffH * sizeAlt;
             });
 
             cameraHUD.aspect = width / height;
@@ -495,24 +532,24 @@ var constants = {
         onFullscreenChange: function () {
             isFullscreen = !isFullscreen;
             if (isFullscreen) {
-                pan_viewer.resetSize(window.innerWidth, window.innerHeight);
-                pan_viewer.resetHUD(window.innerWidth, window.innerHeight);
+                self.resetSize(window.innerWidth, window.innerHeight);
+                self.resetHUD(window.innerWidth, window.innerHeight);
 
                 // TODO: Change color and background when changing image too
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.off_icon.image);
-                fsMat.color.set(panData.fullscreen_icon.off_icon.color
-                    || panData.fullscreen_icon.color);
+                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.off_icon.image);
+                fsMat.color.set(options.fullscreen_icon.off_icon.color
+                    || options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.add(constants.FULLSCREEN);
             } else {
-                pan_viewer.resetSize(containerWidth, containerHeight);
-                pan_viewer.resetHUD(containerWidth, containerHeight);
+                self.resetSize(containerWidth, containerHeight);
+                self.resetHUD(containerWidth, containerHeight);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(panData.fullscreen_icon.image);
-                fsMat.color.set(panData.fullscreen_icon.color);
+                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.image);
+                fsMat.color.set(options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
                 container.classList.remove(constants.FULLSCREEN);
@@ -533,31 +570,35 @@ var constants = {
             if (isUserInteracting && event.clientX) {
                 var clientX = event.clientX || event.touches[0].clientX;
                 var clientY = event.clientY || event.touches[0].clientY;
-                var rot_speed = panData.camera.rotation_speed
-                lon = (onMouseDownMouseX - clientX) * rot_speed + onMouseDownLon;
-                lat = (clientY - onMouseDownMouseY) * rot_speed + onMouseDownLat;
+                var rot_speed = options.camera.mouse_rotation_speed
+                lon = (clientXStart - clientX) * rot_speed + lonStart;
+                lat = (clientY - clientYStart) * rot_speed + latStart;
             }
 
-            // Update mouseVector for all the raycasting
-            var mousePos = pan_viewer.getMousePos(event);
-            mouseVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
-            mouseVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
+            // Update pointerVector for all the raycasting
+            var mousePos = self.getPointerEventPos(event);
+            pointerVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
 
             // Raycast the hotspots for the tooltip system
             hoveringObj = null;
-            raycaster.setFromCamera(mouseVector, camera);
+            raycaster.setFromCamera(pointerVector, camera);
             var intersects = raycaster.intersectObject(hotspotGroup, true);
             if (intersects.length > 0) {
-                latestMouseProjection = intersects[0].point;
+                latestPointerProjection = intersects[0].point;
                 hoveringObj = intersects[0].object;
+                self.showTooltip();
+            }
+            else {
+                self.hideTooltip();
             }
 
             // Change mouse cursor to 'pointer' when hovering over a clickable element
             if (hoveringObj) {
                 $('html,body').css('cursor', 'pointer');
             } else {
-                raycaster.setFromCamera(mouseVector, cameraHUD);
-                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                raycaster.setFromCamera(pointerVector, cameraHUD);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
                 if (obj && obj.onclick)
                     $('html,body').css('cursor', 'pointer');
                 else
@@ -567,12 +608,12 @@ var constants = {
 
         onPointerDown: function (event) {
             // Raycast the HUD elements
-            raycaster.setFromCamera(mouseVector, cameraHUD);
-            hoveredHUDEl = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            raycaster.setFromCamera(pointerVector, cameraHUD);
+            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
 
             // Raycast the hotspot objects
-            raycaster.setFromCamera(mouseVector, camera);
-            hoveredHotspot = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+            raycaster.setFromCamera(pointerVector, camera);
+            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
 
             // TODO: Ignore isMouseover if using a mobile device/touchscreen
             if (isMouseover && event.clientX && !hoveredHUDEl) {
@@ -582,26 +623,25 @@ var constants = {
 
                 var clientX = event.clientX || event.touches[0].clientX;
                 var clientY = event.clientY || event.touches[0].clientY;
-                onMouseDownMouseX = clientX;
-                onMouseDownMouseY = clientY;
-                onMouseDownLon = lastLon = lon;
-                onMouseDownLat = lastLat = lat;
+                clientXStart = clientX;
+                clientYStart = clientY;
+                lonStart = lonLast = lon;
+                latStart = LatLast = lat;
             }
         },
 
-        onPointerUp: function () {
-            raycaster.setFromCamera(mouseVector, cameraHUD);
-            var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-            if (obj && obj === hoveredHUDEl && obj.onclick) {
-                obj.onclick();
-            }
-
-            if (hoveredHotspot && !obj) {
-                // Raycast again to see if we are still hovering the (same) hotspot
-                raycaster.setFromCamera(mouseVector, camera);
-                var obj = pan_viewer.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+        onPointerUp: function (event) {
+            if (hoveredHUDEl) {
+                raycaster.setFromCamera(pointerVector, cameraHUD);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                if (obj && obj === hoveredHUDEl && obj.onclick) {
+                    obj.onclick();
+                }
+            } else if (hoveredHotspot) {
+                raycaster.setFromCamera(pointerVector, camera);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
                 if (obj && obj === hoveredHotspot) {
-                    pan_viewer.changeRoom(hoveredHotspot.name);
+                    self.changeRoom(hoveredHotspot.name);
                 }
             }
 
@@ -614,29 +654,118 @@ var constants = {
             isUserInteracting = false;
         },
 
+        onTouchMove: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas || event.touches.length > 1)
+                return;
+
+            // Update pointerVector for all the raycasting
+            var touchPos = self.getPointerEventPos(event);
+            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+
+            if (isUserInteracting) {
+                var clientX = event.touches[0].clientX;
+                var clientY = event.touches[0].clientY;
+                var rot_speed = options.camera.touch_rotation_speed;
+                lon = (clientXStart - clientX) * rot_speed + lonStart;
+                lat = (clientY - clientYStart) * rot_speed + latStart;
+            }
+        },
+
+        onTouchStart: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas || event.touches.length > 1)
+                return;
+
+            // Update pointerVector for all the raycasting
+            var touchPos = self.getPointerEventPos(event);
+            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+
+            // Raycast the HUD elements
+            raycaster.setFromCamera(pointerVector, cameraHUD);
+            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+
+            // Raycast the hotspot objects
+            raycaster.setFromCamera(pointerVector, camera);
+            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+
+            if (!hoveredHUDEl) {
+                autoRotate = false;
+                decRotationRate = 0.9;
+                isUserInteracting = true;
+
+                clientXStart = event.touches[0].clientX;
+                clientYStart = event.touches[0].clientY;
+                lonStart = lonLast = lon;
+                latStart = LatLast = lat;
+            }
+        },
+
+        onTouchEnd: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas)
+                return;
+
+            if (hoveredHUDEl) {
+                raycaster.setFromCamera(pointerVector, cameraHUD);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                if (obj && obj === hoveredHUDEl && obj.onclick)
+                    obj.onclick();
+            }
+            else if (hoveredHotspot) {
+                if (hoveredHotspot === hoveringObj) {
+                    self.changeRoom(hoveredHotspot.name);
+                    hoveringObj = undefined;
+                }
+                else {
+                    raycaster.setFromCamera(pointerVector, camera);
+                    var intersects = raycaster.intersectObject(hotspotGroup, true);
+                    if (intersects.length > 0 && intersects[0].object === hoveredHotspot) {
+                        latestPointerProjection = intersects[0].point;
+                        hoveringObj = intersects[0].object;
+                        self.showTooltip();
+                    }
+                }
+            }
+            else {
+                hoveringObj = undefined;
+                self.hideTooltip();
+            }
+
+            if (isUserInteracting) {
+                velCam.set(lonAcc.average(), latAcc.average());
+                lonAcc.clear();
+                latAcc.clear();
+            }
+
+            isUserInteracting = false;
+        },
+
         animate: function () {
-            requestAnimationFrame(pan_viewer.animate);
-            pan_viewer.update();
+            animation = requestAnimationFrame(self.animate);
+            self.update();
         },
 
         update: function () {
             var delta = clock.getDelta();
 
             if (isUserInteracting) {
-                lonAcc.add(lon - lastLon);
-                latAcc.add(lat - lastLat);
-                lastLon = lon, lastLat = lat;
+                lonAcc.add(lon - lonLast);
+                latAcc.add(lat - LatLast);
+                lonLast = lon, LatLast = lat;
 
                 clearTimeout(autoRotateTimeout);
                 autoRotateTimeout = setTimeout(function () {
                     autoRotateTimeout = undefined;
                     velCam.set(0, 0);
                     autoRotate = true;
-                }, panData.camera.auto_rotate.secs_to_rotate * 1000);
+                }, options.camera.auto_rotate.secs_to_rotate * 1000);
             } else if (!autoRotate) {
-                if (panData.camera.smooth_out.enable) {
+                if (options.camera.smooth_out.enable) {
                     var decRate = 0.1 + decRotationRate;
-                    var smoothOutRate = panData.camera.smooth_out.decrease_rate;
+                    var smoothOutRate = options.camera.smooth_out.decrease_rate;
                     decRotationRate = Math.max(0, decRotationRate - smoothOutRate * delta);
                     velCam.set(Math.max(0, Math.abs(velCam.x) * decRate) * Math.sign(velCam.x),
                                Math.max(0, Math.abs(velCam.y) * decRate) * Math.sign(velCam.y));
@@ -644,27 +773,25 @@ var constants = {
                     lon += velCam.x;
                     lat += velCam.y;
                 }
-            } else {
-                if (panData.camera.auto_rotate.enable) {
-                    var smoothLonRate = panData.camera.auto_rotate.smooth_in_x_rate;
-                    var smoothLatRate = panData.camera.auto_rotate.smooth_in_y_rate;
+            } else if (options.camera.auto_rotate.enable) {
+                var smoothLonRate = options.camera.auto_rotate.smooth_in_x_rate;
+                var smoothLatRate = options.camera.auto_rotate.smooth_in_y_rate;
 
-                    // Smooth rotate lon
-                    velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
+                // Smooth rotate lon
+                velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
 
-                    // Smooth lat close into 0
-                    if (Math.abs(lat) > 0.5) {
-                        var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
-                        velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
-                    } else if (Math.abs(velCam.y) > 0.001) {
-                        velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
-                    } else {
-                        velCam.y = 0;
-                    }
-
-                    lon += velCam.x;
-                    lat += velCam.y;
+                // Smooth lat close into 0
+                if (Math.abs(lat) > 0.5) {
+                    var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
+                    velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
+                } else if (Math.abs(velCam.y) > 0.001) {
+                    velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
+                } else {
+                    velCam.y = 0;
                 }
+
+                lon += velCam.x;
+                lat += velCam.y;
             }
 
             lat = Math.min(Math.max(-85, lat), 85);
@@ -675,14 +802,6 @@ var constants = {
             camera.target.y = 500 * Math.cos(phi);
             camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
             camera.lookAt(camera.target);
-
-            if (!hoveringObj) {
-                this.hideTooltip();
-            }
-
-            if (latestMouseProjection) {
-                pan_viewer.showTooltip();
-            }
 
             renderer.render(scene, camera);
             renderer.render(sceneHUD, cameraHUD);
@@ -698,7 +817,7 @@ var constants = {
                 var canvasHalfWidth = canvasData.width * 0.5;
                 var canvasHalfHeight = canvasData.height * 0.5;
 
-                var tooltipPosition = latestMouseProjection.clone().project(camera);
+                var tooltipPosition = latestPointerProjection.clone().project(camera);
                 tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + canvasData.left;
                 tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + canvasData.top;
 
@@ -727,14 +846,14 @@ var constants = {
         showMap: function () {
             // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
             var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            pan_viewer.changeOpacity(mapIconSprite, 0);
-            pan_viewer.changeOpacity(mapSprite, 1);
+            self.changeOpacity(mapIconSprite, 0);
+            self.changeOpacity(mapSprite, 1);
         },
 
         hideMap: function () {
             var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            pan_viewer.changeOpacity(mapIconSprite, 1);
-            pan_viewer.changeOpacity(mapSprite, 0);
+            self.changeOpacity(mapIconSprite, 1);
+            self.changeOpacity(mapSprite, 0);
         },
 
         changeOpacity: function (sprite, opacity) {
@@ -752,8 +871,8 @@ var constants = {
             // Update map hotspot images to show which is the current room
             var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
             var newRoomMat = HUDGroup.getObjectByName(roomId).material;
-            prevRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.image);
-            newRoomMat.map = new THREE.TextureLoader().load(panData.map_hotspot.current.image);
+            prevRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.image);
+            newRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.current.image);
             prevRoomMat.needsUpdate = true;
             newRoomMat.needsUpdate = true;
 
@@ -795,16 +914,16 @@ var constants = {
 
         toggleMeasurements: function () {
             if (isShowingMeasurements) {
-                pan_viewer.hideMeasurements();
+                self.hideMeasurements();
             } else {
-                pan_viewer.showMeasurements();
+                self.showMeasurements();
             }
         },
 
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader.load(aptData.rooms[currentRoom].measurements)
+                map: roomImages[currentRoom]
             });
             var mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
@@ -820,9 +939,9 @@ var constants = {
 
         toggleFullscreen: function () {
             if (isFullscreen)
-                pan_viewer.closeFullscreen();
+                self.closeFullscreen();
             else
-                pan_viewer.openFullscreen();
+                self.openFullscreen();
         },
 
         openFullscreen: function () {

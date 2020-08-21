@@ -1,17 +1,24 @@
-﻿panData = {
+﻿panOptions = {
     camera: {
-        rotation_speed: 0.075,
+        mouse_rotation_speed: 0.075,
+        touch_rotation_speed: 0.375,
         smooth_out: {
             enable: true,
             decrease_rate: 1
         },
         auto_rotate: {
             enable: true,
-            secs_to_rotate: 30,
+            secs_to_rotate: 10,
             smooth_in_x_rate: 0.05,
             x_max_velocity: 0.075,
             smooth_in_y_rate: 0.009,
             y_max_velocity: 0.05
+        }
+    },
+    hud: {
+        mobile: {
+            width_at_most: 620,
+            size_alt: 0.4
         }
     },
     map: {

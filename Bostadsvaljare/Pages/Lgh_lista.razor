@@ -139,6 +139,7 @@
 
     private async void OnMouseOverGrid(MouseEventArgs e)
     {
+        //BUG: mouseover on image map and then to grid causes the first row not to highlight the corresponding housing on the image map (sometimes... -_-)
         int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
         if (rowInd >= 0 && this.HighlightedRow != rowInd)
         {
