@@ -576,6 +576,10 @@ const constants = {
             if (intersects.length > 0) {
                 latestPointerProjection = intersects[0].point;
                 hoveringObj = intersects[0].object;
+                self.showTooltip();
+            }
+            else {
+                self.hideTooltip();
             }
 
             // Change mouse cursor to 'pointer' when hovering over a clickable element
@@ -788,14 +792,6 @@ const constants = {
             camera.target.y = 500 * Math.cos(phi);
             camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
             camera.lookAt(camera.target);
-
-            if (!hoveringObj) {
-                this.hideTooltip();
-            }
-
-            if (latestPointerProjection) {
-                this.showTooltip();
-            }
 
             renderer.render(scene, camera);
             renderer.render(sceneHUD, cameraHUD);
