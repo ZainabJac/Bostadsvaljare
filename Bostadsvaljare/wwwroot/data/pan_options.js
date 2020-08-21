@@ -15,6 +15,12 @@
             y_max_velocity: 0.05
         }
     },
+    hud: {
+        mobile: {
+            width_at_most: 620,
+            size_alt: 0.4
+        }
+    },
     map: {
         transform: {
             position: {

@@ -295,12 +295,13 @@ const constants = {
                 })
             );
             var pos = transform.pos,
-                scale = transform.scale;
+                scale = transform.scale,
+                sizeAlt = this.getSizeAlt();
 
             sprite.name = name;
             if (transform.center) sprite.center = transform.center;
             sprite.position.set(pos.x, pos.y, pos.z);
-            sprite.scale.set(scale.x, scale.y, scale.z);
+            sprite.scale.set(scale.x*sizeAlt, scale.y*sizeAlt, scale.z*sizeAlt);
             sprite.onclick = onclick || undefined;
             HUDGroup.add(sprite);
             if (matData.background) {
@@ -309,6 +310,13 @@ const constants = {
                     bg.material.opacity = 0;
             }
             return sprite;
+        },
+
+        getSizeAlt: function () {
+            var sizeAlt = 1;
+            if (containerWidth <= options.hud.mobile.width_at_most)
+                sizeAlt = options.hud.mobile.size_alt;
+            return sizeAlt;
         },
 
         createBackground: function (bgData, parent) {
@@ -510,8 +518,11 @@ const constants = {
 
             HUDGroup.children.forEach(function (hudEl) {
                 var scale = self.getSize(options[hudEl.name].transform.size);
-                hudEl.scale.x = scale.x * scaleDiffW;
-                hudEl.scale.y = scale.y * scaleDiffH;
+                var sizeAlt = self.getSizeAlt();
+                if (hudEl.name === 'map')
+                    sizeAlt = 1;
+                hudEl.scale.x = scale.x * scaleDiffW * sizeAlt;
+                hudEl.scale.y = scale.y * scaleDiffH * sizeAlt;
             });
 
             cameraHUD.aspect = width / height;
@@ -697,7 +708,6 @@ const constants = {
             if (event.target !== canvas)
                 return;
 
-            //BUG: touching a hud element after touching fullscreen_off can/will turn on fullscreen again
             if (hoveredHUDEl) {
                 raycaster.setFromCamera(pointerVector, cameraHUD);
                 var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
