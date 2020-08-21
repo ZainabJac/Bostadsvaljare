@@ -7,7 +7,7 @@
         },
         auto_rotate: {
             enable: true,
-            secs_to_rotate: 30,
+            secs_to_rotate: 10,
             smooth_in_x_rate: 0.05,
             x_max_velocity: 0.075,
             smooth_in_y_rate: 0.009,
