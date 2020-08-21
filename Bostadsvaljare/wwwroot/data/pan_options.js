@@ -1,6 +1,7 @@
 ﻿panOptions = {
     camera: {
-        rotation_speed: 0.075,
+        mouse_rotation_speed: 0.075,
+        touch_rotation_speed: 0.375,
         smooth_out: {
             enable: true,
             decrease_rate: 1

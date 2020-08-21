@@ -9,9 +9,9 @@ var camera, scene, renderer, skybox, container, canvas;
 var cameraHUD, sceneHUD;
 var clock = new THREE.Clock();
 var isUserInteracting = false,
-    onMouseDownMouseX = 0, onMouseDownMouseY = 0,
-    lon = 180, lastLon = 0, onMouseDownLon = 0,
-    lat = 0, lastLat = 0, onMouseDownLat = 0,
+    clientXStart = 0, clientYStart = 0,
+    lon = 180, lonLast = 0, lonStart = 0,
+    lat = 0, LatLast = 0, latStart = 0,
     phi = 0, theta = 0;
 var autoRotate = true,
     autoRotateTimeout,
@@ -27,7 +27,7 @@ var isMouseover = false,
     containerWidth = 0, containerHeight = 0;
 var mapSprite, currentRoom;
 var raycaster = new THREE.Raycaster(),
-    mouseVector = new THREE.Vector2(),
+    pointerVector = new THREE.Vector2(),
     hotspotGroup = new THREE.Group(),
     HUDGroup = new THREE.Group(),
     hoveredHUDEl, hoveredHotspot,
@@ -94,9 +94,9 @@ const constants = {
 
         reset: function () {
             // Reset some camera values
-            onMouseDownMouseX = 0, onMouseDownMouseY = 0,
-            lon = 180, lastLon = 0, onMouseDownLon = 0,
-            lat = 0, lastLat = 0, onMouseDownLat = 0,
+            clientXStart = 0, clientYStart = 0,
+            lon = 180, lonLast = 0, lonStart = 0,
+            lat = 0, LatLast = 0, latStart = 0,
             phi = 0, theta = 0;
             velCam = new THREE.Vector2();
             autoRotate = true;
@@ -178,9 +178,9 @@ const constants = {
             document.addEventListener('mousedown', this.onPointerDown, false);
             document.addEventListener('mouseup', this.onPointerUp, false);
 
-            document.addEventListener('touchmove', this.onPointerMove, false);
-            document.addEventListener('touchstart', this.onPointerDown, false);
-            document.addEventListener('touchend', this.onPointerUp, false);
+            document.addEventListener('touchmove', this.onTouchMove, false);
+            document.addEventListener('touchstart', this.onTouchStart, false);
+            document.addEventListener('touchend', this.onTouchEnd, false);
 
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
         },
@@ -479,11 +479,13 @@ const constants = {
             return size;
         },
 
-        getMousePos: function (event) {
+        getPointerEventPos: function (event) {
             var rect = canvas.getBoundingClientRect();
+            var clientX = event.clientX || event.touches[0].clientX;
+            var clientY = event.clientY || event.touches[0].clientY;
             return {
-                x: event.clientX - rect.left,
-                y: event.clientY - rect.top
+                x: clientX - rect.left,
+                y: clientY - rect.top
             };
         },
 
@@ -557,19 +559,19 @@ const constants = {
             if (isUserInteracting && event.clientX) {
                 var clientX = event.clientX || event.touches[0].clientX;
                 var clientY = event.clientY || event.touches[0].clientY;
-                var rot_speed = options.camera.rotation_speed
-                lon = (onMouseDownMouseX - clientX) * rot_speed + onMouseDownLon;
-                lat = (clientY - onMouseDownMouseY) * rot_speed + onMouseDownLat;
+                var rot_speed = options.camera.mouse_rotation_speed
+                lon = (clientXStart - clientX) * rot_speed + lonStart;
+                lat = (clientY - clientYStart) * rot_speed + latStart;
             }
 
-            // Update mouseVector for all the raycasting
-            var mousePos = self.getMousePos(event);
-            mouseVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
-            mouseVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
+            // Update pointerVector for all the raycasting
+            var mousePos = self.getPointerEventPos(event);
+            pointerVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
 
             // Raycast the hotspots for the tooltip system
             hoveringObj = null;
-            raycaster.setFromCamera(mouseVector, camera);
+            raycaster.setFromCamera(pointerVector, camera);
             var intersects = raycaster.intersectObject(hotspotGroup, true);
             if (intersects.length > 0) {
                 latestMouseProjection = intersects[0].point;
@@ -580,7 +582,7 @@ const constants = {
             if (hoveringObj) {
                 $('html,body').css('cursor', 'pointer');
             } else {
-                raycaster.setFromCamera(mouseVector, cameraHUD);
+                raycaster.setFromCamera(pointerVector, cameraHUD);
                 var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
                 if (obj && obj.onclick)
                     $('html,body').css('cursor', 'pointer');
@@ -591,11 +593,11 @@ const constants = {
 
         onPointerDown: function (event) {
             // Raycast the HUD elements
-            raycaster.setFromCamera(mouseVector, cameraHUD);
+            raycaster.setFromCamera(pointerVector, cameraHUD);
             hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
 
             // Raycast the hotspot objects
-            raycaster.setFromCamera(mouseVector, camera);
+            raycaster.setFromCamera(pointerVector, camera);
             hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
 
             // TODO: Ignore isMouseover if using a mobile device/touchscreen
@@ -606,15 +608,15 @@ const constants = {
 
                 var clientX = event.clientX || event.touches[0].clientX;
                 var clientY = event.clientY || event.touches[0].clientY;
-                onMouseDownMouseX = clientX;
-                onMouseDownMouseY = clientY;
-                onMouseDownLon = lastLon = lon;
-                onMouseDownLat = lastLat = lat;
+                clientXStart = clientX;
+                clientYStart = clientY;
+                lonStart = lonLast = lon;
+                latStart = LatLast = lat;
             }
         },
 
-        onPointerUp: function () {
-            raycaster.setFromCamera(mouseVector, cameraHUD);
+        onPointerUp: function (event) {
+            raycaster.setFromCamera(pointerVector, cameraHUD);
             var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
             if (obj && obj === hoveredHUDEl && obj.onclick) {
                 obj.onclick();
@@ -622,7 +624,7 @@ const constants = {
 
             if (hoveredHotspot && !obj) {
                 // Raycast again to see if we are still hovering the (same) hotspot
-                raycaster.setFromCamera(mouseVector, camera);
+                raycaster.setFromCamera(pointerVector, camera);
                 var obj = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
                 if (obj && obj === hoveredHotspot) {
                     self.changeRoom(hoveredHotspot.name);
@@ -638,6 +640,60 @@ const constants = {
             isUserInteracting = false;
         },
 
+        onTouchMove: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas || event.touches.length > 1)
+                return;
+
+            if (isUserInteracting) {
+                var clientX = event.touches[0].clientX;
+                var clientY = event.touches[0].clientY;
+                var rot_speed = options.camera.touch_rotation_speed;
+                lon = (clientXStart - clientX) * rot_speed + lonStart;
+                lat = (clientY - clientYStart) * rot_speed + latStart;
+            }
+
+            // Update pointerVector for all the raycasting
+            var touchPos = self.getPointerEventPos(event);
+            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+        },
+
+        onTouchStart: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas || event.touches.length > 1)
+                return;
+
+            // Raycast the HUD elements
+            raycaster.setFromCamera(pointerVector, cameraHUD);
+            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+
+            // Raycast the hotspot objects
+            raycaster.setFromCamera(pointerVector, camera);
+            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+
+            if (!hoveredHUDEl) {
+                autoRotate = false;
+                decRotationRate = 0.9;
+                isUserInteracting = true;
+
+                clientXStart = event.touches[0].clientX;
+                clientYStart = event.touches[0].clientY;
+                lonStart = lonLast = lon;
+                latStart = LatLast = lat;
+            }
+        },
+
+        onTouchEnd: function (event) {
+            // Ignore if more than one touch is registered
+            if (event.target !== canvas || event.touches.length > 1)
+                return;
+
+            //BUG: touching a hud element after touching fullscreen_off can/will turn on fullscreen again
+            //TODO: if touched a hotspot: display tooltip on it; if clicked a second time: change room
+            self.onPointerUp(event);
+        },
+
         animate: function () {
             animation = requestAnimationFrame(self.animate);
             self.update();
@@ -647,9 +703,9 @@ const constants = {
             var delta = clock.getDelta();
 
             if (isUserInteracting) {
-                lonAcc.add(lon - lastLon);
-                latAcc.add(lat - lastLat);
-                lastLon = lon, lastLat = lat;
+                lonAcc.add(lon - lonLast);
+                latAcc.add(lat - LatLast);
+                lonLast = lon, LatLast = lat;
 
                 clearTimeout(autoRotateTimeout);
                 autoRotateTimeout = setTimeout(function () {
