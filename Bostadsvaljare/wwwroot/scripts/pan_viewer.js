@@ -31,7 +31,7 @@ var raycaster = new THREE.Raycaster(),
     hotspotGroup = new THREE.Group(),
     HUDGroup = new THREE.Group(),
     hoveredHUDEl, hoveredHotspot,
-    latestMouseProjection,
+    latestPointerProjection,
     tooltipDisplayTimeout,
     hoveringObj;
 
@@ -574,7 +574,7 @@ const constants = {
             raycaster.setFromCamera(pointerVector, camera);
             var intersects = raycaster.intersectObject(hotspotGroup, true);
             if (intersects.length > 0) {
-                latestMouseProjection = intersects[0].point;
+                latestPointerProjection = intersects[0].point;
                 hoveringObj = intersects[0].object;
             }
 
@@ -616,14 +616,13 @@ const constants = {
         },
 
         onPointerUp: function (event) {
-            raycaster.setFromCamera(pointerVector, cameraHUD);
-            var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-            if (obj && obj === hoveredHUDEl && obj.onclick) {
-                obj.onclick();
-            }
-
-            if (hoveredHotspot && !obj) {
-                // Raycast again to see if we are still hovering the (same) hotspot
+            if (hoveredHUDEl) {
+                raycaster.setFromCamera(pointerVector, cameraHUD);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                if (obj && obj === hoveredHUDEl && obj.onclick) {
+                    obj.onclick();
+                }
+            } else if (hoveredHotspot) {
                 raycaster.setFromCamera(pointerVector, camera);
                 var obj = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
                 if (obj && obj === hoveredHotspot) {
@@ -645,6 +644,11 @@ const constants = {
             if (event.target !== canvas || event.touches.length > 1)
                 return;
 
+            // Update pointerVector for all the raycasting
+            var touchPos = self.getPointerEventPos(event);
+            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+
             if (isUserInteracting) {
                 var clientX = event.touches[0].clientX;
                 var clientY = event.touches[0].clientY;
@@ -652,17 +656,17 @@ const constants = {
                 lon = (clientXStart - clientX) * rot_speed + lonStart;
                 lat = (clientY - clientYStart) * rot_speed + latStart;
             }
-
-            // Update pointerVector for all the raycasting
-            var touchPos = self.getPointerEventPos(event);
-            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
-            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
         },
 
         onTouchStart: function (event) {
             // Ignore if more than one touch is registered
             if (event.target !== canvas || event.touches.length > 1)
                 return;
+
+            // Update pointerVector for all the raycasting
+            var touchPos = self.getPointerEventPos(event);
+            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
+            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
 
             // Raycast the HUD elements
             raycaster.setFromCamera(pointerVector, cameraHUD);
@@ -686,12 +690,43 @@ const constants = {
 
         onTouchEnd: function (event) {
             // Ignore if more than one touch is registered
-            if (event.target !== canvas || event.touches.length > 1)
+            if (event.target !== canvas)
                 return;
 
             //BUG: touching a hud element after touching fullscreen_off can/will turn on fullscreen again
-            //TODO: if touched a hotspot: display tooltip on it; if clicked a second time: change room
-            self.onPointerUp(event);
+            if (hoveredHUDEl) {
+                raycaster.setFromCamera(pointerVector, cameraHUD);
+                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                if (obj && obj === hoveredHUDEl && obj.onclick)
+                    obj.onclick();
+            }
+            else if (hoveredHotspot) {
+                if (hoveredHotspot === hoveringObj) {
+                    self.changeRoom(hoveredHotspot.name);
+                    hoveringObj = undefined;
+                }
+                else {
+                    raycaster.setFromCamera(pointerVector, camera);
+                    var intersects = raycaster.intersectObject(hotspotGroup, true);
+                    if (intersects.length > 0 && intersects[0].object === hoveredHotspot) {
+                        latestPointerProjection = intersects[0].point;
+                        hoveringObj = intersects[0].object;
+                        self.showTooltip();
+                    }
+                }
+            }
+            else {
+                hoveringObj = undefined;
+                self.hideTooltip();
+            }
+
+            if (isUserInteracting) {
+                velCam.set(lonAcc.average(), latAcc.average());
+                lonAcc.clear();
+                latAcc.clear();
+            }
+
+            isUserInteracting = false;
         },
 
         animate: function () {
@@ -758,7 +793,7 @@ const constants = {
                 this.hideTooltip();
             }
 
-            if (latestMouseProjection) {
+            if (latestPointerProjection) {
                 this.showTooltip();
             }
 
@@ -776,7 +811,7 @@ const constants = {
                 var canvasHalfWidth = canvasData.width * 0.5;
                 var canvasHalfHeight = canvasData.height * 0.5;
 
-                var tooltipPosition = latestMouseProjection.clone().project(camera);
+                var tooltipPosition = latestPointerProjection.clone().project(camera);
                 tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + canvasData.left;
                 tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + canvasData.top;
 
