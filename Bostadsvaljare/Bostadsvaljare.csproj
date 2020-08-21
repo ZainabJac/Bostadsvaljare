@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\C4-theme\compatibility\material.scss" />
+    <None Include="wwwroot\C4-theme\material.scss" />
+    <None Include="wwwroot\css\material-202008211246302489-52294959\compatibility\material.scss" />
+    <None Include="wwwroot\css\material-202008211246302489-52294959\material.scss" />
     <None Include="wwwroot\IMG\icons\info.png" />
   </ItemGroup>
 

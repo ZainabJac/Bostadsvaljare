@@ -6,6 +6,7 @@
 @using BlazorStrap
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,142 +26,160 @@
     </div>
 </div>
 
-<div class="line-4">
+<div class="line-4planritning">
     <div id="housing_info" class="@(ShowInfo ? "" : "hidden")">
         @*TODO: have an own block that contains relevant info regarding the selected housing*@
     </div>
     <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
 </div>
 
-    <div id="gallery">
-        @*TODO: ensure the images below reflect to what is shown in the slideshow*@
-        @*TODO: enable scrolling if too many images are present to fit the window*@
-        <div class="line-1">
-            <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
-        </div>
-        <div class="line-1">
-            <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
-        </div>
-        <div class="line-1">
-            <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
-        </div>
-        <div class="line-1">
-            <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
-        </div>
-
+<div id="gallery">
+    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
+    @*TODO: enable scrolling if too many images are present to fit the window*@
+    <div class="line-1">
+        <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
     </div>
-
-
-@*<div>
-        <hr />
-        <header class="card-info-header">Lägenhet nr. </header>
-        <header class="card-info-header-right">@house1.HouseNumber</header>
-    </div>*@
-
-
-<div class="line-2">
-    <header class="card-info-header">3 RoK</header>
-    <div>
-
-        <header class="card-info-header">Pris </header>
-        <header class="card-info-header-right">@house1.Price</header>
-        <hr />
+    <div class="line-1">
+        <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
     </div>
-
-    <div>
-
-        <header class="card-info-header">Boarea</header>
-        <header class="card-info-header-right">@house1.Sqm</header>
-        <hr />
+    <div class="line-1">
+        <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
     </div>
-
-
-    <div>
-
-        <header class="card-info-header">Lgh nr.</header>
-        <header class="card-info-header-right">@house1.HouseNumber</header>
+    <div class="line-1last">
+        <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
     </div>
 
 </div>
 
-<div class="line-2">
+
+<div class="line-4">
+    <SfCard >
+        <CardStacked>
 
 
 
-        <header class="card-info-header">Arkitekten har ordet</header>
+            <div>
 
-        <header class="card-info-text" style="font-style:italic;"> "@house1.Comments"</header>
+                <text class="card-info-header" style="margin-left:6px;">Pris </text>
+                <text class="card-info-header-right" style="margin-right:6px;">@house1.Price</text>
 
+            </div>
+
+            <div>
+
+                <text class="card-info-header" style="margin-left:6px;">Boarea</text>
+                <text class="card-info-header-right" style="margin-right:6px;">@house1.Sqm</text>
+
+            </div>
+
+
+            <div>
+
+                <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
+                <text class="card-info-header-right" style="margin-right:6px;">@house1.HouseNumber</text>
+            </div>
+
+            <div>
+                <div style="float:left; margin-left:6px; margin-bottom: 6px; display:inline-block;">
+                    <SfButton> Bofaktablad </SfButton>
+                </div>
+
+                <div style="float:right; margin-right: 6px; margin-bottom: 6px; display:inline-block;">
+                    <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
+
+                </div>
+            </div>
+
+        </CardStacked>
+    </SfCard>
 </div>
 
-<div class="line-2knapp" >
+
+
+
+
+<div class="line-4arkitekt">
+
+    <SfCard  ID="ArkitektenHarOrdet">
+        <CardStacked>
+            <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
+            <text class="italicfont" style="margin-left:6px;">"@house1.Comments" </text>
+        </CardStacked>
+    </SfCard>
+</div>
+
+
+@*<div class="line-2knapp">
+
+
     <div>
-        <div > <SfButton> Bofaktablad </SfButton> </div>
+        <div> <SfButton> Bofaktablad </SfButton> </div>
     </div>
-   </div>
-    <div class="line-2knapp" >
-        <div >
-           
-            <div > <SfButton IsPrimary="true"> Anmäl intresse </SfButton> </div>
-        </div>
+</div>
+<div class="line-2knapp">
+
+    <div>
+        <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
+
     </div>
+</div>*@
 
 
-    @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
-    @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
+@*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
+@*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
-    @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-            <GridColumns>
-                <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-                <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-            </GridColumns>
-        </SfGrid>*@
-
-
-    @code {
-        public class Houses
-        {
-            public string Sqm { get; set; }
-            public string Price { get; set; }
-            public string LandArea { get; set; }
-            public string HouseNumber { get; set; }
-            public string Status { get; set; }
-            public string Comments { get; set; }
-        }
-
-        public class Item
-        {
-            public string Source { get; set; }
-            public string Alt { get; set; }
-            public string Caption { get; set; }
-            public string Header { get; set; }
-            public string ActionLink { get; set; }
-            public string ActionLinkTarget { get; set; }
-        }
-
-        public class Order
-        {
-            public int? OrderID { get; set; }
-            public string CustomerID { get; set; }
-            public DateTime? OrderDate { get; set; }
-            public double? Freight { get; set; }
-        }
+@*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
+        <GridColumns>
+            <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+            <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+            <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+        </GridColumns>
+    </SfGrid>*@
 
 
-        private Houses house1 = new Houses
-        {
-            Sqm = "152m²",
-            Price = "5 000 000",
+@code {
+    public class Houses
+    {
+        public string Sqm { get; set; }
+        public string Price { get; set; }
+        public string LandArea { get; set; }
+        public string HouseNumber { get; set; }
+        public string Status { get; set; }
+        public string Comments { get; set; }
+    }
 
-            HouseNumber = "7a",
-            Status = "Ledig",
-            Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+    public class Item
+    {
+        public string Source { get; set; }
+        public string Alt { get; set; }
+        public string Caption { get; set; }
+        public string Header { get; set; }
+        public string ActionLink { get; set; }
+        public string ActionLinkTarget { get; set; }
+    }
 
-        };
+    public class Order
+    {
+        public int? OrderID { get; set; }
+        public string CustomerID { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public double? Freight { get; set; }
+    }
 
-        private IList<Item> items = new List<Item> {
+
+    private Houses house1 = new Houses
+    {
+        Sqm = "152m²",
+        Price = "5 000 000",
+
+        HouseNumber = "7a",
+        Status = "Ledig",
+        Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+
+    };
+
+    private IList<Item> items = new List<Item> {
         new Item {
             Source = "IMG/soffavinkel1.jpg",
             Alt ="First Slide",
@@ -195,44 +214,49 @@
         }
     };
 
-        [Parameter]
-        public string Housing { get; set; }
-        public List<Order> Orders { get; set; }
-        private bool ShowInfo { get; set; }
+    [Parameter]
+    public string Housing { get; set; }
+    public List<Order> Orders { get; set; }
+    private bool ShowInfo { get; set; }
 
-        private void ToggleInfo()
-        {
-            ShowInfo = !ShowInfo;
-        }
-
-        protected override void OnInitialized()
-        {
-            Orders = Enumerable.Range(1, 75).Select(x => new Order()
-            {
-                OrderID = 1000 + x,
-                CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
-                Freight = 2.1 * x,
-                OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
-            }).ToList();
-            ShowInfo = true;
-        }
+    private void ToggleInfo()
+    {
+        ShowInfo = !ShowInfo;
     }
 
-    <style>
+    protected override void OnInitialized()
+    {
+        Orders = Enumerable.Range(1, 75).Select(x => new Order()
+        {
+            OrderID = 1000 + x,
+            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
+            Freight = 2.1 * x,
+            OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
+        }).ToList();
+        ShowInfo = true;
+    }
+}
 
-        .line-1 {
-            width: 8.33%;
-        }
+<style>
 
-        .line-2 {
-            width: 16.66%;
-        }
+    .italicfont {
+        font-family: 'Segoe UI';
+        font-size: 12px;
+        font-style: italic;
+        text-size-adjust: none;
+    }
 
-        .line-2knapp {
-            width: 16%;
-            margin: auto;
-            display: inline-block;
-        }
+    .line-1 {
+        width: 8.33%;
+    }
+
+    .line-1last {
+        width: 8.33%;
+    }
+
+    .line-2 {
+        width: 16.66%;
+    }
 
         .line-3 {
             width: 25%;
@@ -241,6 +265,16 @@
         .line-4 {
             width: 33.33%;
         }
+
+    .line-4planritning {
+        width: 33.33%;
+    }
+
+    .line-4arkitekt {
+        width: 33.33%;
+        float: left;
+        padding: 7px;
+    }
 
     .line-5 {
         width: 41.66%;
@@ -276,8 +310,8 @@
 
     [class*="line-"] {
         float: left;
-        padding: 15px;
-       
+        padding: 7px;
+
     }
 
     #slideshow {
@@ -296,11 +330,12 @@
     #housing_info {
         float: right;
         width: 33%;
-    
+
         font-family: 'Segoe UI';
         transition: width 0.1s 0.5s, opacity 0.4s 0.5s, display 0.5s 0.5s;
         @*transition-duration: 0.35s;*@
         @*transition-delay: 0.25s;*@
+
     }
 
     #housing_info.hidden {
@@ -312,7 +347,7 @@
     }
 
     #gallery {
-       
+
     }
 
     #hide_info {
@@ -328,7 +363,7 @@
 
     .gallery-img {
         width: 100%;
-       
+
     }
 
     .gallery-img:hover {
@@ -337,22 +372,26 @@
 
         .card-info-header {
             font-family: 'Segoe UI';
-            font-size: 24px;
+            font-size: 18px;
             display: inline-block;
+            text-size-adjust: none;
+
         }
 
         .card-info-text {
             font-family: 'Segoe UI';
-            font-size: 15px;
+            font-size: 12px;
             display: inline-block;
+            text-size-adjust: none;
         }
 
-    .card-info-header-right {
-        font-family: 'Segoe UI';
-        font-size: 24px;
-      display:inline-block;
-        float: right
-    }
+        .card-info-header-right {
+            font-family: 'Segoe UI';
+            font-size: 18px;
+            display: inline-block;
+            float: right ;
+            text-size-adjust: none;
+        }
 
     .list1 {
         list-style-type: none;
@@ -369,93 +408,109 @@
     .planritning {
         width: 100%;
 
+
     }
 
-
-        @@media (max-width: 48em) {
-
-
-            .card-info-header-right {
-                font-family: 'Segoe UI';
-                font-size: 14px;
-                float: right;
-                display:inline-block;
-            }
-
-
-            .card-info-header {
-                font-family: 'Segoe UI';
-                font-size: 14px;
-                display: inline-block;
-            }
-
-
-            .card-info-text {
-                font-family: 'Segoe UI';
-                font-size: 10px;
-                display: inline-block;
-            }
-
-
-            .line-1 {
-                width: 25%;
-            }
-
-            .line-2 {
-                width: 100%;
-            }
-
-            .line-2knapp {
-                width: 50%;
-                margin: auto;
-            }
-
-            .line-3 {
-                width: 25%;
-            }
-
-            .line-4 {
-                width: 50%;
-            }
-
-            .line-5 {
-                width: 50%;
-            }
-
-            .line-6 {
-                width: 50%;
-            }
-
-            .line-7 {
-                width: 100%;
-            }
-
-            .line-8 {
-                width: 100%;
-            }
-
-            .line-9 {
-                width: 100%;
-            }
-
-            .line-10 {
-                width: 100%;
-            }
-
-            .line-11 {
-                width: 100%;
-            }
-
-            .line-12 {
-                width: 100%;
-            }
-
-            [class*="line-"] {
-                float: left;
-                padding: 5px;
-               
-                
-            }
-        
+    @@media (max-width: 1467px) {
+        .line-4arkitekt {
+            width: 100%;
         }
-    </style>
+    }
+
+    @@media (max-width: 927px) {
+
+
+        .card-info-header-right {
+            font-family: 'Segoe UI';
+            font-size: 14px;
+            float: right;
+            display: inline-block;
+        }
+
+
+        .card-info-header {
+            font-family: 'Segoe UI';
+            font-size: 14px;
+            display: inline-block;
+            Margin: 4px;
+        }
+
+
+        .card-info-text {
+            font-family: 'Segoe UI';
+            font-size: 10px;
+            display: inline-block;
+        }
+
+
+        .line-1 {
+            width: 25%;
+        }
+
+        .line-1last {
+            display: none
+        }
+
+        .line-2 {
+            width: 100%;
+        }
+
+        .line-2knapp {
+            width: 50%;
+            margin: auto;
+        }
+
+        .line-3 {
+            width: 25%;
+        }
+
+        .line-4 {
+            width: 100%;
+        }
+
+        .line-4arkitekt {
+            width: 100%;
+        }
+
+        .line-4planritning {
+            width: 75%;
+        }
+
+        .line-5 {
+            width: 50%;
+        }
+
+        .line-6 {
+            width: 50%;
+        }
+
+        .line-7 {
+            width: 100%;
+        }
+
+        .line-8 {
+            width: 100%;
+        }
+
+        .line-9 {
+            width: 100%;
+        }
+
+        .line-10 {
+            width: 100%;
+        }
+
+        .line-11 {
+            width: 100%;
+        }
+
+        .line-12 {
+            width: 100%;
+        }
+
+        [class*="line-"] {
+            float: left;
+            padding: 3px;
+        }
+    }
+</style>

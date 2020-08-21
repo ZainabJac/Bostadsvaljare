@@ -1,3 +1,7 @@
+$css: '.e-css' !default;
+$imported-modules: () !default;
+ .e-lib { 
+ @at-root {
 $primary:rgba(65,89,101,1);
 $primary-font:#fff;
 $accent:rgba(249,178,86,1);
@@ -79291,4 +79295,8 @@ $fe-lg-icon-empty-inner-content-text-align: center !default;
       }
     }
   }
+}}
+& .e-js [class^='e-'], & .e-js [class*=' e-'] {
+  box-sizing: content-box;
+ }
 }

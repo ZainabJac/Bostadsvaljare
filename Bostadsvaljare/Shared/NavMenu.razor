@@ -8,13 +8,13 @@
     <header class="header">
         <input class="menu-btn" type="checkbox" id="menu-btn" />
         <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
-        <ul class="menu">
-            <li><a href="interior">Interior</a></li>
-            <li><a href="lgh_lista">Lägenhetslista</a></li>
-            <li><a href="närområde">Närområde</a></li>
-            <li><a href="VR-video">VR-video</a></li>
-            <li><a href="360_bilder">360 Bilder</a></li>
-            <li><a href="">Exterior</a></li>
+        <ul class="menu" style="color:white;">
+            <li><a  style="color:#415965" href="interior">Interior</a></li>
+            <li><a style="color:#415965" href="lgh_lista">Lägenhetslista</a></li>
+            <li><a style="color:#415965" href="närområde">Närområde</a></li>
+            <li><a style="color:#415965" href="VR-video">VR-video</a></li>
+            <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
+            <li><a style="color:#415965" href="">Exterior</a></li>
         </ul>
     </header>
 
@@ -50,8 +50,10 @@
         z-index: 3;
         overflow: hidden;
         background-color: white;
-        border-bottom: 1px solid black;
-        height: auto;
+        border-bottom: 1px solid;
+        border-bottom-color: #415965;
+
+      
     }
 
     .menuslash {
@@ -59,6 +61,8 @@
         font-family: 'Segoe UI';
         font-weight: bold;
         font-size: 14px;
+        
+        
     }
 
     .e-search::before {
@@ -71,6 +75,7 @@
         font-weight: bold;
         font-size: 14px;
         background-color: #f4f4f4;
+
     }
 
     a {
@@ -82,64 +87,70 @@
     .header {
         display: block;
         float: left;
+        
     }
 
-    .header ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        overflow: hidden;
-        background-color: #fff;
-    }
+        .header ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            overflow: hidden;
+          background-color: #fff;
+        
+        }
 
     .header li a {
         display: block;
-        border-right: 1px solid #f4f4f4;
+       
     }
 
     .header li a:hover,
     .header .menu-btn:hover {
         background-color: #f4f4f4;
+
     }
 
     /* menu */
 
-    .header .menu {
-        clear: both;
-        max-height: 0;
-        transition: max-height .2s ease-out;
-    }
+        .header .menu {
+            clear: both;
+            max-height: 0;
+            transition: max-height .2s ease-out;
+       
+           
+        }
 
     /* menu icon */
 
-    .header .menu-icon {
-        cursor: pointer;
-        display: inline-block;
-        float: left;
-        padding: 28px 20px;
-        position: relative;
-        user-select: none;
-    }
+        .header .menu-icon {
+            cursor: pointer;
+            display: inline-block;
+            float: left;
+            padding: 28px 20px;
+            position: relative;
+            user-select: none;
+           
+        }
 
-    .header .menu-icon .navicon {
-        background: #333;
-        display: block;
-        height: 2px;
-        position: relative;
-        transition: background .2s ease-out;
-        width: 18px;
-    }
+            .header .menu-icon .navicon {
+                background: #415965;
+                display: block;
+                height: 2px;
+                position: relative;
+                transition: background .2s ease-out;
+                width: 18px;
+            }
 
-    .header .menu-icon .navicon:before,
-    .header .menu-icon .navicon:after {
-        background: #333;
-        content: '';
-        display: block;
-        height: 100%;
-        position: absolute;
-        transition: all .2s ease-out;
-        width: 100%;
-    }
+        .header .menu-icon .navicon:before,
+        .header .menu-icon .navicon:after {
+            background: #415965;
+            content: '';
+            display: block;
+            height: 100%;
+            position: absolute;
+            transition: all .2s ease-out;
+            width: 100%;
+        }
 
     .header .menu-icon .navicon:before {
         top: 5px;
@@ -181,16 +192,19 @@
     @@media (min-width: 768px) {
         .header li {
             float: left;
+           
         }
 
-        .header li a {
-            padding: 20px 30px;
-        }
+            .header li a {
+                padding: 20px 30px;
+                
+            }
 
         .header .menu {
             clear: none;
             float: left;
             max-height: none;
+           
         }
 
         .header .menu-icon {
