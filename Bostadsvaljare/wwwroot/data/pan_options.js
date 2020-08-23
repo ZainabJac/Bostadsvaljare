@@ -15,6 +15,9 @@
             y_max_velocity: 0.05
         }
     },
+    canvas: {
+        height_difference: 0.66
+    },
     hud: {
         mobile: {
             width_at_most: 620,

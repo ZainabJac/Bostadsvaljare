@@ -24,7 +24,7 @@ var autoRotate = true,
 var isMouseover = false,
     isFullscreen = false,
     isShowingMeasurements = false,
-    containerWidth = 0, containerHeight = 0;
+    canvasWidth = 0, canvasHeight = 0;
 var mapSprite, currentRoom;
 var raycaster = new THREE.Raycaster(),
     pointerVector = new THREE.Vector2(),
@@ -34,6 +34,7 @@ var raycaster = new THREE.Raycaster(),
     latestPointerProjection,
     tooltipDisplayTimeout,
     hoveringObj;
+var marginWidth, marginHeight;
 
 const constants = {
     CONTAINER: 'pan_container',
@@ -111,11 +112,13 @@ const constants = {
 
         init: function () {
             canvas = document.createElement("canvas");
-            containerWidth = container.offsetWidth;
-            containerHeight = containerWidth * 0.6;
+            marginWidth = window.innerWidth - container.offsetWidth;
+            marginHeight = container.offsetTop;
+            canvasWidth = container.offsetWidth;
+            canvasHeight = canvasWidth*options.canvas.height_difference;
             container.appendChild(canvas);
 
-            var aspect = containerWidth / containerHeight;
+            var aspect = canvasWidth / canvasHeight;
             camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
             camera.target = new THREE.Vector3(0, 0, 0);
             scene = new THREE.Scene();
@@ -129,8 +132,7 @@ const constants = {
             renderer = new THREE.WebGLRenderer({ canvas: canvas });
             renderer.autoClear = false;
             renderer.setPixelRatio(window.devicePixelRatio);
-            // TODO: set size to match panorama image aspect
-            this.resetSize(containerWidth, containerHeight);
+            this.resetSize(canvasWidth, canvasHeight);
 
             this.initHUD();
 
@@ -182,6 +184,7 @@ const constants = {
             document.addEventListener('touchstart', this.onTouchStart, false);
             document.addEventListener('touchend', this.onTouchEnd, false);
 
+            window.addEventListener('resize', this.onResize, false);
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
         },
 
@@ -314,7 +317,7 @@ const constants = {
 
         getSizeAlt: function () {
             var sizeAlt = 1;
-            if (containerWidth <= options.hud.mobile.width_at_most)
+            if (canvasWidth <= options.hud.mobile.width_at_most)
                 sizeAlt = options.hud.mobile.size_alt;
             return sizeAlt;
         },
@@ -513,20 +516,46 @@ const constants = {
         },
 
         resetHUD: function (width, height) {
-            var scaleDiffW = containerWidth / width;
-            var scaleDiffH = containerHeight / height;
+            var scaleDiffW = canvasWidth / width;
+            var scaleDiffH = canvasHeight / height;
 
+            var sizeAlt = self.getSizeAlt();
             HUDGroup.children.forEach(function (hudEl) {
-                var scale = self.getSize(options[hudEl.name].transform.size);
-                var sizeAlt = self.getSizeAlt();
-                if (hudEl.name === 'map')
-                    sizeAlt = 1;
-                hudEl.scale.x = scale.x * scaleDiffW * sizeAlt;
-                hudEl.scale.y = scale.y * scaleDiffH * sizeAlt;
+                var size = self.getSize(options[hudEl.name].transform.size);
+                if (hudEl.name === 'map') {
+                    hudEl.scale.x = size.x * scaleDiffW;
+                    hudEl.scale.y = size.y * scaleDiffH;
+                } else {
+                    hudEl.scale.x = size.x * sizeAlt * scaleDiffW;
+                    hudEl.scale.y = size.y * sizeAlt * scaleDiffH;
+                }
             });
 
             cameraHUD.aspect = width / height;
             cameraHUD.updateProjectionMatrix();
+        },
+
+        onResize: function (event) {
+            var newWidth, newHeight;
+            if ((window.innerWidth-marginWidth) * options.canvas.height_difference < window.innerHeight-marginHeight) {
+                // Adapt canvas after the window's width
+                newWidth = window.innerWidth - marginWidth;
+                var diff = newWidth / canvasWidth;
+                newHeight = canvasHeight * diff;
+            } else {
+                // Adapt canvas after the window's height
+                newHeight = window.innerHeight - marginHeight;
+                var diff = newHeight / canvasHeight;
+                newWidth = canvasWidth * diff;
+            }
+
+            self.resetSize(newWidth, newHeight);
+            self.resetHUD(newWidth, newHeight);
+
+            canvas.style.width = newWidth + 'px';
+            canvas.style.height = newHeight + 'px';
+            canvasWidth = newWidth;
+            canvasHeight = newHeight;
         },
 
         onFullscreenChange: function () {
@@ -544,8 +573,8 @@ const constants = {
 
                 container.classList.add(constants.FULLSCREEN);
             } else {
-                self.resetSize(containerWidth, containerHeight);
-                self.resetHUD(containerWidth, containerHeight);
+                self.resetSize(canvasWidth, canvasHeight);
+                self.resetHUD(canvasWidth, canvasHeight);
 
                 var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.image);
