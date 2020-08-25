@@ -10,6 +10,8 @@
     protected override async void OnInitialized() {
         base.OnInitialized();
         await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("pan_viewer.init");
+        await Task.Delay(100);
         await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
     }
 }

@@ -61,8 +61,8 @@ const constants = {
 (function () {
     window.pan_viewer = {
         start: function (aptID) {
-            self = this;
             aptData = window.apartments[aptID];
+            this.reset();
 
             // Preload images to avoid loading them each time when changing rooms
             if (initiated !== aptID) {
@@ -74,26 +74,20 @@ const constants = {
                     else if (panorama.type === constants.PAN_TYPE.CUBE)
                         roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
                 }
-            }
 
-            elem = document.documentElement;
-            container = $('#' + constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
-            if (!initiated)
-                this.init();
-            else
-                this.reset();
-            container.appendChild(canvas);
-
-            // Change room if new apartment type
-            if (initiated !== aptID)
                 this.changeRoom(aptData.entry);
-            initiated = aptID;
+                initiated = aptID;
+            }
 
             this.animate();
         },
 
         reset: function () {
+            elem = document.documentElement;
+            container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            container.appendChild(canvas);
+
             // Reset some camera values
             clientXStart = 0, clientYStart = 0,
             lon = 180, lonLast = 0, lonStart = 0,
@@ -103,40 +97,11 @@ const constants = {
             autoRotate = true;
             autoRotateTimeout = undefined;
 
-            // Hide map, which is always shown (for some reason)
-            this.hideMap();
-
             // Remove previous animation frame request
             cancelAnimationFrame(animation);
-        },
-
-        init: function () {
-            canvas = document.createElement("canvas");
-            marginWidth = window.innerWidth - container.offsetWidth;
-            marginHeight = container.offsetTop;
-            canvasWidth = container.offsetWidth;
-            canvasHeight = canvasWidth*options.canvas.height_difference;
-            container.appendChild(canvas);
-
-            var aspect = canvasWidth / canvasHeight;
-            camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-            camera.target = new THREE.Vector3(0, 0, 0);
-            scene = new THREE.Scene();
-
-            currentRoom = aptData.entry;
-            var pan = this.getPanorama(currentRoom);
-            skybox = new THREE.Mesh(pan.geometry, pan.material);
-            scene.add(skybox);
-            this.addHotspots();
-
-            renderer = new THREE.WebGLRenderer({ canvas: canvas });
-            renderer.autoClear = false;
-            renderer.setPixelRatio(window.devicePixelRatio);
-            this.resetSize(canvasWidth, canvasHeight);
-
-            this.initHUD();
 
             // Map setup
+            this.removeObjectByName(HUDGroup, 'map');
             var transform = this.getTransform(options.map.transform);
             transform.pos.z = -10;
             mapSprite = this.createHUDElement(aptData.map,
@@ -144,6 +109,39 @@ const constants = {
                 transform,
                 undefined,
                 this.initMap);
+
+            // Hide map, which is always shown (for some reason)
+            this.hideMap();
+        },
+
+        init: function () {
+            if (initiated) return;
+
+            self = this;
+            container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            canvas = document.createElement("canvas");
+            container.appendChild(canvas);
+
+            marginWidth = window.innerWidth - container.offsetWidth;
+            marginHeight = container.offsetTop;
+            canvasWidth = container.offsetWidth;
+            canvasHeight = canvasWidth*options.canvas.height_difference;
+
+            var aspect = canvasWidth / canvasHeight;
+            camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+            camera.target = new THREE.Vector3(0, 0, 0);
+            scene = new THREE.Scene();
+
+            skybox = new THREE.Mesh();
+            scene.add(skybox);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas });
+            renderer.autoClear = false;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            this.resetSize(canvasWidth, canvasHeight);
+
+            this.initHUD();
 
             // Map button setup
             // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
@@ -186,6 +184,8 @@ const constants = {
 
             window.addEventListener('resize', this.onResize, false);
             document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
+
+            initiated = true;
         },
 
         initHUD: function () {
@@ -313,6 +313,17 @@ const constants = {
                     bg.material.opacity = 0;
             }
             return sprite;
+        },
+
+        removeObjectByName: function (object, targetName) {
+            var children = object.children;
+
+            for (var i = 0; i < children.length; i += 1) {
+                if (children[i].name === targetName) {
+                    children.splice(i);
+                    break;
+                }
+            }
         },
 
         getSizeAlt: function () {
@@ -492,8 +503,8 @@ const constants = {
 
         getPointerEventPos: function (event) {
             var rect = canvas.getBoundingClientRect();
-            var clientX = event.clientX || event.touches[0].clientX;
-            var clientY = event.clientY || event.touches[0].clientY;
+            var clientX = event.clientX || (event.touches && event.touches[0].clientX) || 0;
+            var clientY = event.clientY || (event.touches && event.touches[0].clientY) || 0;
             return {
                 x: clientX - rect.left,
                 y: clientY - rect.top
@@ -596,12 +607,10 @@ const constants = {
         },
 
         onPointerMove: function (event) {
-            if (isUserInteracting && event.clientX) {
-                var clientX = event.clientX || event.touches[0].clientX;
-                var clientY = event.clientY || event.touches[0].clientY;
+            if (isUserInteracting) {
                 var rot_speed = options.camera.mouse_rotation_speed
-                lon = (clientXStart - clientX) * rot_speed + lonStart;
-                lat = (clientY - clientYStart) * rot_speed + latStart;
+                lon = (clientXStart - event.clientX) * rot_speed + lonStart;
+                lat = (event.clientY - clientYStart) * rot_speed + latStart;
             }
 
             // Update pointerVector for all the raycasting
@@ -898,12 +907,14 @@ const constants = {
             }
 
             // Update map hotspot images to show which is the current room
-            var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
-            var newRoomMat = HUDGroup.getObjectByName(roomId).material;
-            prevRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.image);
-            newRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.current.image);
-            prevRoomMat.needsUpdate = true;
-            newRoomMat.needsUpdate = true;
+            if (HUDGroup.getObjectByName(currentRoom)) {
+                var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
+                var newRoomMat = HUDGroup.getObjectByName(roomId).material;
+                prevRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.image);
+                newRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.current.image);
+                prevRoomMat.needsUpdate = true;
+                newRoomMat.needsUpdate = true;
+            }
 
             // Change panorama image
             // TODO: Some sort of transition, fade in and out of black?
