@@ -57,5 +57,16 @@
             else
                 return -1;
         },
+
+        removeObjectByName: function (object, targetName) {
+            var children = object.children;
+
+            for (var i = 0; i < children.length; i += 1) {
+                if (children[i].name === targetName) {
+                    children.splice(i);
+                    break;
+                }
+            }
+        },
     };
 })();
