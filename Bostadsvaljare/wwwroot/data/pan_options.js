@@ -16,7 +16,7 @@
         }
     },
     canvas: {
-        height_difference: 0.66
+        height_difference: 0.6666666666666666
     },
     hud: {
         mobile: {
