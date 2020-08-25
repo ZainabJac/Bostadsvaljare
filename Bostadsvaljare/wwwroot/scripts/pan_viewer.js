@@ -50,7 +50,7 @@
         pointerVector: new THREE.Vector2(),
         hotspotGroup: new THREE.Group(),
         HUDGroup: new THREE.Group(),
-        hoveredHUDEl: null, hoveredHotspot: null,
+        holdingHUDEl: null, holdingHotspot: null,
         hoveringObj: null,
         latestPointerProjection: null,
         tooltipDisplayTimeout: null,
@@ -102,7 +102,7 @@
                 constants.MAP,
                 transform,
                 undefined,
-                function () { self.initMap() });
+                function() { self.initMap(); });
 
             // Hide map, which is always shown (for some reason)
             this.hideMap();
@@ -641,13 +641,13 @@
 
             // Raycast the HUD elements
             this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.hoveredHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
-            this.hoveredHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
+            this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.hoveredHUDEl) {
+            if (!this.holdingHUDEl) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -660,27 +660,29 @@
         },
 
         onMouseUp: function (event) {
-            if (!this.animating || !this.isUserInteracting) return;
+            if (!this.animating || !this.isMouseover) return;
 
-            if (this.hoveredHUDEl) {
+            if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
-                if (obj && obj === this.hoveredHUDEl && obj.onclick) {
+                if (obj && obj === this.holdingHUDEl && obj.onclick) {
                     obj.onclick();
                 }
-            } else if (this.hoveredHotspot) {
+            } else if (this.holdingHotspot) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
-                if (obj && obj === this.hoveredHotspot) {
-                    this.changeRoom(this.hoveredHotspot.name);
+                if (obj && obj === this.holdingHotspot) {
+                    this.changeRoom(this.holdingHotspot.name);
                 }
             }
 
-            this.velCam.set(this.lonAcc.average(), this.latAcc.average());
-            this.lonAcc.clear();
-            this.latAcc.clear();
+            if (this.isUserInteracting) {
+                this.velCam.set(this.lonAcc.average(), this.latAcc.average());
+                this.lonAcc.clear();
+                this.latAcc.clear();
 
-            this.isUserInteracting = false;
+                this.isUserInteracting = false;
+            }
         },
 
         onTouchMove: function (event) {
@@ -718,13 +720,13 @@
 
             // Raycast the HUD elements
             this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.hoveredHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
-            this.hoveredHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
+            this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.hoveredHUDEl) {
+            if (!this.holdingHUDEl) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -743,21 +745,21 @@
             if (event.target !== this.canvas)
                 return;
 
-            if (this.hoveredHUDEl) {
+            if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
-                if (obj && obj === this.hoveredHUDEl && obj.onclick)
+                if (obj && obj === this.holdingHUDEl && obj.onclick)
                     obj.onclick();
             }
-            else if (this.hoveredHotspot) {
-                if (this.hoveredHotspot === this.hoveringObj) {
-                    this.changeRoom(this.hoveredHotspot.name);
+            else if (this.holdingHotspot) {
+                if (this.holdingHotspot === this.hoveringObj) {
+                    this.changeRoom(this.holdingHotspot.name);
                     this.hoveringObj = undefined;
                 }
                 else {
                     this.raycaster.setFromCamera(this.pointerVector, this.camera);
                     var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
-                    if (intersects.length > 0 && intersects[0].object === this.hoveredHotspot) {
+                    if (intersects.length > 0 && intersects[0].object === this.holdingHotspot) {
                         this.latestPointerProjection = intersects[0].point;
                         this.hoveringObj = intersects[0].object;
                         this.showTooltip();
@@ -773,9 +775,9 @@
                 this.velCam.set(this.lonAcc.average(), this.latAcc.average());
                 this.lonAcc.clear();
                 this.latAcc.clear();
-            }
 
-            this.isUserInteracting = false;
+                this.isUserInteracting = false;
+            }
         },
 
         animate: function () {
