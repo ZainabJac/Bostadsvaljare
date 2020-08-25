@@ -1,5 +1,6 @@
 ﻿@page "/360_bilder"
 
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 
 
@@ -13,6 +14,10 @@
         await JSRuntime.InvokeVoidAsync("pan_viewer.init");
         await Task.Delay(100);
         await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
+    }
+
+    public async void Dispose() {
+        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
 }
 

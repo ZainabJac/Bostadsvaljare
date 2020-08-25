@@ -2,7 +2,7 @@
     camera: {
         mouse_rotation_speed: 0.075,
         touch_rotation_speed: 0.375,
-        smooth_out: {
+        smooth_stop: {
             enable: true,
             decrease_rate: 1
         },
@@ -20,7 +20,7 @@
     },
     hud: {
         mobile: {
-            width_at_most: 620,
+            width_at_most: 768,
             size_alt: 0.4
         }
     },

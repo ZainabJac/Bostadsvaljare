@@ -1,42 +1,4 @@
-﻿var options = { ...panOptions };
-var aptData;
-var roomImages;
-var self;
-var initiated;
-var elem;
-var animation;
-var camera, scene, renderer, skybox, container, canvas;
-var cameraHUD, sceneHUD;
-var clock = new THREE.Clock();
-var isUserInteracting = false,
-    clientXStart = 0, clientYStart = 0,
-    lon = 180, lonLast = 0, lonStart = 0,
-    lat = 0, LatLast = 0, latStart = 0,
-    phi = 0, theta = 0;
-var autoRotate = true,
-    autoRotateTimeout,
-    lonAcc = new Accumulator(20, true),
-    latAcc = new Accumulator(20, true),
-    velCam = new THREE.Vector2(),
-    maxVelLon = options.camera.auto_rotate.x_max_velocity,
-    maxVelLat = options.camera.auto_rotate.y_max_velocity,
-    decRotationRate = 0;
-var isMouseover = false,
-    isFullscreen = false,
-    isShowingMeasurements = false,
-    canvasWidth = 0, canvasHeight = 0;
-var mapSprite, currentRoom;
-var raycaster = new THREE.Raycaster(),
-    pointerVector = new THREE.Vector2(),
-    hotspotGroup = new THREE.Group(),
-    HUDGroup = new THREE.Group(),
-    hoveredHUDEl, hoveredHotspot,
-    latestPointerProjection,
-    tooltipDisplayTimeout,
-    hoveringObj;
-var marginWidth, marginHeight;
-
-const constants = {
+﻿const constants = {
     CONTAINER: 'pan_container',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
@@ -60,154 +22,187 @@ const constants = {
 
 (function () {
     window.pan_viewer = {
+        options: { ...panOptions }, aptData: {},
+        roomImages: {},
+        elem: null, container: null, canvas: null,
+        camera: null, scene: null, renderer: null, skybox: null,
+        cameraHUD: null, sceneHUD: null, canvasHUD: null,
+        clock: new THREE.Clock(),
+        initiated: null, animating: null,
+        isUserInteracting: false,
+        clientXStart: 0, clientYStart: 0,
+        lon: 180, lonLast: 0, lonStart: 0,
+        lat: 0, LatLast: 0, latStart: 0,
+        phi: 0, theta: 0,
+        autoRotate: true,
+        autoRotateTimeout: null,
+        lonAcc: new Accumulator(20, true),
+        latAcc: new Accumulator(20, true),
+        velCam: new THREE.Vector2(),
+        decRotationRate: 0,
+        isMouseover: false,
+        isFullscreen: false,
+        isShowingMeasurements: false,
+        canvasWidth: 0, canvasHeight: 0,
+        startingWidth: 0, startingHeight: 0,
+        mapSprite: null, currentRoom: null,
+        raycaster: new THREE.Raycaster(),
+        pointerVector: new THREE.Vector2(),
+        hotspotGroup: new THREE.Group(),
+        HUDGroup: new THREE.Group(),
+        hoveredHUDEl: null, hoveredHotspot: null,
+        hoveringObj: null,
+        latestPointerProjection: null,
+        tooltipDisplayTimeout: null,
+        marginWidth: 0, marginHeight: 0,
+
         start: function (aptID) {
-            aptData = window.apartments[aptID];
+            this.aptData = window.apartments[aptID];
             this.reset();
 
             // Preload images to avoid loading them each time when changing rooms
-            if (initiated !== aptID) {
-                roomImages = {};
-                for (var room in aptData.rooms) {
-                    var panorama = aptData.rooms[room].panorama;
+            if (this.initiated !== aptID) {
+                this.roomImages = {};
+                for (var room in this.aptData.rooms) {
+                    var panorama = this.aptData.rooms[room].panorama;
                     if (panorama.type === constants.PAN_TYPE.SPHERE)
-                        roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                        this.roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
                     else if (panorama.type === constants.PAN_TYPE.CUBE)
-                        roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+                        this.roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
                 }
 
-                this.changeRoom(aptData.entry);
-                initiated = aptID;
+                this.changeRoom(this.aptData.entry);
+                this.initiated = aptID;
             }
 
             this.animate();
         },
 
         reset: function () {
-            elem = document.documentElement;
-            container = $('#' + constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
-            container.appendChild(canvas);
+            var self = this;
+
+            this.elem = document.documentElement;
+            this.container = $('#' + constants.CONTAINER)[0];
+            this.container.oncontextmenu = function () { return false; };
+            this.container.appendChild(this.canvas);
 
             // Reset some camera values
-            clientXStart = 0, clientYStart = 0,
-            lon = 180, lonLast = 0, lonStart = 0,
-            lat = 0, LatLast = 0, latStart = 0,
-            phi = 0, theta = 0;
-            velCam = new THREE.Vector2();
-            autoRotate = true;
-            autoRotateTimeout = undefined;
-
-            // Remove previous animation frame request
-            cancelAnimationFrame(animation);
+            this.clientXStart = 0, this.clientYStart = 0,
+            this.lon = 180, this.lonLast = 0, this.lonStart = 0,
+            this.lat = 0, this.LatLast = 0, this.latStart = 0,
+            this.phi = 0, this.theta = 0;
+            this.velCam = new THREE.Vector2();
+            this.autoRotate = true;
+            this.autoRotateTimeout = undefined;
 
             // Map setup
-            this.removeObjectByName(HUDGroup, 'map');
-            var transform = this.getTransform(options.map.transform);
+            var transform = this.getTransform(this.options.map.transform);
             transform.pos.z = -10;
-            mapSprite = this.createHUDElement(aptData.map,
+            this.mapSprite = this.createHUDElement(this.aptData.map,
                 constants.MAP,
                 transform,
                 undefined,
-                this.initMap);
+                function () { self.initMap() });
 
             // Hide map, which is always shown (for some reason)
             this.hideMap();
         },
 
         init: function () {
-            if (initiated) return;
+            if (this.initiated) return;
 
-            self = this;
-            container = $('#' + constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
-            canvas = document.createElement("canvas");
-            container.appendChild(canvas);
+            var self = this;
 
-            marginWidth = window.innerWidth - container.offsetWidth;
-            marginHeight = container.offsetTop;
-            canvasWidth = container.offsetWidth;
-            canvasHeight = canvasWidth*options.canvas.height_difference;
+            this.container = $('#' + constants.CONTAINER)[0];
+            this.container.oncontextmenu = function () { return false; };
+            this.canvas = document.createElement("canvas");
+            this.container.appendChild(this.canvas);
 
-            var aspect = canvasWidth / canvasHeight;
-            camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-            camera.target = new THREE.Vector3(0, 0, 0);
-            scene = new THREE.Scene();
+            this.marginWidth = window.innerWidth - this.container.offsetWidth;
+            this.marginHeight = this.container.offsetTop;
+            this.startingWidth = this.canvasWidth = this.container.offsetWidth;
+            this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
 
-            skybox = new THREE.Mesh();
-            scene.add(skybox);
+            var aspect = this.canvasWidth / this.canvasHeight;
+            this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+            this.camera.target = new THREE.Vector3(0, 0, 0);
+            this.scene = new THREE.Scene();
 
-            renderer = new THREE.WebGLRenderer({ canvas: canvas });
-            renderer.autoClear = false;
-            renderer.setPixelRatio(window.devicePixelRatio);
-            this.resetSize(canvasWidth, canvasHeight);
+            this.skybox = new THREE.Mesh();
+            this.scene.add(this.skybox);
+
+            this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+            this.renderer.autoClear = false;
+            this.renderer.setPixelRatio(window.devicePixelRatio);
 
             this.initHUD();
+            this.onResize();
 
             // Map button setup
             // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
             //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = options.map_icon;
+            var mapData = this.options.map_icon;
             var transform = this.getTransform(mapData.transform);
             this.createHUDElement(mapData,
                 constants.MAP_ICON,
                 transform,
-                this.showMap);
+                function() { self.showMap(); });
 
             // Fullscreen button setup
-            var fullscreenData = options.fullscreen_icon;
+            var fullscreenData = this.options.fullscreen_icon;
             var transform = this.getTransform(fullscreenData.transform);
             this.createHUDElement(fullscreenData,
                 constants.FULLSCREEN_ICON,
                 transform,
-                this.toggleFullscreen);
+                function() { self.toggleFullscreen(); });
 
             // Measurements button setup
             // TODO: Be able to show apartment measurements on walls, etc.
             // TODO: Make a different icon
-            /*var measurementsData = options.measurements_icon;
+            /*var measurementsData = this.options.measurements_icon;
             var transform = this.getTransform(measurementsData.transform);
             this.createHUDElement(measurementsData,
                 constants.MEASUREMENTS_ICON,
                 transform,
-                this.toggleMeasurements);*/
+                function() { self.toggleMeasurements(); });*/
 
             // Adding event listeners
-            document.addEventListener('mouseover', this.onMouseover, false);
-            document.addEventListener('mouseout', this.onMouseout, false);
-            document.addEventListener('mousemove', this.onPointerMove, false);
-            document.addEventListener('mousedown', this.onPointerDown, false);
-            document.addEventListener('mouseup', this.onPointerUp, false);
+            document.addEventListener('mouseover', function(e) { self.onMouseover(e); }, false);
+            document.addEventListener('mouseout', function(e) { self.onMouseout(e); }, false);
+            document.addEventListener('mousemove', function(e) { self.onMouseMove(e); }, false);
+            document.addEventListener('mousedown', function(e) { self.onMouseDown(e); }, false);
+            document.addEventListener('mouseup', function(e) { self.onMouseUp(e); }
+                , false);
 
-            document.addEventListener('touchmove', this.onTouchMove, false);
-            document.addEventListener('touchstart', this.onTouchStart, false);
-            document.addEventListener('touchend', this.onTouchEnd, false);
+            document.addEventListener('touchmove', function(e) { self.onTouchMove(e); }, false);
+            document.addEventListener('touchstart', function(e) { self.onTouchStart(e); }, false);
+            document.addEventListener('touchend', function(e) { self.onTouchEnd(e); }, false);
 
-            window.addEventListener('resize', this.onResize, false);
-            document.addEventListener('fullscreenchange', this.onFullscreenChange, false);
+            document.addEventListener('fullscreenchange', function(e) { self.onFullscreenChange(e); }, false);
+            window.addEventListener('resize', function(e) { self.onResize(e); }, false);
 
             initiated = true;
         },
 
         initHUD: function () {
-            var canvasData = canvas.getBoundingClientRect();
-            var width = canvasData.width, height = canvasData.height;
-            var halfWidth = width * 0.5, halfHeight = height * 0.5;
+            var halfWidth = this.canvasWidth * 0.5,
+                halfHeight = this.canvasHeight * 0.5;
 
             // We will use 2D canvas element to render our HUD
-            var canvasHUD = document.createElement("canvas");
+            this.canvasHUD = document.createElement("canvas");
 
             // Again, set dimensions to fit the screen
-            canvasHUD.width = width;
-            canvasHUD.height = height;
+            this.canvasHUD.width = this.canvasWidth;
+            this.canvasHUD.height = this.canvasHeight;
 
             // Create the camera and set the viewport to match the screen dimensions
-            cameraHUD = new THREE.OrthographicCamera(-halfWidth, halfWidth, halfHeight, -halfHeight, 0, 30);
+            this.cameraHUD = new THREE.OrthographicCamera(-halfWidth, halfWidth, halfHeight, -halfHeight, 0, 30);
 
             // Create also a custom scene for HUD
-            sceneHUD = new THREE.Scene();
+            this.sceneHUD = new THREE.Scene();
 
             // Create texture from rendered graphics
-            var textureHUD = new THREE.Texture(canvasHUD);
+            var textureHUD = new THREE.Texture(this.canvasHUD);
             textureHUD.needsUpdate = true;
 
             // Create HUD material
@@ -215,41 +210,42 @@ const constants = {
             materialHUD.transparent = true;
 
             // Create plane to render the HUD. This plane fills the whole screen
-            var planeGeometry = new THREE.PlaneBufferGeometry(width, height);
+            var planeGeometry = new THREE.PlaneBufferGeometry(this.canvasWidth, this.canvasHeight);
             var plane = new THREE.Mesh(planeGeometry, materialHUD);
-            sceneHUD.add(plane);
-            sceneHUD.add(HUDGroup);
+            this.sceneHUD.add(plane);
+            this.sceneHUD.add(this.HUDGroup);
         },
 
         initMap: function () {
-            var mapImg = mapSprite.material.map.image;
+            var self = this;
+            var mapImg = this.mapSprite.material.map.image;
             var origHeight = mapImg.height;
-            mapImg.height = canvas.offsetHeight * aptData.map.size;
+            mapImg.height = this.canvas.offsetHeight * this.aptData.map.size;
             var sizeOffset = mapImg.height / origHeight;
             mapImg.width = mapImg.width * sizeOffset;
 
             var imgWidth = mapImg.width,
                 imgHeight = mapImg.height;
 
-            options.map.transform.size = {
+            this.options.map.transform.size = {
                 width: imgWidth,
                 height: imgHeight,
             };
 
-            mapSprite.scale.set(imgWidth, imgHeight, 1);
+            this.mapSprite.scale.set(imgWidth, imgHeight, 1);
 
             // Add hotspots for each explorable room
-            for (var room in aptData.map.room_locations) {
-                var hotspotData = options.map_hotspot;
-                var loc = aptData.map.room_locations[room];
+            for (var room in this.aptData.map.room_locations) {
+                var hotspotData = this.options.map_hotspot;
+                var loc = this.aptData.map.room_locations[room];
                 var x = (loc.x * sizeOffset - imgWidth) / imgWidth,
                     y = (imgHeight - loc.y * sizeOffset) / imgHeight;
                 var w = hotspotData.transform.size.width / imgWidth,
                     h = hotspotData.transform.size.height / imgHeight;
 
                 if (!hotspotData.hidden_at_start)
-                    hotspotData.hidden_at_start = aptData.map.hidden_at_start;
-                if (room === currentRoom) {
+                    hotspotData.hidden_at_start = this.aptData.map.hidden_at_start;
+                if (room === this.currentRoom) {
                     if (!hotspotData.current.color)
                         hotspotData.current.color = hotspotData.color;
                     if (!hotspotData.current.hidden_at_start)
@@ -261,32 +257,32 @@ const constants = {
                     pos: new THREE.Vector3(x, y, 5),
                     scale: new THREE.Vector3(w, h, 1)
                 };
-                var hotspotSprite = self.createHUDElement(hotspotData,
+                var hotspotSprite = this.createHUDElement(hotspotData,
                     room,
                     transform,
-                    function () { self.changeRoom(this.name); });
-                mapSprite.add(hotspotSprite);
+                    function() { self.changeRoom(this.name); });
+                this.mapSprite.add(hotspotSprite);
             }
 
             // Add button to minimize the map
-            var minData = options.minimize_icon;
+            var minData = this.options.minimize_icon;
             var x = 0 * sizeOffset / imgWidth,
                 y = (imgHeight + 0 * sizeOffset) / imgHeight;
             var w = minData.transform.size.width / imgWidth,
                 h = minData.transform.size.height / imgHeight;
             if (!minData.hidden_at_start)
-                minData.hidden_at_start = aptData.map.hidden_at_start;
+                minData.hidden_at_start = this.aptData.map.hidden_at_start;
 
             var transform = {
                 pos: new THREE.Vector3(x, y, 5),
                 center: new THREE.Vector2(1, 1),
                 scale: new THREE.Vector3(w, h, 1)
             };
-            var minSprite = self.createHUDElement(minData,
+            var minSprite = this.createHUDElement(minData,
                 constants.MINIMIZE_ICON,
                 transform,
-                self.hideMap);
-            mapSprite.add(minSprite);
+                function() { self.hideMap(); });
+            this.mapSprite.add(minSprite);
         },
 
         createHUDElement: function (matData, name, transform, onclick, onload) {
@@ -306,7 +302,7 @@ const constants = {
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.scale.set(scale.x*sizeAlt, scale.y*sizeAlt, scale.z*sizeAlt);
             sprite.onclick = onclick || undefined;
-            HUDGroup.add(sprite);
+            this.HUDGroup.add(sprite);
             if (matData.background) {
                 var bg = this.createBackground(matData.background, sprite);
                 if (matData.hidden_at_start)
@@ -315,21 +311,10 @@ const constants = {
             return sprite;
         },
 
-        removeObjectByName: function (object, targetName) {
-            var children = object.children;
-
-            for (var i = 0; i < children.length; i += 1) {
-                if (children[i].name === targetName) {
-                    children.splice(i);
-                    break;
-                }
-            }
-        },
-
         getSizeAlt: function () {
             var sizeAlt = 1;
-            if (canvasWidth <= options.hud.mobile.width_at_most)
-                sizeAlt = options.hud.mobile.size_alt;
+            if (window.innerWidth <= this.options.hud.mobile.width_at_most)
+                sizeAlt = this.options.hud.mobile.size_alt;
             return sizeAlt;
         },
 
@@ -362,15 +347,16 @@ const constants = {
         },
 
         addHotspots: function () {
-            aptData.rooms[currentRoom].connections.forEach(function (connectingRoom) {
+            var self = this;
+            this.aptData.rooms[this.currentRoom].connections.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
-                    options.hotspot.transform.size.width,
-                    options.hotspot.transform.size.height
+                    self.options.hotspot.transform.size.width,
+                    self.options.hotspot.transform.size.height
                 );
                 var hotspotMaterial = new THREE.MeshBasicMaterial({
-                    map: new THREE.TextureLoader().load(options.hotspot.image),
-                    color: options.hotspot.color,
+                    map: new THREE.TextureLoader().load(self.options.hotspot.image),
+                    color: self.options.hotspot.color,
                     side: THREE.DoubleSide,
                     transparent: true
                 });
@@ -379,23 +365,23 @@ const constants = {
 
                 // Position the hotspot
                 var dist = 250;
-                var xThis = aptData.map.room_locations[currentRoom].x,
-                    yThis = aptData.map.room_locations[currentRoom].y,
-                    xOther = aptData.map.room_locations[connectingRoom].x,
-                    yOther = aptData.map.room_locations[connectingRoom].y;
+                var xThis = self.aptData.map.room_locations[self.currentRoom].x,
+                    yThis = self.aptData.map.room_locations[self.currentRoom].y,
+                    xOther = self.aptData.map.room_locations[connectingRoom].x,
+                    yOther = self.aptData.map.room_locations[connectingRoom].y;
                 var vRel = new THREE.Vector3(xThis - xOther, 0, yThis - yOther);
                 var vRelNorm = vRel.normalize();
                 hotspotMesh.position.set(vRelNorm.z * dist, 0, -vRelNorm.x * dist);
-                hotspotMesh.lookAt(camera.position);
+                hotspotMesh.lookAt(self.camera.position);
 
-                hotspotGroup.add(hotspotMesh);
+                self.hotspotGroup.add(hotspotMesh);
             });
-            scene.add(hotspotGroup);
+            this.scene.add(this.hotspotGroup);
         },
 
         getPanorama: function (roomId) {
             var geometry, material;
-            var room = aptData.rooms[roomId];
+            var room = this.aptData.rooms[roomId];
 
             switch (room.panorama.type) {
                 case constants.PAN_TYPE.SPHERE:
@@ -404,14 +390,14 @@ const constants = {
                     geometry.scale(-1, 1, 1);
 
                     material = new THREE.MeshBasicMaterial({
-                        map: roomImages[roomId]
+                        map: this.roomImages[roomId]
                     });
                     break;
                 case constants.PAN_TYPE.CUBE:
                     geometry = new THREE.BoxBufferGeometry(1, 1, 1);
                     geometry.scale(1, 1, -1);
 
-                    var textures = roomImages[roomId];
+                    var textures = this.roomImages[roomId];
                     material = [];
                     for (var i=0; i < 6; i+=1) {
                         material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
@@ -502,7 +488,7 @@ const constants = {
         },
 
         getPointerEventPos: function (event) {
-            var rect = canvas.getBoundingClientRect();
+            var rect = this.canvas.getBoundingClientRect();
             var clientX = event.clientX || (event.touches && event.touches[0].clientX) || 0;
             var clientY = event.clientY || (event.touches && event.touches[0].clientY) || 0;
             return {
@@ -521,122 +507,129 @@ const constants = {
         },
 
         resetSize: function (width, height) {
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(width, height);
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(width, height);
         },
 
         resetHUD: function (width, height) {
-            var scaleDiffW = canvasWidth / width;
-            var scaleDiffH = canvasHeight / height;
+            var self = this,
+                scaleDiffW = this.startingWidth / width,
+                scaleDiffH = this.startingHeight / height;
 
-            var sizeAlt = self.getSizeAlt();
-            HUDGroup.children.forEach(function (hudEl) {
-                var size = self.getSize(options[hudEl.name].transform.size);
+            var sizeAlt = this.getSizeAlt();
+            this.HUDGroup.children.forEach(function (hudEl) {
+                var size = self.getSize(self.options[hudEl.name].transform.size);
                 if (hudEl.name === 'map') {
-                    hudEl.scale.x = size.x * scaleDiffW;
-                    hudEl.scale.y = size.y * scaleDiffH;
+                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
+                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
                 } else {
-                    hudEl.scale.x = size.x * sizeAlt * scaleDiffW;
-                    hudEl.scale.y = size.y * sizeAlt * scaleDiffH;
+                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
+                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
                 }
             });
 
-            cameraHUD.aspect = width / height;
-            cameraHUD.updateProjectionMatrix();
+            this.canvasHUD.width = width;
+            this.canvasHUD.height = height;
+            this.cameraHUD.aspect = width / height;
+            this.cameraHUD.updateProjectionMatrix();
         },
 
         onResize: function (event) {
             var newWidth, newHeight;
-            if ((window.innerWidth-marginWidth) * options.canvas.height_difference < window.innerHeight-marginHeight) {
+            if ((window.innerWidth - this.marginWidth) * this.options.canvas.height_difference < window.innerHeight - this.marginHeight) {
                 // Adapt canvas after the window's width
-                newWidth = window.innerWidth - marginWidth;
-                var diff = newWidth / canvasWidth;
-                newHeight = canvasHeight * diff;
+                newWidth = window.innerWidth - this.marginWidth;
+                var diff = newWidth / this.canvasWidth;
+                newHeight = this.canvasHeight * diff;
             } else {
                 // Adapt canvas after the window's height
-                newHeight = window.innerHeight - marginHeight;
-                var diff = newHeight / canvasHeight;
-                newWidth = canvasWidth * diff;
+                newHeight = window.innerHeight - this.marginHeight;
+                var diff = newHeight / this.canvasHeight;
+                newWidth = this.canvasWidth * diff;
             }
 
-            self.resetSize(newWidth, newHeight);
-            self.resetHUD(newWidth, newHeight);
+            this.canvas.style.width = newWidth + 'px';
+            this.canvas.style.height = newHeight + 'px';
+            this.resetSize(newWidth, newHeight);
+            this.resetHUD(newWidth, newHeight);
 
-            canvas.style.width = newWidth + 'px';
-            canvas.style.height = newHeight + 'px';
-            canvasWidth = newWidth;
-            canvasHeight = newHeight;
+            this.canvasWidth = newWidth;
+            this.canvasHeight = newHeight;
         },
 
         onFullscreenChange: function () {
-            isFullscreen = !isFullscreen;
-            if (isFullscreen) {
-                self.resetSize(window.innerWidth, window.innerHeight);
-                self.resetHUD(window.innerWidth, window.innerHeight);
+            if (!this.animating) return;
+
+            this.isFullscreen = !this.isFullscreen;
+            if (this.isFullscreen) {
+                this.resetSize(window.innerWidth, window.innerHeight);
+                this.resetHUD(window.innerWidth, window.innerHeight);
 
                 // TODO: Change color and background when changing image too
-                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.off_icon.image);
-                fsMat.color.set(options.fullscreen_icon.off_icon.color
-                    || options.fullscreen_icon.color);
+                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.off_icon.image);
+                fsMat.color.set(this.options.fullscreen_icon.off_icon.color
+                             || this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                container.classList.add(constants.FULLSCREEN);
+                this.container.classList.add(constants.FULLSCREEN);
             } else {
-                self.resetSize(canvasWidth, canvasHeight);
-                self.resetHUD(canvasWidth, canvasHeight);
+                this.resetSize(this.canvasWidth, this.canvasHeight);
+                this.resetHUD(this.canvasWidth, this.canvasHeight);
 
-                var fsMat = sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(options.fullscreen_icon.image);
-                fsMat.color.set(options.fullscreen_icon.color);
+                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
+                fsMat.color.set(this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                container.classList.remove(constants.FULLSCREEN);
+                this.container.classList.remove(constants.FULLSCREEN);
             }
         },
 
         onMouseover: function (event) {
-            if (event.target === canvas) {
-                isMouseover = true;
+            if (event.target === this.canvas) {
+                this.isMouseover = true;
             }
         },
 
         onMouseout: function (event) {
-            isMouseover = false;
+            this.isMouseover = false;
         },
 
-        onPointerMove: function (event) {
-            if (isUserInteracting) {
-                var rot_speed = options.camera.mouse_rotation_speed
-                lon = (clientXStart - event.clientX) * rot_speed + lonStart;
-                lat = (event.clientY - clientYStart) * rot_speed + latStart;
+        onMouseMove: function (event) {
+            if (!this.animating) return;
+
+            if (this.isUserInteracting) {
+                var rot_speed = this.options.camera.mouse_rotation_speed
+                this.lon = (this.clientXStart - event.clientX) * rot_speed + this.lonStart;
+                this.lat = (event.clientY - this.clientYStart) * rot_speed + this.latStart;
             }
 
             // Update pointerVector for all the raycasting
-            var mousePos = self.getPointerEventPos(event);
-            pointerVector.x = (mousePos.x / canvas.offsetWidth) * 2 - 1;
-            pointerVector.y = -(mousePos.y / canvas.offsetHeight) * 2 + 1;
+            var mousePos = this.getPointerEventPos(event);
+            this.pointerVector.x = (mousePos.x / this.canvas.offsetWidth) * 2 - 1;
+            this.pointerVector.y = -(mousePos.y / this.canvas.offsetHeight) * 2 + 1;
 
             // Raycast the hotspots for the tooltip system
-            hoveringObj = null;
-            raycaster.setFromCamera(pointerVector, camera);
-            var intersects = raycaster.intersectObject(hotspotGroup, true);
+            this.hoveringObj = null;
+            this.raycaster.setFromCamera(this.pointerVector, this.camera);
+            var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
             if (intersects.length > 0) {
-                latestPointerProjection = intersects[0].point;
-                hoveringObj = intersects[0].object;
-                self.showTooltip();
+                this.latestPointerProjection = intersects[0].point;
+                this.hoveringObj = intersects[0].object;
+                this.showTooltip();
             }
             else {
-                self.hideTooltip();
+                this.hideTooltip();
             }
 
             // Change mouse cursor to 'pointer' when hovering over a clickable element
-            if (hoveringObj) {
+            if (this.hoveringObj) {
                 $('html,body').css('cursor', 'pointer');
             } else {
-                raycaster.setFromCamera(pointerVector, cameraHUD);
-                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+                this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+                var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
                 if (obj && obj.onclick)
                     $('html,body').css('cursor', 'pointer');
                 else
@@ -644,220 +637,235 @@ const constants = {
             }
         },
 
-        onPointerDown: function (event) {
+        onMouseDown: function (event) {
+            if (!this.animating || !this.isMouseover) return;
+
             // Raycast the HUD elements
-            raycaster.setFromCamera(pointerVector, cameraHUD);
-            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            this.hoveredHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
-            raycaster.setFromCamera(pointerVector, camera);
-            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+            this.raycaster.setFromCamera(this.pointerVector, this.camera);
+            this.hoveredHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            // TODO: Ignore isMouseover if using a mobile device/touchscreen
-            if (isMouseover && event.clientX && !hoveredHUDEl) {
-                autoRotate = false;
-                decRotationRate = 0.9;
-                isUserInteracting = true;
+            if (!this.hoveredHUDEl) {
+                this.autoRotate = false;
+                this.decRotationRate = 0.9;
+                this.isUserInteracting = true;
 
-                var clientX = event.clientX || event.touches[0].clientX;
-                var clientY = event.clientY || event.touches[0].clientY;
-                clientXStart = clientX;
-                clientYStart = clientY;
-                lonStart = lonLast = lon;
-                latStart = LatLast = lat;
+                this.clientXStart = event.clientX;
+                this.clientYStart = event.clientY;
+                this.lonStart = this.lonLast = this.lon;
+                this.latStart = this.LatLast = this.lat;
             }
         },
 
-        onPointerUp: function (event) {
-            if (hoveredHUDEl) {
-                raycaster.setFromCamera(pointerVector, cameraHUD);
-                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-                if (obj && obj === hoveredHUDEl && obj.onclick) {
+        onMouseUp: function (event) {
+            if (!this.animating || !this.isUserInteracting) return;
+
+            if (this.hoveredHUDEl) {
+                this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+                var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+                if (obj && obj === this.hoveredHUDEl && obj.onclick) {
                     obj.onclick();
                 }
-            } else if (hoveredHotspot) {
-                raycaster.setFromCamera(pointerVector, camera);
-                var obj = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
-                if (obj && obj === hoveredHotspot) {
-                    self.changeRoom(hoveredHotspot.name);
+            } else if (this.hoveredHotspot) {
+                this.raycaster.setFromCamera(this.pointerVector, this.camera);
+                var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
+                if (obj && obj === this.hoveredHotspot) {
+                    this.changeRoom(this.hoveredHotspot.name);
                 }
             }
 
-            if (isUserInteracting) {
-                velCam.set(lonAcc.average(), latAcc.average());
-                lonAcc.clear();
-                latAcc.clear();
-            }
+            this.velCam.set(this.lonAcc.average(), this.latAcc.average());
+            this.lonAcc.clear();
+            this.latAcc.clear();
 
-            isUserInteracting = false;
+            this.isUserInteracting = false;
         },
 
         onTouchMove: function (event) {
+            if (!this.animating || !this.isUserInteracting) return;
+
             // Ignore if more than one touch is registered
-            if (event.target !== canvas || event.touches.length > 1)
+            if (event.target !== this.canvas || event.touches.length > 1)
                 return;
 
             // Update pointerVector for all the raycasting
-            var touchPos = self.getPointerEventPos(event);
-            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
-            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+            var touchPos = this.getPointerEventPos(event);
+            this.pointerVector.x = (touchPos.x / this.canvas.offsetWidth) * 2 - 1;
+            this.pointerVector.y = -(touchPos.y / this.canvas.offsetHeight) * 2 + 1;
 
-            if (isUserInteracting) {
+            if (this.isUserInteracting) {
                 var clientX = event.touches[0].clientX;
                 var clientY = event.touches[0].clientY;
-                var rot_speed = options.camera.touch_rotation_speed;
-                lon = (clientXStart - clientX) * rot_speed + lonStart;
-                lat = (clientY - clientYStart) * rot_speed + latStart;
+                var rot_speed = this.options.camera.touch_rotation_speed;
+                this.lon = (this.clientXStart - clientX) * rot_speed + this.lonStart;
+                this.lat = (clientY - this.clientYStart) * rot_speed + this.latStart;
             }
         },
 
         onTouchStart: function (event) {
+            if (!this.animating) return;
+
             // Ignore if more than one touch is registered
-            if (event.target !== canvas || event.touches.length > 1)
+            if (event.target !== this.canvas || event.touches.length > 1)
                 return;
 
             // Update pointerVector for all the raycasting
-            var touchPos = self.getPointerEventPos(event);
-            pointerVector.x = (touchPos.x / canvas.offsetWidth) * 2 - 1;
-            pointerVector.y = -(touchPos.y / canvas.offsetHeight) * 2 + 1;
+            var touchPos = this.getPointerEventPos(event);
+            this.pointerVector.x = (touchPos.x / this.canvas.offsetWidth) * 2 - 1;
+            this.pointerVector.y = -(touchPos.y / this.canvas.offsetHeight) * 2 + 1;
 
             // Raycast the HUD elements
-            raycaster.setFromCamera(pointerVector, cameraHUD);
-            hoveredHUDEl = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
+            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            this.hoveredHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
-            raycaster.setFromCamera(pointerVector, camera);
-            hoveredHotspot = self.getFirstValidRCObj(raycaster.intersectObject(hotspotGroup, true));
+            this.raycaster.setFromCamera(this.pointerVector, this.camera);
+            this.hoveredHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!hoveredHUDEl) {
-                autoRotate = false;
-                decRotationRate = 0.9;
-                isUserInteracting = true;
+            if (!this.hoveredHUDEl) {
+                this.autoRotate = false;
+                this.decRotationRate = 0.9;
+                this.isUserInteracting = true;
 
-                clientXStart = event.touches[0].clientX;
-                clientYStart = event.touches[0].clientY;
-                lonStart = lonLast = lon;
-                latStart = LatLast = lat;
+                this.clientXStart = event.touches[0].clientX;
+                this.clientYStart = event.touches[0].clientY;
+                this.lonStart = this.lonLast = this.lon;
+                this.latStart = this.LatLast = this.lat;
             }
         },
 
         onTouchEnd: function (event) {
+            if (!this.animating || !this.isUserInteracting) return;
+
             // Ignore if more than one touch is registered
-            if (event.target !== canvas)
+            if (event.target !== this.canvas)
                 return;
 
-            if (hoveredHUDEl) {
-                raycaster.setFromCamera(pointerVector, cameraHUD);
-                var obj = self.getFirstValidRCObj(raycaster.intersectObject(HUDGroup, true));
-                if (obj && obj === hoveredHUDEl && obj.onclick)
+            if (this.hoveredHUDEl) {
+                this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+                var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+                if (obj && obj === this.hoveredHUDEl && obj.onclick)
                     obj.onclick();
             }
-            else if (hoveredHotspot) {
-                if (hoveredHotspot === hoveringObj) {
-                    self.changeRoom(hoveredHotspot.name);
-                    hoveringObj = undefined;
+            else if (this.hoveredHotspot) {
+                if (this.hoveredHotspot === this.hoveringObj) {
+                    this.changeRoom(this.hoveredHotspot.name);
+                    this.hoveringObj = undefined;
                 }
                 else {
-                    raycaster.setFromCamera(pointerVector, camera);
-                    var intersects = raycaster.intersectObject(hotspotGroup, true);
-                    if (intersects.length > 0 && intersects[0].object === hoveredHotspot) {
-                        latestPointerProjection = intersects[0].point;
-                        hoveringObj = intersects[0].object;
-                        self.showTooltip();
+                    this.raycaster.setFromCamera(this.pointerVector, this.camera);
+                    var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
+                    if (intersects.length > 0 && intersects[0].object === this.hoveredHotspot) {
+                        this.latestPointerProjection = intersects[0].point;
+                        this.hoveringObj = intersects[0].object;
+                        this.showTooltip();
                     }
                 }
             }
             else {
-                hoveringObj = undefined;
-                self.hideTooltip();
+                this.hoveringObj = undefined;
+                this.hideTooltip();
             }
 
-            if (isUserInteracting) {
-                velCam.set(lonAcc.average(), latAcc.average());
-                lonAcc.clear();
-                latAcc.clear();
+            if (this.isUserInteracting) {
+                this.velCam.set(this.lonAcc.average(), this.latAcc.average());
+                this.lonAcc.clear();
+                this.latAcc.clear();
             }
 
-            isUserInteracting = false;
+            this.isUserInteracting = false;
         },
 
         animate: function () {
-            animation = requestAnimationFrame(self.animate);
-            self.update();
+            var self = this;
+            this.animating = requestAnimationFrame(function() { self.animate(); });
+            this.update();
         },
 
         update: function () {
-            var delta = clock.getDelta();
+            var self = this;
+            var delta = this.clock.getDelta();
+            var autoRotateOpts = this.options.camera.auto_rotate;
 
-            if (isUserInteracting) {
-                lonAcc.add(lon - lonLast);
-                latAcc.add(lat - LatLast);
-                lonLast = lon, LatLast = lat;
+            if (this.isUserInteracting) {
+                this.lonAcc.add(this.lon - this.lonLast);
+                this.latAcc.add(this.lat - this.LatLast);
+                this.lonLast = this.lon, this.LatLast = this.lat;
 
-                clearTimeout(autoRotateTimeout);
-                autoRotateTimeout = setTimeout(function () {
-                    autoRotateTimeout = undefined;
-                    velCam.set(0, 0);
-                    autoRotate = true;
-                }, options.camera.auto_rotate.secs_to_rotate * 1000);
-            } else if (!autoRotate) {
-                if (options.camera.smooth_out.enable) {
-                    var decRate = 0.1 + decRotationRate;
-                    var smoothOutRate = options.camera.smooth_out.decrease_rate;
-                    decRotationRate = Math.max(0, decRotationRate - smoothOutRate * delta);
-                    velCam.set(Math.max(0, Math.abs(velCam.x) * decRate) * Math.sign(velCam.x),
-                               Math.max(0, Math.abs(velCam.y) * decRate) * Math.sign(velCam.y));
+                clearTimeout(this.autoRotateTimeout);
+                this.autoRotateTimeout = setTimeout(function () {
+                    self.autoRotateTimeout = undefined;
+                    self.velCam.set(0, 0);
+                    self.autoRotate = true;
+                }, autoRotateOpts.secs_to_rotate * 1000);
+            } else if (!this.autoRotate) {
+                if (this.options.camera.smooth_stop.enable) {
+                    var decRate = 0.1 + this.decRotationRate;
+                    var smoothOutRate = this.options.camera.smooth_stop.decrease_rate;
+                    this.decRotationRate = Math.max(0, this.decRotationRate - smoothOutRate * delta);
+                    this.velCam.set(Math.max(0, Math.abs(this.velCam.x) * decRate) * Math.sign(this.velCam.x),
+                                    Math.max(0, Math.abs(this.velCam.y) * decRate) * Math.sign(this.velCam.y));
 
-                    lon += velCam.x;
-                    lat += velCam.y;
+                    this.lon += this.velCam.x;
+                    this.lat += this.velCam.y;
                 }
-            } else if (options.camera.auto_rotate.enable) {
-                var smoothLonRate = options.camera.auto_rotate.smooth_in_x_rate;
-                var smoothLatRate = options.camera.auto_rotate.smooth_in_y_rate;
+            } else if (autoRotateOpts.enable) {
+                var smoothLonRate = autoRotateOpts.smooth_in_x_rate,
+                    smoothLatRate = autoRotateOpts.smooth_in_y_rate,
+                    maxVelLon = autoRotateOpts.x_max_velocity,
+                    maxVelLat = autoRotateOpts.y_max_velocity;
 
                 // Smooth rotate lon
-                velCam.x = Math.min(velCam.x + smoothLonRate * delta, maxVelLon);
+                this.velCam.x = Math.min(this.velCam.x + smoothLonRate * delta, maxVelLon);
 
                 // Smooth lat close into 0
-                if (Math.abs(lat) > 0.5) {
-                    var velLat = Math.abs(velCam.y) + smoothLatRate * delta;
-                    velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(lat);
-                } else if (Math.abs(velCam.y) > 0.001) {
-                    velCam.y = Math.max(0, Math.abs(velCam.y) * 0.95) * Math.sign(velCam.y);
+                if (Math.abs(this.lat) > 0.5) {
+                    var velLat = Math.abs(this.velCam.y) + smoothLatRate * delta;
+                    this.velCam.y = Math.min(velLat, maxVelLat) * -Math.sign(this.lat);
+                } else if (Math.abs(this.velCam.y) > 0.001) {
+                    this.velCam.y = Math.max(0, Math.abs(this.velCam.y) * 0.95) * Math.sign(this.velCam.y);
                 } else {
-                    velCam.y = 0;
+                    this.velCam.y = 0;
                 }
 
-                lon += velCam.x;
-                lat += velCam.y;
+                this.lon += this.velCam.x;
+                this.lat += this.velCam.y;
             }
 
-            lat = Math.min(Math.max(-85, lat), 85);
-            phi = THREE.Math.degToRad(90 - lat);
-            theta = THREE.Math.degToRad(lon);
+            this.lat = Math.min(Math.max(-85, this.lat), 85);
+            this.phi = THREE.Math.degToRad(90 - this.lat);
+            this.theta = THREE.Math.degToRad(this.lon);
 
-            camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
-            camera.target.y = 500 * Math.cos(phi);
-            camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
-            camera.lookAt(camera.target);
+            this.camera.target.x = 500 * Math.sin(this.phi) * Math.cos(this.theta);
+            this.camera.target.y = 500 * Math.cos(this.phi);
+            this.camera.target.z = 500 * Math.sin(this.phi) * Math.sin(this.theta);
+            this.camera.lookAt(this.camera.target);
 
-            renderer.render(scene, camera);
-            renderer.render(sceneHUD, cameraHUD);
+            this.renderer.render(this.scene, this.camera);
+            this.renderer.render(this.sceneHUD, this.cameraHUD);
+        },
+
+        dispose: function () {
+            cancelAnimationFrame(this.animating);
+            util.removeObjectByName(this.HUDGroup, 'map');
         },
 
         showTooltip: function () {
             var tooltipDiv = $('#'+ constants.TOOLTIP)[0];
 
-            if (tooltipDiv && hoveringObj) {
+            if (tooltipDiv && this.hoveringObj) {
                 tooltipDiv.style.display = "block";
 
-                var canvasData = canvas.getBoundingClientRect();
-                var canvasHalfWidth = canvasData.width * 0.5;
-                var canvasHalfHeight = canvasData.height * 0.5;
+                var canvasData = this.canvas.getBoundingClientRect(),
+                    halfWidth = this.canvasWidth * 0.5,
+                    halfHeight = this.canvasHeight * 0.5;
 
-                var tooltipPosition = latestPointerProjection.clone().project(camera);
-                tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + canvasData.left;
-                tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + canvasData.top;
+                var tooltipPosition = this.latestPointerProjection.clone().project(this.camera);
+                tooltipPosition.x = (tooltipPosition.x * halfWidth) + halfWidth + canvasData.left;
+                tooltipPosition.y = -(tooltipPosition.y * halfHeight) + halfHeight + canvasData.top;
 
                 var tootipWidth = tooltipDiv.offsetWidth;
                 var tootipHeight = tooltipDiv.offsetHeight;
@@ -865,7 +873,7 @@ const constants = {
                 tooltipDiv.style.left = tooltipPosition.x - tootipWidth * 0.5 + 'px';
                 tooltipDiv.style.top = tooltipPosition.y - tootipHeight - 5 + 'px';
 
-                tooltipDiv.innerText = this.prettyString(hoveringObj.name);
+                tooltipDiv.innerText = this.prettyString(this.hoveringObj.name);
 
                 setTimeout(function () {
                     tooltipDiv.style.opacity = 1.0;
@@ -883,15 +891,15 @@ const constants = {
 
         showMap: function () {
             // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
-            var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            self.changeOpacity(mapIconSprite, 0);
-            self.changeOpacity(mapSprite, 1);
+            var mapIconSprite = this.sceneHUD.getObjectByName(constants.MAP_ICON);
+            this.changeOpacity(mapIconSprite, 0);
+            this.changeOpacity(this.mapSprite, 1);
         },
 
         hideMap: function () {
-            var mapIconSprite = sceneHUD.getObjectByName(constants.MAP_ICON);
-            self.changeOpacity(mapIconSprite, 1);
-            self.changeOpacity(mapSprite, 0);
+            var mapIconSprite = this.sceneHUD.getObjectByName(constants.MAP_ICON);
+            this.changeOpacity(mapIconSprite, 1);
+            this.changeOpacity(this.mapSprite, 0);
         },
 
         changeOpacity: function (sprite, opacity) {
@@ -902,16 +910,16 @@ const constants = {
         },
 
         changeRoom: function (roomId) {
-            if (roomId === currentRoom) {
+            if (roomId === this.currentRoom) {
                 return;
             }
 
             // Update map hotspot images to show which is the current room
-            if (HUDGroup.getObjectByName(currentRoom)) {
-                var prevRoomMat = HUDGroup.getObjectByName(currentRoom).material;
-                var newRoomMat = HUDGroup.getObjectByName(roomId).material;
-                prevRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.image);
-                newRoomMat.map = new THREE.TextureLoader().load(options.map_hotspot.current.image);
+            if (this.HUDGroup.getObjectByName(this.currentRoom)) {
+                var prevRoomMat = this.HUDGroup.getObjectByName(this.currentRoom).material;
+                var newRoomMat = this.HUDGroup.getObjectByName(roomId).material;
+                prevRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.image);
+                newRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.current.image);
                 prevRoomMat.needsUpdate = true;
                 newRoomMat.needsUpdate = true;
             }
@@ -919,80 +927,76 @@ const constants = {
             // Change panorama image
             // TODO: Some sort of transition, fade in and out of black?
             var panorama = this.getPanorama(roomId);
-            skybox.geometry = panorama.geometry;
-            skybox.material = panorama.material;
-            currentRoom = roomId;
+            this.skybox.geometry = panorama.geometry;
+            this.skybox.material = panorama.material;
+            this.currentRoom = roomId;
 
             // Change the hotspots
-            scene.remove(hotspotGroup);
-            hotspotGroup = new THREE.Group();
+            this.scene.remove(this.hotspotGroup);
+            this.hotspotGroup = new THREE.Group();
             this.addHotspots();
 
             this.hideTooltip();
-            hoveringObj = undefined;
+            this.hoveringObj = undefined;
         },
 
         topPos: function (px) {
-            var canvasData = canvas.getBoundingClientRect();
-            return canvasData.height * 0.5 - px;
+            return this.canvasHeight * 0.5 - px;
         },
 
         bottomPos: function (px) {
-            var canvasData = canvas.getBoundingClientRect();
-            return px - canvasData.height * 0.5;
+            return px - this.canvasHeight * 0.5;
         },
 
         leftPos: function (px) {
-            var canvasData = canvas.getBoundingClientRect();
-            return px - canvasData.width * 0.5;
+            return px - this.canvasWidth * 0.5;
         },
 
         rightPos: function (px) {
-            var canvasData = canvas.getBoundingClientRect();
-            return canvasData.width * 0.5 - px;
+            return this.canvasWidth * 0.5 - px;
         },
 
         toggleMeasurements: function () {
-            if (isShowingMeasurements) {
-                self.hideMeasurements();
+            if (this.isShowingMeasurements) {
+                this.hideMeasurements();
             } else {
-                self.showMeasurements();
+                this.showMeasurements();
             }
         },
 
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: roomImages[currentRoom]
+                map: this.roomImages[this.currentRoom]
             });
             var mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
+            this.scene.add(mesh);
 
-            isShowingMeasurements = true;
+            this.isShowingMeasurements = true;
         },
 
         hideMeasurements: function () {
             //TODO: hide measurements
 
-            isShowingMeasurements = false;
+            this.isShowingMeasurements = false;
         },
 
         toggleFullscreen: function () {
-            if (isFullscreen)
-                self.closeFullscreen();
+            if (this.isFullscreen)
+                this.closeFullscreen();
             else
-                self.openFullscreen();
+                this.openFullscreen();
         },
 
         openFullscreen: function () {
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) { /* Firefox */
-                elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE/Edge */
-                elem.msRequestFullscreen();
+            if (this.elem.requestFullscreen) {
+                this.elem.requestFullscreen();
+            } else if (this.elem.mozRequestFullScreen) { /* Firefox */
+                this.elem.mozRequestFullScreen();
+            } else if (this.elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                this.elem.webkitRequestFullscreen();
+            } else if (this.elem.msRequestFullscreen) { /* IE/Edge */
+                this.elem.msRequestFullscreen();
             }
         },
 
