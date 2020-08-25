@@ -118,7 +118,7 @@
             this.canvas = document.createElement("canvas");
             this.container.appendChild(this.canvas);
 
-            this.marginWidth = window.innerWidth - this.container.offsetWidth;
+            this.marginWidth = $(window).width() - this.container.offsetWidth;
             this.marginHeight = this.container.offsetTop;
             this.startingWidth = this.canvasWidth = this.container.offsetWidth;
             this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
@@ -171,8 +171,7 @@
             document.addEventListener('mouseout', function(e) { self.onMouseout(e); }, false);
             document.addEventListener('mousemove', function(e) { self.onMouseMove(e); }, false);
             document.addEventListener('mousedown', function(e) { self.onMouseDown(e); }, false);
-            document.addEventListener('mouseup', function(e) { self.onMouseUp(e); }
-                , false);
+            document.addEventListener('mouseup', function(e) { self.onMouseUp(e); }, false);
 
             document.addEventListener('touchmove', function(e) { self.onTouchMove(e); }, false);
             document.addEventListener('touchstart', function(e) { self.onTouchStart(e); }, false);
@@ -309,13 +308,6 @@
                     bg.material.opacity = 0;
             }
             return sprite;
-        },
-
-        getSizeAlt: function () {
-            var sizeAlt = 1;
-            if (window.innerWidth <= this.options.hud.mobile.width_at_most)
-                sizeAlt = this.options.hud.mobile.size_alt;
-            return sizeAlt;
         },
 
         createBackground: function (bgData, parent) {
@@ -487,6 +479,13 @@
             return size;
         },
 
+        getSizeAlt: function () {
+            var sizeAlt = 1;
+            if ($(window).width() <= this.options.hud.mobile.width_at_most)
+                sizeAlt = this.options.hud.mobile.size_alt;
+            return sizeAlt;
+        },
+
         getPointerEventPos: function (event) {
             var rect = this.canvas.getBoundingClientRect();
             var clientX = event.clientX || (event.touches && event.touches[0].clientX) || 0;
@@ -537,14 +536,14 @@
 
         onResize: function (event) {
             var newWidth, newHeight;
-            if ((window.innerWidth - this.marginWidth) * this.options.canvas.height_difference < window.innerHeight - this.marginHeight) {
+            if (($(window).width() - this.marginWidth) * this.options.canvas.height_difference < $(window).height() - this.marginHeight) {
                 // Adapt canvas after the window's width
-                newWidth = window.innerWidth - this.marginWidth;
+                newWidth = $(window).width() - this.marginWidth;
                 var diff = newWidth / this.canvasWidth;
                 newHeight = this.canvasHeight * diff;
             } else {
                 // Adapt canvas after the window's height
-                newHeight = window.innerHeight - this.marginHeight;
+                newHeight = $(window).height() - this.marginHeight;
                 var diff = newHeight / this.canvasHeight;
                 newWidth = this.canvasWidth * diff;
             }
@@ -563,8 +562,8 @@
 
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                this.resetSize(window.innerWidth, window.innerHeight);
-                this.resetHUD(window.innerWidth, window.innerHeight);
+                this.resetSize($(window).width(), $(window).height());
+                this.resetHUD($(window).width(), $(window).height());
 
                 // TODO: Change color and background when changing image too
                 var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
