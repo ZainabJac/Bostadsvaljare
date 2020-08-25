@@ -24,6 +24,7 @@
             <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
         </BSCarousel>
     </div>
+    <div id="pan_container" class="select-none hidden"></div>
 </div>
 
 <div class="line-4planritning">
@@ -204,7 +205,7 @@
             ActionLink = "https://visivo.se",
             ActionLinkTarget = "_blank"
         },
-  new Item {
+        new Item {
             Source = "IMG/soffavinkel3.jpg",
             Alt ="Third Slide",
             Caption = "Slide 3",
@@ -224,8 +225,12 @@
         ShowInfo = !ShowInfo;
     }
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
+        base.OnInitialized();
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("pan_viewer.init");
+
         Orders = Enumerable.Range(1, 75).Select(x => new Order()
         {
             OrderID = 1000 + x,
@@ -238,7 +243,6 @@
 }
 
 <style>
-
     .italicfont {
         font-family: 'Segoe UI';
         font-size: 12px;
@@ -258,13 +262,13 @@
         width: 16.66%;
     }
 
-        .line-3 {
-            width: 25%;
-        }
+    .line-3 {
+        width: 25%;
+    }
 
-        .line-4 {
-            width: 33.33%;
-        }
+    .line-4 {
+        width: 33.33%;
+    }
 
     .line-4planritning {
         width: 33.33%;
@@ -363,35 +367,33 @@
 
     .gallery-img {
         width: 100%;
-
     }
 
     .gallery-img:hover {
         filter: brightness(110%);
     }
 
-        .card-info-header {
-            font-family: 'Segoe UI';
-            font-size: 18px;
-            display: inline-block;
-            text-size-adjust: none;
+    .card-info-header {
+        font-family: 'Segoe UI';
+        font-size: 18px;
+        display: inline-block;
+        text-size-adjust: none;
+    }
 
-        }
+    .card-info-text {
+        font-family: 'Segoe UI';
+        font-size: 12px;
+        display: inline-block;
+        text-size-adjust: none;
+    }
 
-        .card-info-text {
-            font-family: 'Segoe UI';
-            font-size: 12px;
-            display: inline-block;
-            text-size-adjust: none;
-        }
-
-        .card-info-header-right {
-            font-family: 'Segoe UI';
-            font-size: 18px;
-            display: inline-block;
-            float: right ;
-            text-size-adjust: none;
-        }
+    .card-info-header-right {
+        font-family: 'Segoe UI';
+        font-size: 18px;
+        display: inline-block;
+        float: right ;
+        text-size-adjust: none;
+    }
 
     .list1 {
         list-style-type: none;
@@ -407,8 +409,6 @@
 
     .planritning {
         width: 100%;
-
-
     }
 
     @@media (max-width: 1467px) {
@@ -447,7 +447,7 @@
             width: 25%;
         }
 
-        .line-1last {
+        .last {
             display: none
         }
 
