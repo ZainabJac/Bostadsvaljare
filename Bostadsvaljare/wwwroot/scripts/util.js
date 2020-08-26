@@ -58,6 +58,14 @@
                 return -1;
         },
 
+        getGalleryIndex: function () {
+            var img = this.getElementFromPoint('img');
+            if (img  &&  img.className.includes('gallery-img'))
+                return parseInt(img.attributes.index.value);
+            else
+                return -1;
+        },
+
         removeObjectByName: function (object, targetName) {
             var children = object.children;
 

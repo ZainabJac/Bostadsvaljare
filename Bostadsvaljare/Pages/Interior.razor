@@ -3,7 +3,6 @@
 
 @inject IJSRuntime JSRuntime
 
-@using BlazorStrap
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
@@ -11,104 +10,101 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <div class="line-8">
+    <!-- Stillbilder -->
     <div id="slideshow" class="@(ShowInfo ? "" : "full")">
-        <BSCarousel NumberOfItems="@items.Count">
+        <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                @for (int i = 0; i < items.Count; i++) {
+                    <!--TODO: if item = non-image then ignore -->
+                    <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                }
+            </ol>
             <div class="carousel-inner">
-                @for (int i = 0; i < items.Count; i++)
-                {
-                    <BSCarouselItem src="@items[i].Source" alt="@items[i].Alt" />
+                @for (int i = 0; i < items.Count; i++) {
+                    <!--TODO: if item = non-image then ignore -->
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <img class="d-block w-100" src="@items[i].Source" alt="@items[i].Alt">
+                    </div>
                 }
             </div>
-            <BSCarouselIndicators NumberOfItems="@items.Count"></BSCarouselIndicators>
-            <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@items.Count"></BSCarouselControl>
-            <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@items.Count"></BSCarouselControl>
-        </BSCarousel>
+            <a class="carousel-control-prev" href="#gallery-carousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#gallery-carousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
     </div>
+
+    <!-- 360-bilder -->
     <div id="pan_container" class="select-none hidden"></div>
+
+    <!-- VR-video -->
+    <iframe src="https://player.vimeo.com/video/393178231" class="hidden" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen></iframe>
 </div>
 
-<div class="line-4planritning">
-    <div id="housing_info" class="@(ShowInfo ? "" : "hidden")">
-        @*TODO: have an own block that contains relevant info regarding the selected housing*@
-    </div>
+<div class="line-4-planritning">
+    <div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
     <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
 </div>
 
 <div id="gallery">
-    @*TODO: ensure the images below reflect to what is shown in the slideshow*@
     @*TODO: enable scrolling if too many images are present to fit the window*@
-    <div class="line-1">
-        <BSImage src="IMG/soffavinkel1.jpg" Class="gallery-img"></BSImage>
-    </div>
-    <div class="line-1">
-        <BSImage src="IMG/Köksbild.jpg" Class="gallery-img"></BSImage>
-    </div>
-    <div class="line-1">
-        <BSImage src="IMG/soffavinkel3.jpg" Class="gallery-img"></BSImage>
-    </div>
-    <div class="line-1last">
-        <BSImage src="IMG/soffavinkel2.jpg" Class="gallery-img" style="margin-right: initial;"></BSImage>
-    </div>
-
+    @for (int i=0; i < items.Count; i++) {
+        <div class="line-1 @(i == items.Count-1 ? "last" : "")">
+            <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+        </div>
+    }
 </div>
-
 
 <div class="line-4">
-    <SfCard >
-        <CardStacked>
+    <div>
+        <SfCard>
+            <CardStacked>
 
-
-
-            <div>
-
-                <text class="card-info-header" style="margin-left:6px;">Pris </text>
-                <text class="card-info-header-right" style="margin-right:6px;">@house1.Price</text>
-
-            </div>
-
-            <div>
-
-                <text class="card-info-header" style="margin-left:6px;">Boarea</text>
-                <text class="card-info-header-right" style="margin-right:6px;">@house1.Sqm</text>
-
-            </div>
-
-
-            <div>
-
-                <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
-                <text class="card-info-header-right" style="margin-right:6px;">@house1.HouseNumber</text>
-            </div>
-
-            <div>
-                <div style="float:left; margin-left:6px; margin-bottom: 6px; display:inline-block;">
-                    <SfButton> Bofaktablad </SfButton>
+                <div>
+                    <text class="card-info-header" style="margin-left:6px;">Pris </text>
+                    <text class="card-info-header-right" style="margin-right:6px;">@house1.Price</text>
                 </div>
 
-                <div style="float:right; margin-right: 6px; margin-bottom: 6px; display:inline-block;">
-                    <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
-
+                <div>
+                    <text class="card-info-header" style="margin-left:6px;">Boarea</text>
+                    <text class="card-info-header-right" style="margin-right:6px;">@house1.Sqm</text>
                 </div>
-            </div>
 
-        </CardStacked>
-    </SfCard>
+
+                <div>
+                    <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
+                    <text class="card-info-header-right" style="margin-right:6px;">@house1.HouseNumber</text>
+                </div>
+
+                <div>
+                    <div style="float:left; margin-left:6px; margin-bottom: 6px; display:inline-block;">
+                        <SfButton> Bofaktablad </SfButton>
+                    </div>
+
+                    <div style="float:right; margin-right: 6px; margin-bottom: 6px; display:inline-block;">
+                        <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
+                    </div>
+                </div>
+
+            </CardStacked>
+        </SfCard>
+    </div>
+
+    <div class="arkitekt">
+
+        <SfCard ID="ArkitektenHarOrdet">
+            <CardStacked>
+                <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
+                <text class="italicfont" style="margin-left:6px;">"@house1.Comments" </text>
+            </CardStacked>
+        </SfCard>
+
+    </div>
 </div>
-
-
-
-
-
-<div class="line-4arkitekt">
-
-    <SfCard  ID="ArkitektenHarOrdet">
-        <CardStacked>
-            <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-            <text class="italicfont" style="margin-left:6px;">"@house1.Comments" </text>
-        </CardStacked>
-    </SfCard>
-</div>
-
 
 @*<div class="line-2knapp">
 
@@ -240,6 +236,12 @@
         }).ToList();
         ShowInfo = true;
     }
+
+    private async void OnClickGalleryImg(MouseEventArgs ev)
+    {
+        int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
+        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
+    }
 }
 
 <style>
@@ -254,8 +256,8 @@
         width: 8.33%;
     }
 
-    .line-1last {
-        width: 8.33%;
+    .last {
+        margin-right: initial;
     }
 
     .line-2 {
@@ -270,13 +272,11 @@
         width: 33.33%;
     }
 
-    .line-4planritning {
+    .line-4-planritning {
         width: 33.33%;
     }
 
-    .line-4arkitekt {
-        width: 33.33%;
-        float: left;
+    .arkitekt {
         padding: 7px;
     }
 
@@ -371,6 +371,7 @@
 
     .gallery-img:hover {
         filter: brightness(110%);
+        cursor: pointer;
     }
 
     .card-info-header {
@@ -412,7 +413,7 @@
     }
 
     @@media (max-width: 1467px) {
-        .line-4arkitekt {
+        .arkitekt {
             width: 100%;
         }
     }
@@ -448,7 +449,7 @@
         }
 
         .last {
-            display: none
+            display: none;
         }
 
         .line-2 {
@@ -468,11 +469,11 @@
             width: 100%;
         }
 
-        .line-4arkitekt {
+        .arkitekt {
             width: 100%;
         }
 
-        .line-4planritning {
+        .line-4-planritning {
             width: 75%;
         }
 
