@@ -51,16 +51,15 @@
 </div>
 
 <div id="gallery" class="line-4">
-    @*TODO: enable scrolling if too many images are present to fit the window*@
     @for (int i=0; i < items.Count; i++) {
         if (i < 4) {
-            <div class="line-3 @(i == 3 ? "last" : "")">
+            <span class="line-3 @(i == 3 ? "last" : "")">
                 <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-            </div>
+            </span>
         } else {
-            <div class="line-3 hidden">
+            <span class="line-3">
                 <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-            </div>
+            </span>
         }
     }
 </div>
@@ -364,11 +363,14 @@
     }
 
     #gallery {
-        /*height: 95px;*/
         padding: 0px;
         overflow-y: hidden;
         overflow-x: auto;
         white-space: nowrap;
+    }
+
+    #gallery span {
+        display: contents;
     }
 
     #hide_info {
@@ -383,12 +385,20 @@
     }
 
     .gallery-img {
-        width: 100%;
+        width: 25%;
+        padding: 7px;
+        filter: brightness(120%);
+        transition-property: filter;
+        transition-duration: 0.25s;
     }
 
     .gallery-img:hover {
-        filter: brightness(110%);
+        filter: brightness(100%);
         cursor: pointer;
+    }
+
+    .gallery-img.active {
+        filter: brightness(100%);
     }
 
     .card-info-header {
