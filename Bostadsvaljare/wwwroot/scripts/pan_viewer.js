@@ -55,10 +55,12 @@
         latestPointerProjection: null,
         tooltipDisplayTimeout: null,
         marginWidth: 0, marginHeight: 0,
+        listeners: {},
 
         start: function (aptID) {
             this.aptData = window.apartments[aptID];
             this.reset();
+            this.onResize();
 
             // Preload images to avoid loading them each time when changing rooms
             if (this.initiated !== aptID) {
@@ -86,6 +88,11 @@
             this.container.oncontextmenu = function () { return false; };
             this.container.appendChild(this.canvas);
 
+            this.marginWidth = $(window).width() - this.container.offsetWidth;
+            this.marginHeight = this.container.offsetTop;
+            this.startingWidth = this.canvasWidth = this.container.offsetWidth;
+            this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
+
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
             this.lon = 180, this.lonLast = 0, this.lonStart = 0,
@@ -94,6 +101,8 @@
             this.velCam = new THREE.Vector2();
             this.autoRotate = true;
             this.autoRotateTimeout = undefined;
+
+            this.initHUD();
 
             // Map setup
             var transform = this.getTransform(this.options.map.transform);
@@ -106,6 +115,20 @@
 
             // Hide map, which is always shown (for some reason)
             this.hideMap();
+
+            // Adding event listeners
+            document.addEventListener('mouseover', this.listeners.mouseover, false);
+            document.addEventListener('mouseout', this.listeners.mouseout, false);
+            document.addEventListener('mousemove', this.listeners.mousemove, false);
+            document.addEventListener('mousedown', this.listeners.mousedown, false);
+            document.addEventListener('mouseup', this.listeners.mouseup, false);
+
+            document.addEventListener('touchmove', this.listeners.touchmove, false);
+            document.addEventListener('touchstart', this.listeners.touchstart, false);
+            document.addEventListener('touchend', this.listeners.touchend, false);
+
+            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
+            window.addEventListener('resize', this.listeners.resize, false);
         },
 
         init: function () {
@@ -113,17 +136,8 @@
 
             var self = this;
 
-            this.container = $('#' + constants.CONTAINER)[0];
-            this.container.oncontextmenu = function () { return false; };
-            this.canvas = document.createElement("canvas");
-            this.container.appendChild(this.canvas);
-
-            this.marginWidth = $(window).width() - this.container.offsetWidth;
-            this.marginHeight = this.container.offsetTop;
-            this.startingWidth = this.canvasWidth = this.container.offsetWidth;
-            this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
-
-            var aspect = this.canvasWidth / this.canvasHeight;
+            var aspect = this.canvasWidth ? this.canvasWidth / this.canvasHeight
+                                          : 100 / (100*this.options.canvas.height_difference);
             this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
             this.camera.target = new THREE.Vector3(0, 0, 0);
             this.scene = new THREE.Scene();
@@ -131,59 +145,27 @@
             this.skybox = new THREE.Mesh();
             this.scene.add(this.skybox);
 
+            this.canvas = document.createElement("canvas");
             this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
             this.renderer.autoClear = false;
             this.renderer.setPixelRatio(window.devicePixelRatio);
 
-            this.initHUD();
-            this.onResize();
+            this.listeners.mouseover = function (e) { self.onMouseover(e); };
+            this.listeners.mouseout = function (e) { self.onMouseout(e); };
+            this.listeners.mousemove = function (e) { self.onMouseMove(e); };
+            this.listeners.mousedown = function (e) { self.onMouseDown(e); };
+            this.listeners.mouseup = function (e) { self.onMouseUp(e); };
+            this.listeners.touchmove = function (e) { self.onTouchMove(e); };
+            this.listeners.touchstart = function (e) { self.onTouchStart(e); };
+            this.listeners.touchend = function (e) { self.onTouchEnd(e); };
+            this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
+            this.listeners.resize = function (e) { self.onResize(e); };
 
-            // Map button setup
-            // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
-            //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = this.options.map_icon;
-            var transform = this.getTransform(mapData.transform);
-            this.createHUDElement(mapData,
-                constants.MAP_ICON,
-                transform,
-                function() { self.showMap(); });
-
-            // Fullscreen button setup
-            var fullscreenData = this.options.fullscreen_icon;
-            var transform = this.getTransform(fullscreenData.transform);
-            this.createHUDElement(fullscreenData,
-                constants.FULLSCREEN_ICON,
-                transform,
-                function() { self.toggleFullscreen(); });
-
-            // Measurements button setup
-            // TODO: Be able to show apartment measurements on walls, etc.
-            // TODO: Make a different icon
-            /*var measurementsData = this.options.measurements_icon;
-            var transform = this.getTransform(measurementsData.transform);
-            this.createHUDElement(measurementsData,
-                constants.MEASUREMENTS_ICON,
-                transform,
-                function() { self.toggleMeasurements(); });*/
-
-            // Adding event listeners
-            document.addEventListener('mouseover', function(e) { self.onMouseover(e); }, false);
-            document.addEventListener('mouseout', function(e) { self.onMouseout(e); }, false);
-            document.addEventListener('mousemove', function(e) { self.onMouseMove(e); }, false);
-            document.addEventListener('mousedown', function(e) { self.onMouseDown(e); }, false);
-            document.addEventListener('mouseup', function(e) { self.onMouseUp(e); }, false);
-
-            document.addEventListener('touchmove', function(e) { self.onTouchMove(e); }, false);
-            document.addEventListener('touchstart', function(e) { self.onTouchStart(e); }, false);
-            document.addEventListener('touchend', function(e) { self.onTouchEnd(e); }, false);
-
-            document.addEventListener('fullscreenchange', function(e) { self.onFullscreenChange(e); }, false);
-            window.addEventListener('resize', function(e) { self.onResize(e); }, false);
-
-            initiated = true;
+            this.initiated = true;
         },
 
         initHUD: function () {
+            var self = this;
             var halfWidth = this.canvasWidth * 0.5,
                 halfHeight = this.canvasHeight * 0.5;
 
@@ -213,6 +195,34 @@
             var plane = new THREE.Mesh(planeGeometry, materialHUD);
             this.sceneHUD.add(plane);
             this.sceneHUD.add(this.HUDGroup);
+
+            // Map button setup
+            // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
+            //       Need to make sure the background is clickable as well (to bring up the map)
+            var mapData = this.options.map_icon;
+            var transform = this.getTransform(mapData.transform);
+            this.createHUDElement(mapData,
+                constants.MAP_ICON,
+                transform,
+                function() { self.showMap(); });
+
+            // Fullscreen button setup
+            var fullscreenData = this.options.fullscreen_icon;
+            var transform = this.getTransform(fullscreenData.transform);
+            this.createHUDElement(fullscreenData,
+                constants.FULLSCREEN_ICON,
+                transform,
+                function() { self.toggleFullscreen(); });
+
+            // Measurements button setup
+            // TODO: Be able to show apartment measurements on walls, etc.
+            // TODO: Make a different icon
+            /*var measurementsData = this.options.measurements_icon;
+            var transform = this.getTransform(measurementsData.transform);
+            this.createHUDElement(measurementsData,
+                constants.MEASUREMENTS_ICON,
+                transform,
+                function() { self.toggleMeasurements(); });*/
         },
 
         initMap: function () {
@@ -558,8 +568,6 @@
         },
 
         onFullscreenChange: function () {
-            if (!this.animating) return;
-
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
                 this.resetSize($(window).width(), $(window).height());
@@ -597,8 +605,6 @@
         },
 
         onMouseMove: function (event) {
-            if (!this.animating) return;
-
             if (this.isUserInteracting) {
                 var rot_speed = this.options.camera.mouse_rotation_speed
                 this.lon = (this.clientXStart - event.clientX) * rot_speed + this.lonStart;
@@ -637,7 +643,7 @@
         },
 
         onMouseDown: function (event) {
-            if (!this.animating || !this.isMouseover) return;
+            if (!this.isMouseover) return;
 
             // Raycast the HUD elements
             this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
@@ -660,7 +666,7 @@
         },
 
         onMouseUp: function (event) {
-            if (!this.animating || !this.isMouseover) return;
+            if (!this.isMouseover) return;
 
             if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
@@ -686,7 +692,7 @@
         },
 
         onTouchMove: function (event) {
-            if (!this.animating || !this.isUserInteracting) return;
+            if (!this.isUserInteracting) return;
 
             // Ignore if more than one touch is registered
             if (event.target !== this.canvas || event.touches.length > 1)
@@ -707,8 +713,6 @@
         },
 
         onTouchStart: function (event) {
-            if (!this.animating) return;
-
             // Ignore if more than one touch is registered
             if (event.target !== this.canvas || event.touches.length > 1)
                 return;
@@ -739,7 +743,7 @@
         },
 
         onTouchEnd: function (event) {
-            if (!this.animating || !this.isUserInteracting) return;
+            if (!this.isUserInteracting) return;
 
             // Ignore if more than one touch is registered
             if (event.target !== this.canvas)
@@ -851,7 +855,18 @@
 
         dispose: function () {
             cancelAnimationFrame(this.animating);
-            util.removeObjectByName(this.HUDGroup, 'map');
+            this.sceneHUD.remove(this.HUDGroup);
+
+            document.removeEventListener('mouseover', this.listeners.mouseover, false);
+            document.removeEventListener('mouseout', this.listeners.mouseout, false);
+            document.removeEventListener('mousemove', this.listeners.mousemove, false);
+            document.removeEventListener('mousedown', this.listeners.mousedown, false);
+            document.removeEventListener('mouseup', this.listeners.mouseup, false);
+            document.removeEventListener('touchmove', this.listeners.touchmove, false);
+            document.removeEventListener('touchstart', this.listeners.touchstart, false);
+            document.removeEventListener('touchend', this.listeners.touchend, false);
+            document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
+            window.removeEventListener('resize', this.listeners.resize, false);
         },
 
         showTooltip: function () {
