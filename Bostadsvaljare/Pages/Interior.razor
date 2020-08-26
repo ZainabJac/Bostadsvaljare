@@ -50,12 +50,18 @@
     <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
 </div>
 
-<div id="gallery">
+<div id="gallery" class="line-4">
     @*TODO: enable scrolling if too many images are present to fit the window*@
     @for (int i=0; i < items.Count; i++) {
-        <div class="line-1 @(i == items.Count-1 ? "last" : "")">
-            <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-        </div>
+        if (i < 4) {
+            <div class="line-3 @(i == 3 ? "last" : "")">
+                <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+            </div>
+        } else {
+            <div class="line-3 hidden">
+                <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+            </div>
+        }
     }
 </div>
 
@@ -173,7 +179,6 @@
         HouseNumber = "7a",
         Status = "Ledig",
         Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
-
     };
 
     private IList<Item> items = new List<Item> {
@@ -203,6 +208,14 @@
         },
         new Item {
             Source = "IMG/soffavinkel3.jpg",
+            Alt ="Third Slide",
+            Caption = "Slide 3",
+            Header = "Slide 3 Header",
+            ActionLink = "https://visivo.se",
+            ActionLinkTarget = "_blank"
+        },
+        new Item {
+            Source = "IMG/soffavinkel1.jpg",
             Alt ="Third Slide",
             Caption = "Slide 3",
             Header = "Slide 3 Header",
@@ -277,7 +290,7 @@
     }
 
     .arkitekt {
-        padding: 7px;
+        padding-top: 14px;
     }
 
     .line-5 {
@@ -351,7 +364,11 @@
     }
 
     #gallery {
-
+        /*height: 95px;*/
+        padding: 0px;
+        overflow-y: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 
     #hide_info {
@@ -420,6 +437,11 @@
 
     @@media (max-width: 927px) {
 
+        #gallery {
+            width: 25%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
 
         .card-info-header-right {
             font-family: 'Segoe UI';
@@ -462,7 +484,7 @@
         }
 
         .line-3 {
-            width: 25%;
+            width: 100%;
         }
 
         .line-4 {
@@ -471,6 +493,7 @@
 
         .arkitekt {
             width: 100%;
+            padding-top: 6px;
         }
 
         .line-4-planritning {
