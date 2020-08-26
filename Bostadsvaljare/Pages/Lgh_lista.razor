@@ -6,33 +6,14 @@
 @inject IJSRuntime JSRuntime
 
 
-<div class="line-7">
-    <div id="house-main">
-        <img id="house-main-img" src="IMG/Imagemap.jpg" usemap="#apt-list" @onload="OnLoadImage">
-        <map id="apt-list" name="apt-list">
-            @foreach (HouseImage image in ImageData)
-            {
-                <area id="@GetHouseStatus(image.HouseNumber)" href="#"
-                      @onmouseover="@(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(image.HouseNumber)"
-                      coords="@image.IMCoords" shape="poly">
-            }
-        </map>
-    </div>
 
 
 
-</div>
-<div class="underbild">
-    <div>  <BSImage src="IMG/imagemap.jpg"></BSImage></div>
-    <div> <BSImage src="IMG/Dag.jpg"></BSImage></div>
-    <div> <BSImage src="IMG/ext. 2.jpg"></BSImage></div>
-    <div>  <BSImage src="IMG/Natt.jpg"></BSImage></div>
-</div>
 <div class="line-5">
     <SfGrid @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
-        <GridPageSettings PageSize="18"></GridPageSettings>
+        <GridPageSettings></GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-        <GridEvents RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
+        <GridEvents OnLoad="Load" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
         <GridColumns>
             <GridColumn Field="@nameof(House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
             <GridColumn Field="@nameof(House.Sqm)" HeaderText="Boarea"></GridColumn>
@@ -72,9 +53,42 @@
     </SfGrid>
 </div>
 
+<div class="line-7">
+    <img src="IMG/Köksbild.jpg" class="line-12" />
+    @*<div id="house-main">
+        <img id="house-main-img" src="IMG/Imagemap.jpg" usemap="#apt-list" @onload="OnLoadImage">
+        <map id="apt-list" name="apt-list">
+            @foreach (HouseImage image in ImageData)
+            {
+                <area id="@GetHouseStatus(image.HouseNumber)" href="#"
+                      @onmouseover="@(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(image.HouseNumber)"
+                      coords="@image.IMCoords" shape="poly">
+            }
+        </map>*@
+
+
+
+
+    <div>
+        <div class="line-1-5">  <BSImage src="IMG/imagemap.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+        <div class="line-1-5"> <BSImage src="IMG/Dag.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+        <div class="line-1-5"> <BSImage src="IMG/ext. 2.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+        <div class="line-1-5">  <BSImage src="IMG/Natt.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+    </div>
+
+
+</div>
+
+
+
+
 
 @code{
+
+
+
     private SfGrid<House> HouseList;
+    public int GridHeight;
     private Dictionary<string, string> HouseToArea;
     private bool IsHighlighting { get; set; }
     private int HighlightedRow { get; set; }
@@ -90,6 +104,15 @@
         this.HouseToArea = new Dictionary<string, string>();
         this.IsHighlighting = false;
         this.HighlightedRow = -1;
+    }
+
+    public void Load(object args)
+    {
+        var RowHeight = 37; //height of the each row
+        Int32.TryParse(this.HouseList.Height, out GridHeight); //datagrid height
+        var PageSize = (this.HouseList.PageSettings as GridPageSettings).PageSize; //initial page size
+        decimal PageResize = ((GridHeight) - (PageSize * RowHeight)) / RowHeight; //new page size is obtained here
+        (this.HouseList.PageSettings as GridPageSettings).PageSize = PageSize + (int)Math.Round(PageResize);
     }
 
     private async void OnLoadImage(ProgressEventArgs e)
@@ -356,41 +379,130 @@
 <style>
 
 
-        .e-gridcontent:hover {
-            cursor: pointer;
+    .e-gridcontent:hover {
+        cursor: pointer;
+    }
+
+
+    .e-grid * {
+        font-size: 12px !important;
+    }
+
+    .e-grid .e-headercell, .e-grid .e-detailheadercell {
+        background-color: #415965;
+        color: white;
+    }
+
+    .e-grid .e-icon-ascending::before, .e-grid-menu .e-icon-ascending::after {
+        color: white;
+    }
+
+    .e-grid .e-icon-descending::before, .e-grid-menu .e-icon-descending::before {
+        color: white;
+    }
+
+    .pic-below {
+        width: 14.57%;
+        float: left;
+    }
+
+    .line-1 {
+        width: 8.33%;
+        padding: 7px;
+    }
+
+    .line-1last {
+        width: 8.33%;
+    }
+
+    .line-1-5 {
+        width: 25%;
+        padding: 7px;
+    }
+
+    .line-2 {
+        width: 16.66%;
+    }
+
+    .line-3 {
+        width: 25%;
+    }
+
+    .line-4 {
+        width: 33.33%;
+    }
+
+    .line-4planritning {
+        width: 33.33%;
+    }
+
+    .line-4arkitekt {
+        width: 33.33%;
+        float: left;
+        padding: 7px;
+    }
+
+    .line-5 {
+        width: 41.66%;
+    }
+
+    .line-6 {
+        width: 50%;
+    }
+
+    .line-7 {
+        width: 58.33%;
+    }
+
+    .line-8 {
+        width: 66.66%;
+    }
+
+    .line-9 {
+        width: 75%;
+    }
+
+    .line-10 {
+        width: 83.33%;
+    }
+
+    .line-11 {
+        width: 91.66%;
+    }
+
+    .line-12 {
+        width: 100%;
+    }
+
+    [class*="line-"] {
+        float: left;
+        padding: 7px;
+    }
+
+    @@media (max-width: 1467px) {
+        .line-4arkitekt {
+            width: 100%;
         }
+    }
 
+    @@media (max-width: 927px) {
 
-
-
-        .e-grid .e-headercell, .e-grid .e-detailheadercell {
-            background-color: #415965;
-            color: white;
-        }
-
-        .e-grid .e-icon-ascending::before, .e-grid-menu .e-icon-ascending::after {
-            color: white;
-        }
-
-        .e-grid .e-icon-descending::before, .e-grid-menu .e-icon-descending::before {
-            color: white;
-        }
-
-        .pic-below {
-            width: 14.57%;
-        }
 
         .line-1 {
-            width: 8.33%;
-            padding: 7px;
+            width: 25%;
         }
 
         .line-1last {
-            width: 8.33%;
+            display: none
         }
 
         .line-2 {
-            width: 16.66%;
+            width: 100%;
+        }
+
+        .line-2knapp {
+            width: 50%;
+            margin: auto;
         }
 
         .line-3 {
@@ -398,21 +510,19 @@
         }
 
         .line-4 {
-            width: 33.33%;
-        }
-
-        .line-4planritning {
-            width: 33.33%;
+            width: 100%;
         }
 
         .line-4arkitekt {
-            width: 33.33%;
-            float: left;
-            padding: 7px;
+            width: 100%;
+        }
+
+        .line-4planritning {
+            width: 75%;
         }
 
         .line-5 {
-            width: 41.66%;
+            width: 100%;
         }
 
         .line-6 {
@@ -420,23 +530,23 @@
         }
 
         .line-7 {
-            width: 58.33%;
+            width: 100%;
         }
 
         .line-8 {
-            width: 66.66%;
+            width: 100%;
         }
 
         .line-9 {
-            width: 75%;
+            width: 100%;
         }
 
         .line-10 {
-            width: 83.33%;
+            width: 100%;
         }
 
         .line-11 {
-            width: 91.66%;
+            width: 100%;
         }
 
         .line-12 {
@@ -445,87 +555,11 @@
 
         [class*="line-"] {
             float: left;
-            padding: 7px;
+            padding: 3px;
         }
 
-        /*  @@media (max-width: 1467px) {
-            .line-4arkitekt {
-                width: 100%;
-            }
+        .e-grid * {
+            font-size: 10px !important;
         }
-
-        @@media (max-width: 927px) {
-
-
-            .line-1 {
-                width: 25%;
-            }
-
-            .line-1last {
-                display: none
-            }
-
-            .line-2 {
-                width: 100%;
-            }
-
-            .line-2knapp {
-                width: 50%;
-                margin: auto;
-            }
-
-            .line-3 {
-                width: 25%;
-            }
-
-            .line-4 {
-                width: 100%;
-            }
-
-            .line-4arkitekt {
-                width: 100%;
-            }
-
-            .line-4planritning {
-                width: 75%;
-            }
-
-            .line-5 {
-                width: 50%;
-            }
-
-            .line-6 {
-                width: 50%;
-            }
-
-            .line-7 {
-                width: 100%;
-            }
-
-            .line-8 {
-                width: 100%;
-            }
-
-            .line-9 {
-                width: 100%;
-            }
-
-            .line-10 {
-                width: 100%;
-            }
-
-            .line-11 {
-                width: 100%;
-            }
-
-            .line-12 {
-                width: 100%;
-            }
-
-            [class*="line-"] {
-                float: left;
-                padding: 3px;
-            }
-        }
-    */
+    }
 </style>
