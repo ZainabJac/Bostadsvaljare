@@ -1,6 +1,7 @@
 ﻿@page "/interior"
 @*@page "/interior/{Housing}"*@
 
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 
 @using Syncfusion.Blazor.Grids
@@ -51,7 +52,7 @@
 </div>
 
 <div id="gallery" class="line-4">
-    @for (int i=0; i < items.Count; i++) {
+    @for (int i = 0; i < items.Count; i++) {
         if (i < 4) {
             <span class="line-3 @(i == 3 ? "last" : "")">
                 <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
@@ -114,17 +115,17 @@
 @*<div class="line-2knapp">
 
 
-    <div>
-        <div> <SfButton> Bofaktablad </SfButton> </div>
+        <div>
+            <div> <SfButton> Bofaktablad </SfButton> </div>
+        </div>
     </div>
-</div>
-<div class="line-2knapp">
+    <div class="line-2knapp">
 
-    <div>
-        <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
+        <div>
+            <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
 
-    </div>
-</div>*@
+        </div>
+    </div>*@
 
 
 @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
@@ -238,6 +239,8 @@
         base.OnInitialized();
         await Task.Delay(100);
         await JSRuntime.InvokeVoidAsync("pan_viewer.init");
+        await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
+        await JSRuntime.InvokeVoidAsync("interior.onResize", null);
 
         Orders = Enumerable.Range(1, 75).Select(x => new Order()
         {
@@ -253,6 +256,11 @@
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
         await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
+    }
+
+    public async void Dispose()
+    {
+        await JSRuntime.InvokeVoidAsync("interior.dispose");
     }
 }
 
@@ -419,7 +427,7 @@
         font-family: 'Segoe UI';
         font-size: 18px;
         display: inline-block;
-        float: right ;
+        float: right;
         text-size-adjust: none;
     }
 
@@ -449,8 +457,18 @@
 
         #gallery {
             width: 25%;
+            /*height: height(line-4-planritning) + 6px*/
             overflow-y: auto;
             overflow-x: hidden;
+        }
+
+        #gallery span {
+            display: initial;
+        }
+
+        .gallery-img {
+            width: 100%;
+            padding: 0px;
         }
 
         .card-info-header-right {
@@ -478,10 +496,6 @@
 
         .line-1 {
             width: 25%;
-        }
-
-        .last {
-            display: none;
         }
 
         .line-2 {
