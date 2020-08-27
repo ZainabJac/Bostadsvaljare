@@ -520,9 +520,11 @@
             return undefined;
         },
 
-        resetSize: function (width, height) {
+        resetCamera: function (width, height) {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
+            this.cameraHUD.aspect = width / height;
+            this.cameraHUD.updateProjectionMatrix();
             this.renderer.setSize(width, height);
         },
 
@@ -545,8 +547,6 @@
 
             this.canvasHUD.width = width;
             this.canvasHUD.height = height;
-            this.cameraHUD.aspect = width / height;
-            this.cameraHUD.updateProjectionMatrix();
         },
 
         onResize: async function (event) {
@@ -571,18 +571,18 @@
 
             this.canvas.style.width = newWidth + 'px';
             this.canvas.style.height = newHeight + 'px';
-            this.resetSize(newWidth, newHeight);
             this.resetHUD(newWidth, newHeight);
+            this.resetCamera(newWidth, newHeight);
 
             this.canvasWidth = newWidth;
             this.canvasHeight = newHeight;
         },
 
-        onFullscreenChange: function () {
+        onFullscreenChange: function (event) {
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                this.resetSize($(window).width(), $(window).height());
                 this.resetHUD($(window).width(), $(window).height());
+                this.resetCamera($(window).width(), $(window).height());
 
                 // TODO: Change color and background when changing image too
                 var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -593,8 +593,8 @@
 
                 this.container.classList.add(constants.FULLSCREEN);
             } else {
-                this.resetSize(this.canvasWidth, this.canvasHeight);
                 this.resetHUD(this.canvasWidth, this.canvasHeight);
+                this.resetCamera(this.canvasWidth, this.canvasHeight);
 
                 var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
