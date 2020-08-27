@@ -9,16 +9,16 @@
         <input class="menu-btn" type="checkbox" id="menu-btn" />
         <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
         <ul class="menu" style="color:white;">
-            <li><a  style="color:#415965" href="interior">Interior</a></li>
-            <li><a style="color:#415965" href="lgh_lista">Lägenhetslista</a></li>
-            <li><a style="color:#415965" href="närområde">Närområde</a></li>
-            <li><a style="color:#415965" href="VR-video">VR-video</a></li>
-            <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
-            <li><a style="color:#415965" href="">Exterior</a></li>
+            <li><a style="color:white" href="">Bostadsväljare</a></li>
+            <li><a style="color:white" href="lgh_lista">Lägenhetslista</a></li>
+            <li><a style="color:white" href="närområde">Närområde</a></li>
+            @*<li><a style="color:#415965" href="VR-video">VR-video</a></li>
+        <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
+            <li><a style="color:white" href="interior">Interior</a></li>*@
         </ul>
     </header>
 
-    <span style="float: right;">
+    <span style="float: right;margin-top: 10px; margin-right:30px;">
         <SfButton CssClass="e-flat" IconCss="e-icons e-search" OnClick="@ToggleFullscreen"></SfButton>
     </span>
 </div>
@@ -44,36 +44,49 @@
 
 
 <style>
+
+
+
+    a {
+        padding-bottom: 20px;
+    }
+
+    ul.menu li {
+        padding-left: 20px;
+        background-color: #415965;
+    }
+
     #topnav {
         position: fixed;
         width: 100%;
+        height: auto;
         z-index: 3;
         overflow: hidden;
-        background-color: white;
+        background-color: #415965;
         border-bottom: 1px solid;
-        border-bottom-color: #415965;
-
-      
+        border-bottom-color:white;
     }
 
     .menuslash {
         display: inline-block;
         font-family: 'Segoe UI';
-        font-weight: bold;
-        font-size: 14px;
+        font-size: 15px;
         
         
     }
 
     .e-search::before {
         content: '\e771';
+        color: white;
+        font-size: 32px;
+       
     }
 
     body {
         margin: 0;
         font-family: 'Segoe UI';
-        font-weight: bold;
-        font-size: 14px;
+        
+        font-size: 15px;
         background-color: #f4f4f4;
 
     }
@@ -106,7 +119,7 @@
 
     .header li a:hover,
     .header .menu-btn:hover {
-        background-color: #f4f4f4;
+        background-color:  #576a74;
 
     }
 
@@ -133,7 +146,7 @@
         }
 
             .header .menu-icon .navicon {
-                background: #415965;
+                background: white;
                 display: block;
                 height: 2px;
                 position: relative;
@@ -143,7 +156,7 @@
 
         .header .menu-icon .navicon:before,
         .header .menu-icon .navicon:after {
-            background: #415965;
+            background: white;
             content: '';
             display: block;
             height: 100%;
@@ -210,5 +223,6 @@
         .header .menu-icon {
             display: none;
         }
+
     }
 </style>
