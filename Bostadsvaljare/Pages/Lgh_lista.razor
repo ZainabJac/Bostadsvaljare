@@ -7,13 +7,21 @@
 
 
 
+    <div class="line-6">
+        <img src="IMG/Dag.jpg" style="width:100%" />
 
-
-<div class="line-5">
-    <SfGrid @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
-        <GridPageSettings></GridPageSettings>
+        <div>
+            <div class="line-1-5">  <BSImage src="IMG/imagemap.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+            <div class="line-1-5"> <BSImage src="IMG/Dag.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+            <div class="line-1-5"> <BSImage src="IMG/ext. 2.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+            <div class="line-1-5">  <BSImage src="IMG/Natt.jpg" class="line-12" style="display:inline-block"></BSImage></div>
+        </div>
+    </div>
+<div class="line-6">
+    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
+        <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-        <GridEvents OnLoad="Load" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
+        <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
         <GridColumns>
             <GridColumn Field="@nameof(House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
             <GridColumn Field="@nameof(House.Sqm)" HeaderText="Boarea"></GridColumn>
@@ -53,9 +61,9 @@
     </SfGrid>
 </div>
 
-<div class="line-7">
+@*<div class="line-7"> 
     <img src="IMG/Köksbild.jpg" class="line-12" />
-    @*<div id="house-main">
+    <div id="house-main">
         <img id="house-main-img" src="IMG/Imagemap.jpg" usemap="#apt-list" @onload="OnLoadImage">
         <map id="apt-list" name="apt-list">
             @foreach (HouseImage image in ImageData)
@@ -69,15 +77,8 @@
 
 
 
-    <div>
-        <div class="line-1-5">  <BSImage src="IMG/imagemap.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-        <div class="line-1-5"> <BSImage src="IMG/Dag.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-        <div class="line-1-5"> <BSImage src="IMG/ext. 2.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-        <div class="line-1-5">  <BSImage src="IMG/Natt.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-    </div>
 
 
-</div>
 
 
 
@@ -88,13 +89,29 @@
 
 
     private SfGrid<House> HouseList;
-    public int GridHeight;
     private Dictionary<string, string> HouseToArea;
     private bool IsHighlighting { get; set; }
     private int HighlightedRow { get; set; }
 
     public List<House> HouseData { get; set; }
     public List<HouseImage> ImageData { get; set; }
+
+    public bool InitialRender = false;
+
+    public void Created()
+    {
+        InitialRender = true;
+        JSRuntime.InvokeAsync<object>("ResizeScript");
+    }
+
+    public void DataBound()
+    {
+        if (InitialRender)     //check for initial render and call the JS method
+        {
+            InitialRender = false;
+            JSRuntime.InvokeAsync<object>("ResizeComplete");
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -106,14 +123,6 @@
         this.HighlightedRow = -1;
     }
 
-    public void Load(object args)
-    {
-        var RowHeight = 37; //height of the each row
-        Int32.TryParse(this.HouseList.Height, out GridHeight); //datagrid height
-        var PageSize = (this.HouseList.PageSettings as GridPageSettings).PageSize; //initial page size
-        decimal PageResize = ((GridHeight) - (PageSize * RowHeight)) / RowHeight; //new page size is obtained here
-        (this.HouseList.PageSettings as GridPageSettings).PageSize = PageSize + (int)Math.Round(PageResize);
-    }
 
     private async void OnLoadImage(ProgressEventArgs e)
     {
