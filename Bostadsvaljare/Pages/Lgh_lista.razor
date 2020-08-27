@@ -18,7 +18,7 @@
         </div>
     </div>
 <div class="line-6" >
-    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" EnableVirtualization="true" EnableColumnVirtualization="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
+    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
         <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
         <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
@@ -85,8 +85,6 @@
 
 
 @code{
-
-
 
     private SfGrid<House> HouseList;
     private Dictionary<string, string> HouseToArea;
@@ -578,7 +576,7 @@
         }
 
         .e-grid * {
-            font-size: 8px !important;
+            font-size: 10px !important;
         }
 
         .e-attr{
@@ -666,11 +664,21 @@
         }
 
         .e-grid * {
-            grid-row-gap: 1px !important;
-            column-width: 20px !important;
+            font-size: 10px !important;
+           
         }
 
-       
-     
+
+
+        .e-headercelldiv {
+            padding: 0px !important;
+        }
+
+        .e-rowcell {
+            padding-left: 10px !important;
+            
+            margin: auto !important;
+        }
+
     }
 </style>
