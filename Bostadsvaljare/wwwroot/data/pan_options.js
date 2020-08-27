@@ -16,6 +16,7 @@
         }
     },
     canvas: {
+        cover_window: true,
         height_difference: 0.6666666666666666
     },
     hud: {

@@ -24,8 +24,8 @@
     window.pan_viewer = {
         options: { ...panOptions }, aptData: {},
         roomImages: {},
-        elem: null, container: null, canvas: null,
-        camera: null, scene: null, renderer: null, skybox: null,
+        renderer: null, skybox: null,
+        camera: null, scene: null, canvas: null,
         cameraHUD: null, sceneHUD: null, canvasHUD: null,
         clock: new THREE.Clock(),
         initiated: null, animating: null,
@@ -56,8 +56,11 @@
         tooltipDisplayTimeout: null,
         listeners: {},
 
-        start: function (aptID) {
+        start: function (aptID, coverWindow) {
             this.aptData = window.apartments[aptID];
+            if (coverWindow === undefined)
+                coverWindow = true;
+            this.options.canvas.cover_window = coverWindow;
             this.reset();
             this.onResize();
 
@@ -82,13 +85,13 @@
         reset: function () {
             var self = this;
 
-            this.elem = document.documentElement;
-            this.container = $('#' + constants.CONTAINER)[0];
-            this.container.oncontextmenu = function () { return false; };
-            this.container.appendChild(this.canvas);
+            var container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            container.appendChild(this.canvas);
 
-            this.startingWidth = this.canvasWidth = this.container.offsetWidth;
-            this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
+            var containerDims = this.getContainerDimensions();
+            this.startingWidth = this.canvasWidth = containerDims.width;
+            this.startingHeight = this.canvasHeight = containerDims.height;
 
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
@@ -486,6 +489,13 @@
             return size;
         },
 
+        getContainerDimensions: function () {
+            return {
+                width: $('#'+constants.CONTAINER).width(),
+                height: $('#'+constants.CONTAINER).width() * this.options.canvas.height_difference,
+            }
+        },
+
         getSizeAlt: function () {
             var sizeAlt = 1;
             if ($(window).width() <= this.options.hud.mobile.width_at_most)
@@ -494,10 +504,10 @@
         },
 
         getMargin: function () {
-            var l = this.container.offsetLeft,
-                r = $(window).width() - this.container.offsetWidth - l,
-                t = this.container.offsetTop,
-                b = parseInt(this.container.style.marginBottom) || 0;
+            var l = $('#'+constants.CONTAINER).offset().left,
+                r = $(window).width() - $('#'+constants.CONTAINER).width() - l,
+                t = $('#'+constants.CONTAINER).offset().top,
+                b = 0; //TODO: get correct margin-bottom
             return {left: l, right: r, top: t, bottom: b, width: l+r, height: t+b};
         },
 
@@ -536,13 +546,8 @@
             var sizeAlt = this.getSizeAlt();
             this.HUDGroup.children.forEach(function (hudEl) {
                 var size = self.getSize(self.options[hudEl.name].transform.size);
-                if (hudEl.name === 'map') {
-                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
-                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
-                } else {
-                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
-                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
-                }
+                hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
+                hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
             });
 
             this.canvasHUD.width = width;
@@ -552,28 +557,30 @@
         onResize: async function (event) {
             // Wait some time to make sure that fullscreenchange event has taken its time,
             // should it also have triggered at the same time.
-            await util.delay(50);
+            await util.delay(100);
             if (this.isFullscreen) return;
 
-            var newWidth, newHeight;
-            var margin = this.getMargin();
-            if (($(window).width() - margin.width) * this.options.canvas.height_difference < $(window).height() - margin.height) {
-                // Adapt canvas after the window's width
-                newWidth = $(window).width() - margin.width;
-                var diff = newWidth / this.canvasWidth;
-                newHeight = this.canvasHeight * diff;
-            } else {
-                // Adapt canvas after the window's height
-                newHeight = $(window).height() - margin.height;
-                var diff = newHeight / this.canvasHeight;
-                newWidth = this.canvasWidth * diff;
+            var dims = this.getContainerDimensions();
+            var newWidth = dims.width, newHeight = dims.height;
+
+            if (this.options.canvas.cover_window) {
+                var margin = this.getMargin(),
+                    w = $(window).width() - margin.width,
+                    h = $(window).height() - margin.height;
+
+                if (w * this.options.canvas.height_difference >= h) {
+                    // Adapt canvas after the window's height
+                    newHeight = h;
+                    var diff = newHeight / this.canvasHeight;
+                    newWidth = w * diff;
+                }
             }
 
-            this.canvas.style.width = newWidth + 'px';
-            this.canvas.style.height = newHeight + 'px';
+            $("canvas").outerHeight(newHeight);
             this.resetHUD(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
+            this.canvas.style.width = "";
             this.canvasWidth = newWidth;
             this.canvasHeight = newHeight;
         },
@@ -591,7 +598,7 @@
                              || this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                this.container.classList.add(constants.FULLSCREEN);
+                $('#'+constants.CONTAINER).addClass(constants.FULLSCREEN);
             } else {
                 this.resetHUD(this.canvasWidth, this.canvasHeight);
                 this.resetCamera(this.canvasWidth, this.canvasHeight);
@@ -601,7 +608,7 @@
                 fsMat.color.set(this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                this.container.classList.remove(constants.FULLSCREEN);
+                $('#'+constants.CONTAINER).removeClass(constants.FULLSCREEN);
             }
         },
 
