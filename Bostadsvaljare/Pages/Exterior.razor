@@ -145,6 +145,7 @@
             );
 
         Views[view].Initialized = true;
+        base.StateHasChanged();
     }
 
     public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args, int itemNr)
