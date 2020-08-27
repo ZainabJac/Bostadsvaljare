@@ -260,7 +260,6 @@
         if (items[ind].ImgType == ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
         else if (items[ind].ImgType == ImageType.Panorama) {
-            //await Task.Delay(100);
             await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
         }
     }
@@ -348,7 +347,6 @@
     [class*="line-"] {
         float: left;
         padding: 7px;
-
     }
 
     #slideshow {
@@ -362,6 +360,22 @@
     #slideshow.full {
         width: 100%;
         transition-duration: 0.45s;
+    }
+
+    canvas {
+        margin: auto;
+        width: 100%;
+    }
+
+    #pan_container {
+        width: 100%;
+    }
+
+    #pan_container.fullscreen {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 1000000;
     }
 
     #housing_info {

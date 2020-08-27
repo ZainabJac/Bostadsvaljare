@@ -24,8 +24,8 @@
     window.pan_viewer = {
         options: { ...panOptions }, aptData: {},
         roomImages: {},
-        elem: null, container: null, canvas: null,
-        camera: null, scene: null, renderer: null, skybox: null,
+        renderer: null, skybox: null,
+        camera: null, scene: null, canvas: null,
         cameraHUD: null, sceneHUD: null, canvasHUD: null,
         clock: new THREE.Clock(),
         initiated: null, animating: null,
@@ -54,11 +54,13 @@
         hoveringObj: null,
         latestPointerProjection: null,
         tooltipDisplayTimeout: null,
-        marginWidth: 0, marginHeight: 0,
         listeners: {},
 
-        start: function (aptID) {
+        start: function (aptID, coverWindow) {
             this.aptData = window.apartments[aptID];
+            if (coverWindow === undefined)
+                coverWindow = true;
+            this.options.canvas.cover_window = coverWindow;
             this.reset();
             this.onResize();
 
@@ -83,15 +85,13 @@
         reset: function () {
             var self = this;
 
-            this.elem = document.documentElement;
-            this.container = $('#' + constants.CONTAINER)[0];
-            this.container.oncontextmenu = function () { return false; };
-            this.container.appendChild(this.canvas);
+            var container = $('#' + constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            container.appendChild(this.canvas);
 
-            this.marginWidth = $(window).width() - this.container.offsetWidth;
-            this.marginHeight = this.container.offsetTop;
-            this.startingWidth = this.canvasWidth = this.container.offsetWidth;
-            this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
+            var containerDims = this.getContainerDimensions();
+            this.startingWidth = this.canvasWidth = containerDims.width;
+            this.startingHeight = this.canvasHeight = containerDims.height;
 
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
@@ -489,11 +489,26 @@
             return size;
         },
 
+        getContainerDimensions: function () {
+            return {
+                width: $('#'+constants.CONTAINER).width(),
+                height: $('#'+constants.CONTAINER).width() * this.options.canvas.height_difference,
+            }
+        },
+
         getSizeAlt: function () {
             var sizeAlt = 1;
             if ($(window).width() <= this.options.hud.mobile.width_at_most)
                 sizeAlt = this.options.hud.mobile.size_alt;
             return sizeAlt;
+        },
+
+        getMargin: function () {
+            var l = $('#'+constants.CONTAINER).offset().left,
+                r = $(window).width() - $('#'+constants.CONTAINER).width() - l,
+                t = $('#'+constants.CONTAINER).offset().top,
+                b = 0; //TODO: get correct margin-bottom
+            return {left: l, right: r, top: t, bottom: b, width: l+r, height: t+b};
         },
 
         getPointerEventPos: function (event) {
@@ -515,9 +530,11 @@
             return undefined;
         },
 
-        resetSize: function (width, height) {
+        resetCamera: function (width, height) {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
+            this.cameraHUD.aspect = width / height;
+            this.cameraHUD.updateProjectionMatrix();
             this.renderer.setSize(width, height);
         },
 
@@ -529,49 +546,50 @@
             var sizeAlt = this.getSizeAlt();
             this.HUDGroup.children.forEach(function (hudEl) {
                 var size = self.getSize(self.options[hudEl.name].transform.size);
-                if (hudEl.name === 'map') {
-                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
-                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
-                } else {
-                    hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
-                    hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
-                }
+                hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
+                hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
             });
 
             this.canvasHUD.width = width;
             this.canvasHUD.height = height;
-            this.cameraHUD.aspect = width / height;
-            this.cameraHUD.updateProjectionMatrix();
         },
 
-        onResize: function (event) {
-            var newWidth, newHeight;
-            if (($(window).width() - this.marginWidth) * this.options.canvas.height_difference < $(window).height() - this.marginHeight) {
-                // Adapt canvas after the window's width
-                newWidth = $(window).width() - this.marginWidth;
-                var diff = newWidth / this.canvasWidth;
-                newHeight = this.canvasHeight * diff;
-            } else {
-                // Adapt canvas after the window's height
-                newHeight = $(window).height() - this.marginHeight;
-                var diff = newHeight / this.canvasHeight;
-                newWidth = this.canvasWidth * diff;
+        onResize: async function (event) {
+            // Wait some time to make sure that fullscreenchange event has taken its time,
+            // should it also have triggered at the same time.
+            await util.delay(100);
+            if (this.isFullscreen) return;
+
+            var dims = this.getContainerDimensions();
+            var newWidth = dims.width, newHeight = dims.height;
+
+            if (this.options.canvas.cover_window) {
+                var margin = this.getMargin(),
+                    w = $(window).width() - margin.width,
+                    h = $(window).height() - margin.height;
+
+                if (w * this.options.canvas.height_difference >= h) {
+                    // Adapt canvas after the window's height
+                    newHeight = h;
+                    var diff = newHeight / this.canvasHeight;
+                    newWidth = w * diff;
+                }
             }
 
-            this.canvas.style.width = newWidth + 'px';
-            this.canvas.style.height = newHeight + 'px';
-            this.resetSize(newWidth, newHeight);
+            $("canvas").outerHeight(newHeight);
             this.resetHUD(newWidth, newHeight);
+            this.resetCamera(newWidth, newHeight);
 
+            this.canvas.style.width = "";
             this.canvasWidth = newWidth;
             this.canvasHeight = newHeight;
         },
 
-        onFullscreenChange: function () {
+        onFullscreenChange: function (event) {
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                this.resetSize($(window).width(), $(window).height());
                 this.resetHUD($(window).width(), $(window).height());
+                this.resetCamera($(window).width(), $(window).height());
 
                 // TODO: Change color and background when changing image too
                 var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -580,17 +598,19 @@
                              || this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                this.container.classList.add(constants.FULLSCREEN);
+                $('#'+constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': 'hidden' });
             } else {
-                this.resetSize(this.canvasWidth, this.canvasHeight);
                 this.resetHUD(this.canvasWidth, this.canvasHeight);
+                this.resetCamera(this.canvasWidth, this.canvasHeight);
 
                 var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
                 fsMat.color.set(this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                this.container.classList.remove(constants.FULLSCREEN);
+                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': '' });
             }
         },
 
@@ -891,7 +911,7 @@
                 tooltipDiv.style.left = tooltipPosition.x - tootipWidth * 0.5 + 'px';
                 tooltipDiv.style.top = tooltipPosition.y - tootipHeight - 5 + 'px';
 
-                tooltipDiv.innerText = this.prettyString(this.hoveringObj.name);
+                tooltipDiv.innerText = util.prettyString(this.hoveringObj.name);
 
                 setTimeout(function () {
                     tooltipDiv.style.opacity = 1.0;
@@ -1001,62 +1021,9 @@
 
         toggleFullscreen: function () {
             if (this.isFullscreen)
-                this.closeFullscreen();
+                util.closeFullscreen();
             else
-                this.openFullscreen();
-        },
-
-        openFullscreen: function () {
-            if (this.elem.requestFullscreen) {
-                this.elem.requestFullscreen();
-            } else if (this.elem.mozRequestFullScreen) { /* Firefox */
-                this.elem.mozRequestFullScreen();
-            } else if (this.elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-                this.elem.webkitRequestFullscreen();
-            } else if (this.elem.msRequestFullscreen) { /* IE/Edge */
-                this.elem.msRequestFullscreen();
-            }
-        },
-
-        closeFullscreen: function () {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) { /* Firefox */
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE/Edge */
-                document.msExitFullscreen();
-            }
-        },
-
-        prettyString: function (str, options) {
-            if (str == null || typeof str !== 'string')
-                return str;
-            if (!options)
-                options = {};
-
-            if (options.strip) {
-                var stripArr = options.strip.split('|');
-                $.each(stripArr, function (_, strip) {
-                    str = str.replace(RegExp(strip, 'g'), '');
-                });
-            }
-
-            // Replace underscores with a space
-            str = str.replace(/_/g, ' ');
-
-            // Remove all brackets
-            str = str.replace(/\[/g, '').replace(/\]/g, '');
-
-            // Turn the first character of each word into upper case
-            str = str.replace(/\w\S*/g, function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-            });
-
-            return (options.prefix || '')
-                + str
-                + (options.postfix || '');
+                util.openFullscreen();
         },
     };
 })();
