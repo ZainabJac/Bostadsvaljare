@@ -80,5 +80,13 @@
         matchHeightToWidth: function (id) {
             $("#"+id).height( $("#"+id).width() * 2/3 );
         },
+
+        delay: function (ms) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(2);
+                }, ms);
+            });
+        },
     };
 })();
