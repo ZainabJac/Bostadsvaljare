@@ -549,7 +549,12 @@
             this.cameraHUD.updateProjectionMatrix();
         },
 
-        onResize: function (event) {
+        onResize: async function (event) {
+            // Wait some time to make sure that fullscreenchange event has taken its time,
+            // should it also have triggered at the same time.
+            await util.delay(50);
+            if (this.isFullscreen) return;
+
             var newWidth, newHeight;
             var margin = this.getMargin();
             if (($(window).width() - margin.width) * this.options.canvas.height_difference < $(window).height() - margin.height) {
