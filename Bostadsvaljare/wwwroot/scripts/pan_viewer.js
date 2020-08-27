@@ -599,6 +599,7 @@
                 fsMat.needsUpdate = true;
 
                 $('#'+constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': 'hidden' });
             } else {
                 this.resetHUD(this.canvasWidth, this.canvasHeight);
                 this.resetCamera(this.canvasWidth, this.canvasHeight);
@@ -608,7 +609,8 @@
                 fsMat.color.set(this.options.fullscreen_icon.color);
                 fsMat.needsUpdate = true;
 
-                $('#'+constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': '' });
             }
         },
 
