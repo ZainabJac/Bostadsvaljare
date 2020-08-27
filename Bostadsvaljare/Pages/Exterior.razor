@@ -6,7 +6,7 @@
 @inject NavigationManager navManager
 
 
-<div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;")">
+<div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;") @(Views[0].Initialized ? "" : "visibility: hidden;")">
     <img id="@(Views[0].ID)-img" src="@ExteriorImgPaths[0]" style="width: 60%;" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
     <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
         <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
@@ -24,7 +24,7 @@
         <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
     </map>
 </div>
-<div id="@Views[1].ID" style="@(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;")">
+<div id="@Views[1].ID" style="@(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;") @(Views[1].Initialized ? "" : "visibility: hidden;")">
     <img id="@(Views[1].ID)-img" src="@ExteriorImgPaths[1]" style="width: 60%;" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
     <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
         <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
