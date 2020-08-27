@@ -54,7 +54,6 @@
         hoveringObj: null,
         latestPointerProjection: null,
         tooltipDisplayTimeout: null,
-        marginWidth: 0, marginHeight: 0,
         listeners: {},
 
         start: function (aptID) {
@@ -88,8 +87,6 @@
             this.container.oncontextmenu = function () { return false; };
             this.container.appendChild(this.canvas);
 
-            this.marginWidth = $(window).width() - this.container.offsetWidth;
-            this.marginHeight = this.container.offsetTop;
             this.startingWidth = this.canvasWidth = this.container.offsetWidth;
             this.startingHeight = this.canvasHeight = this.canvasWidth * this.options.canvas.height_difference;
 
@@ -496,6 +493,14 @@
             return sizeAlt;
         },
 
+        getMargin: function () {
+            var l = this.container.offsetLeft,
+                r = $(window).width() - this.container.offsetWidth - l,
+                t = this.container.offsetTop,
+                b = parseInt(this.container.style.marginBottom) || 0;
+            return {left: l, right: r, top: t, bottom: b, width: l+r, height: t+b};
+        },
+
         getPointerEventPos: function (event) {
             var rect = this.canvas.getBoundingClientRect();
             var clientX = event.clientX || (event.touches && event.touches[0].clientX) || 0;
@@ -546,14 +551,15 @@
 
         onResize: function (event) {
             var newWidth, newHeight;
-            if (($(window).width() - this.marginWidth) * this.options.canvas.height_difference < $(window).height() - this.marginHeight) {
+            var margin = this.getMargin();
+            if (($(window).width() - margin.width) * this.options.canvas.height_difference < $(window).height() - margin.height) {
                 // Adapt canvas after the window's width
-                newWidth = $(window).width() - this.marginWidth;
+                newWidth = $(window).width() - margin.width;
                 var diff = newWidth / this.canvasWidth;
                 newHeight = this.canvasHeight * diff;
             } else {
                 // Adapt canvas after the window's height
-                newHeight = $(window).height() - this.marginHeight;
+                newHeight = $(window).height() - margin.height;
                 var diff = newHeight / this.canvasHeight;
                 newWidth = this.canvasWidth * diff;
             }
