@@ -854,6 +854,8 @@
         },
 
         dispose: function () {
+            if (!this.animating) return;
+
             cancelAnimationFrame(this.animating);
             this.sceneHUD.remove(this.HUDGroup);
 
