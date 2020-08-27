@@ -857,7 +857,7 @@
             if (!this.animating) return;
 
             cancelAnimationFrame(this.animating);
-            this.sceneHUD.remove(this.HUDGroup);
+            this.HUDGroup.children.length = 0;
 
             document.removeEventListener('mouseover', this.listeners.mouseover, false);
             document.removeEventListener('mouseout', this.listeners.mouseout, false);
