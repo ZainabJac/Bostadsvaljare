@@ -8,7 +8,7 @@
 
 
     <div class="line-6">
-        <img src="IMG/Dag.jpg" style="width:100%" />
+        <img src="IMG/Dag.jpg" style="width:100%"/>
 
         <div>
             <div class="line-1-5">  <BSImage src="IMG/imagemap.jpg" class="line-12" style="display:inline-block"></BSImage></div>
@@ -17,8 +17,8 @@
             <div class="line-1-5">  <BSImage src="IMG/Natt.jpg" class="line-12" style="display:inline-block"></BSImage></div>
         </div>
     </div>
-<div class="line-6">
-    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
+<div class="line-6" >
+    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" EnableVirtualization="true" EnableColumnVirtualization="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
         <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
         <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
@@ -292,66 +292,66 @@
         public static List<House> GetHouseData()
         {
             List<House> houseData = new List<House>();
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "1b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "3a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9b", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7c", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "4a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9c", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9d", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7d", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "9b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "10a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "27b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7a", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "7b", Status = "available" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8a", Status = "booked" });
-            houseData.Add(new House { Sqm = 91, Price = "4 700 000 Kr", Manadsavgift = "3 800 Kr", HouseNumber = "8b", Status = "sold" });
-            houseData.Add(new House { Sqm = 110, Price = "5 200 000 Kr", Manadsavgift = "5 900 Kr", HouseNumber = "9a", Status = "sold" });
-            houseData.Add(new House { Sqm = 120, Price = "5 400 000 Kr", Manadsavgift = "5 400 Kr", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "1b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "3a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "4b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9b", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7c", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "4a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9c", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9d", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7d", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "9b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "10a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "27b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7a", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "7b", Status = "available" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8a", Status = "booked" });
+            houseData.Add(new House { Sqm = 91, Price = "4 700 000 ", Manadsavgift = "3 800 ", HouseNumber = "8b", Status = "sold" });
+            houseData.Add(new House { Sqm = 110, Price = "5 200 000 ", Manadsavgift = "5 900 ", HouseNumber = "9a", Status = "sold" });
+            houseData.Add(new House { Sqm = 120, Price = "5 400 000 ", Manadsavgift = "5 400 ", HouseNumber = "9a", Status = "sold" });
 
             return houseData;
         }
@@ -386,6 +386,8 @@
 
 
 <style>
+
+
 
 
     .e-gridcontent:hover {
@@ -453,6 +455,10 @@
 
     .line-5 {
         width: 41.66%;
+    }
+
+    .line-6-grid {
+        width: 50%
     }
 
     .line-6 {
@@ -535,7 +541,99 @@
         }
 
         .line-6 {
+            width: 100%;
+        }
+
+
+        .line-6-grid {
+            width: 100%
+        } 
+        .line-7 {
+            width: 100%;
+        }
+
+        .line-8 {
+            width: 100%;
+        }
+
+        .line-9 {
+            width: 100%;
+        }
+
+        .line-10 {
+            width: 100%;
+        }
+
+        .line-11 {
+            width: 100%;
+        }
+
+        .line-12 {
+            width: 100%;
+        }
+
+        [class*="line-"] {
+            float: left;
+            padding: 3px;
+        }
+
+        .e-grid * {
+            font-size: 8px !important;
+        }
+
+        .e-attr{
+            letter-spacing: 1px;
+        }
+
+
+        .gridwidth {
+            width: 100%;
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+
+        .line-1 {
+            width: 25%;
+        }
+
+        .line-1last {
+            display: none
+        }
+
+        .line-2 {
+            width: 100%;
+        }
+
+        .line-2knapp {
             width: 50%;
+            margin: auto;
+        }
+
+        .line-3 {
+            width: 25%;
+        }
+
+        .line-4 {
+            width: 100%;
+        }
+
+        .line-4arkitekt {
+            width: 100%;
+        }
+
+        .line-4planritning {
+            width: 75%;
+        }
+
+        .line-5 {
+            width: 100%;
+        }
+
+        .line-6 {
+            width: 100%;
         }
 
         .line-7 {
@@ -568,7 +666,11 @@
         }
 
         .e-grid * {
-            font-size: 10px !important;
+            grid-row-gap: 1px !important;
+            column-width: 20px !important;
         }
+
+       
+     
     }
 </style>

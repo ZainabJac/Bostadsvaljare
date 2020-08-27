@@ -76,5 +76,9 @@
                 }
             }
         },
+
+        matchHeightToWidth: function (id) {
+            $("#"+id).height( $("#"+id).width() * 2/3 );
+        },
     };
 })();
