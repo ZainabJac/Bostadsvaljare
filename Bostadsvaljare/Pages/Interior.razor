@@ -12,17 +12,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <div class="line-8">
     <!-- Stillbilder -->
-    <div id="slideshow" class="@(ShowInfo ? "" : "full")">
+    <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == ImageType.Image ? "" : "hidden")">
         <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
                 @for (int i = 0; i < items.Count; i++) {
-                    <!--TODO: if item = non-image then ignore -->
+                    if (items[i].ImgType != ImageType.Image)
+                        continue;
+
                     <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                 }
             </ol>
             <div class="carousel-inner">
                 @for (int i = 0; i < items.Count; i++) {
-                    <!--TODO: if item = non-image then ignore -->
+                    if (items[i].ImgType != ImageType.Image)
+                        continue;
+
                     <div class="carousel-item @(i == 0 ? "active" : "")">
                         <img class="d-block w-100" src="@items[i].Source" alt="@items[i].Alt">
                     </div>
@@ -40,10 +44,10 @@
     </div>
 
     <!-- 360-bilder -->
-    <div id="pan_container" class="select-none hidden"></div>
+    <div id="pan_container" class="select-none @(SelectedType == ImageType.Panorama ? "" : "hidden")"></div>
 
     <!-- VR-video -->
-    <iframe src="https://player.vimeo.com/video/393178231" class="hidden" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen></iframe>
+    <iframe id="vr_video" src="@SelectedImage.Link" class=" @(SelectedType == ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
 </div>
 
 <div class="line-4-planritning">
@@ -53,15 +57,9 @@
 
 <div id="gallery" class="line-4">
     @for (int i = 0; i < items.Count; i++) {
-        if (i < 4) {
-            <span class="line-3 @(i == 3 ? "last" : "")">
-                <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-            </span>
-        } else {
-            <span class="line-3">
-                <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-            </span>
-        }
+        <span class="line-3">
+            <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+        </span>
     }
 </div>
 
@@ -142,6 +140,13 @@
 
 
 @code {
+    public enum ImageType
+    {
+        Image,
+        Panorama,
+        VR
+    }
+
     public class Houses
     {
         public string Sqm { get; set; }
@@ -156,10 +161,8 @@
     {
         public string Source { get; set; }
         public string Alt { get; set; }
-        public string Caption { get; set; }
-        public string Header { get; set; }
-        public string ActionLink { get; set; }
-        public string ActionLinkTarget { get; set; }
+        public ImageType ImgType { get; set; }
+        public string Link { get; set; }
     }
 
     public class Order
@@ -185,49 +188,42 @@
         new Item {
             Source = "IMG/soffavinkel1.jpg",
             Alt ="First Slide",
-            Caption = "Slide 1",
-            Header = "Slide 1 Header",
-            ActionLink = "https://visivo.se",
-            ActionLinkTarget = "_blank"
+            ImgType = ImageType.Image
         },
         new Item {
             Source = "IMG/Köksbild.jpg",
             Alt ="Second Slide",
-            Caption = "Slide 2",
-            Header = "Slide 2 Header",
-            ActionLink = "https://visivo.se",
-            ActionLinkTarget = "_blank"
+            ImgType = ImageType.Image
         },
         new Item {
             Source = "IMG/soffavinkel2.jpg",
             Alt ="Third Slide",
-            Caption = "Slide 3",
-            Header = "Slide 3 Header",
-            ActionLink = "https://visivo.se",
-            ActionLinkTarget = "_blank"
+            ImgType = ImageType.Image
         },
         new Item {
             Source = "IMG/soffavinkel3.jpg",
-            Alt ="Third Slide",
-            Caption = "Slide 3",
-            Header = "Slide 3 Header",
-            ActionLink = "https://visivo.se",
-            ActionLinkTarget = "_blank"
+            Alt ="Fourth Slide",
+            ImgType = ImageType.VR,
+            Link = "https://player.vimeo.com/video/393178231"
         },
         new Item {
             Source = "IMG/soffavinkel1.jpg",
-            Alt ="Third Slide",
-            Caption = "Slide 3",
-            Header = "Slide 3 Header",
-            ActionLink = "https://visivo.se",
-            ActionLinkTarget = "_blank"
+            Alt ="Fifth Slide",
+            ImgType = ImageType.Panorama,
+            Link = "apt_data"
         }
     };
 
     [Parameter]
     public string Housing { get; set; }
+    [Parameter]
     public List<Order> Orders { get; set; }
-    private bool ShowInfo { get; set; }
+    [Parameter]
+    public bool ShowInfo { get; set; }
+    [Parameter]
+    public Item SelectedImage { get; set; }
+    [Parameter]
+    public ImageType SelectedType { get; set; }
 
     private void ToggleInfo()
     {
@@ -237,7 +233,8 @@
     protected override async void OnInitialized()
     {
         base.OnInitialized();
-        await Task.Delay(100);
+        SelectedImage = items[0];
+        ShowInfo = true;
         await JSRuntime.InvokeVoidAsync("pan_viewer.init");
         await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
         await JSRuntime.InvokeVoidAsync("interior.onResize", null);
@@ -249,13 +246,29 @@
             Freight = 2.1 * x,
             OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
         }).ToList();
-        ShowInfo = true;
     }
 
     private async void OnClickGalleryImg(MouseEventArgs ev)
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
+
+        SelectedImage = items[ind];
+        SelectedType = SelectedImage.ImgType;
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+        if (items[ind].ImgType == ImageType.Image)
+            await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
+        else if (items[ind].ImgType == ImageType.Panorama) {
+            //await Task.Delay(100);
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
+        }
+    }
+
+    private async void OnLoadVR(ProgressEventArgs ev)
+    {
+        // Change height on #vr_video to be its width*2/3
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
     }
 
     public async void Dispose()
