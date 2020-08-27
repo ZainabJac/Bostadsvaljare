@@ -182,13 +182,12 @@
 
     public async void HideTooltip(MouseEventArgs e)
     {
-        await JSRuntime.InvokeVoidAsync(
-            "util.hideTooltip"
-        );
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
-    private void HousingClicked(string housing)
+    private async void HousingClicked(string housing)
     {
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
         if (housing != "")
             navManager.NavigateTo("/interior/" + housing);
         else
