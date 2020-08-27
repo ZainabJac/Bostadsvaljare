@@ -902,7 +902,7 @@
                 tooltipDiv.style.left = tooltipPosition.x - tootipWidth * 0.5 + 'px';
                 tooltipDiv.style.top = tooltipPosition.y - tootipHeight - 5 + 'px';
 
-                tooltipDiv.innerText = this.prettyString(this.hoveringObj.name);
+                tooltipDiv.innerText = util.prettyString(this.hoveringObj.name);
 
                 setTimeout(function () {
                     tooltipDiv.style.opacity = 1.0;
@@ -1012,62 +1012,9 @@
 
         toggleFullscreen: function () {
             if (this.isFullscreen)
-                this.closeFullscreen();
+                util.closeFullscreen();
             else
-                this.openFullscreen();
-        },
-
-        openFullscreen: function () {
-            if (this.elem.requestFullscreen) {
-                this.elem.requestFullscreen();
-            } else if (this.elem.mozRequestFullScreen) { /* Firefox */
-                this.elem.mozRequestFullScreen();
-            } else if (this.elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-                this.elem.webkitRequestFullscreen();
-            } else if (this.elem.msRequestFullscreen) { /* IE/Edge */
-                this.elem.msRequestFullscreen();
-            }
-        },
-
-        closeFullscreen: function () {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) { /* Firefox */
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE/Edge */
-                document.msExitFullscreen();
-            }
-        },
-
-        prettyString: function (str, options) {
-            if (str == null || typeof str !== 'string')
-                return str;
-            if (!options)
-                options = {};
-
-            if (options.strip) {
-                var stripArr = options.strip.split('|');
-                $.each(stripArr, function (_, strip) {
-                    str = str.replace(RegExp(strip, 'g'), '');
-                });
-            }
-
-            // Replace underscores with a space
-            str = str.replace(/_/g, ' ');
-
-            // Remove all brackets
-            str = str.replace(/\[/g, '').replace(/\]/g, '');
-
-            // Turn the first character of each word into upper case
-            str = str.replace(/\w\S*/g, function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-            });
-
-            return (options.prefix || '')
-                + str
-                + (options.postfix || '');
+                util.openFullscreen();
         },
     };
 })();

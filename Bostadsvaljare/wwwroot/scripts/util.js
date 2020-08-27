@@ -1,9 +1,45 @@
-﻿var elem = document.documentElement;
-
-(function () {
+﻿(function () {
     window.util = {
+        getElementFromPoint: function (target) {
+            var list = document.querySelectorAll(':hover');
+            for (i = list.length-1; i >= 0; i--) {
+                if (list[i].localName === target)
+                    return list[i];
+            }
+            return undefined;
+        },
+
+        getSFGridRowIndex: function () {
+            var rowEl = this.getElementFromPoint('tr');
+            if (rowEl  &&  rowEl.className.includes('e-row'))
+                return parseInt(rowEl.ariaRowIndex);
+            else
+                return -1;
+        },
+
+        getGalleryIndex: function () {
+            var img = this.getElementFromPoint('img');
+            if (img  &&  img.className.includes('gallery-img'))
+                return parseInt(img.attributes.index.value);
+            else
+                return -1;
+        },
+
+        removeObjectByName: function (object, targetName) {
+            var children = object.children;
+
+            for (var i = 0; i < children.length; i += 1) {
+                if (children[i].name === targetName) {
+                    children.splice(i);
+                    break;
+                }
+            }
+        },
+
         /* View in fullscreen */
         openFullscreen: function () {
+            var elem = document.documentElement;
+
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
             } else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -41,40 +77,33 @@
             $('#tipmsg').hide();
         },
 
-        getElementFromPoint: function (target) {
-            var list = document.querySelectorAll(':hover');
-            for (i = list.length-1; i >= 0; i--) {
-                if (list[i].localName === target)
-                    return list[i];
+        prettyString: function (str, options) {
+            if (str == null || typeof str !== 'string')
+                return str;
+            if (!options)
+                options = {};
+
+            if (options.strip) {
+                var stripArr = options.strip.split('|');
+                $.each(stripArr, function (_, strip) {
+                    str = str.replace(RegExp(strip, 'g'), '');
+                });
             }
-            return undefined;
-        },
 
-        getSFGridRowIndex: function () {
-            var rowEl = this.getElementFromPoint('tr');
-            if (rowEl  &&  rowEl.className.includes('e-row'))
-                return parseInt(rowEl.ariaRowIndex);
-            else
-                return -1;
-        },
+            // Replace underscores with a space
+            str = str.replace(/_/g, ' ');
 
-        getGalleryIndex: function () {
-            var img = this.getElementFromPoint('img');
-            if (img  &&  img.className.includes('gallery-img'))
-                return parseInt(img.attributes.index.value);
-            else
-                return -1;
-        },
+            // Remove all brackets
+            str = str.replace(/\[/g, '').replace(/\]/g, '');
 
-        removeObjectByName: function (object, targetName) {
-            var children = object.children;
+            // Turn the first character of each word into upper case
+            str = str.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+            });
 
-            for (var i = 0; i < children.length; i += 1) {
-                if (children[i].name === targetName) {
-                    children.splice(i);
-                    break;
-                }
-            }
+            return (options.prefix || '')
+                + str
+                + (options.postfix || '');
         },
 
         matchHeightToWidth: function (id) {
