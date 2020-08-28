@@ -3,20 +3,31 @@
 @using BlazorStrap
 @using Syncfusion.Blazor.Grids
 
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 
 
 
-    <div class="line-6">
-        <img src="IMG/Dag.jpg" style="width:100%"/>
-
-        <div>
-            <div class="line-1-5">  <BSImage src="IMG/imagemap.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-            <div class="line-1-5"> <BSImage src="IMG/Dag.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-            <div class="line-1-5"> <BSImage src="IMG/ext. 2.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-            <div class="line-1-5">  <BSImage src="IMG/Natt.jpg" class="line-12" style="display:inline-block"></BSImage></div>
-        </div>
+<div class="line-6">
+    <div id="house-main">
+        <img id="house-main-img" src="IMG/Dag.jpg" style="width: 100%;" usemap="#apt-list" @onload="OnLoadImage">
+        <map id="apt-list" name="apt-list">
+            @foreach (HouseImage image in ImageData) {
+                <area id="@GetHouseStatus(image.HouseNumber)" status="" href="#"
+                      @onmouseover="@(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(image.HouseNumber)"
+                      coords="@image.IMCoords" shape="poly">
+            }
+        </map>
     </div>
+
+    <div>
+        <BSImage src="IMG/imagemap.jpg" class="line-3" style="display: inline-block;"></BSImage>
+        <BSImage src="IMG/Dag.jpg" class="line-3" style="display: inline-block;"></BSImage>
+        <BSImage src="IMG/ext. 2.jpg" class="line-3" style="display: inline-block;"></BSImage>
+        <BSImage src="IMG/Natt.jpg" class="line-3" style="display: inline-block;"></BSImage>
+    </div>
+</div>
+
 <div class="line-6" >
     <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
         <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="House"></GridEvents>
@@ -32,22 +43,19 @@
                     @{
                         House house = (context as House);
                         <div>
-                            @if (house.Status == "sold")
-                            {
+                            @if (house.Status == "sold") {
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
                                      height="25"
                                      width="25" />
                                 <span>Såld</span>
                             }
-                            @if (house.Status == "booked")
-                            {
+                            @if (house.Status == "booked") {
                                 <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
                                      height="25"
                                      width="25" />
                                 <span>Reserverad</span>
                             }
-                            @if (house.Status == "available")
-                            {
+                            @if (house.Status == "available") {
                                 <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
                                      height="25"
                                      width="25" />
@@ -61,31 +69,8 @@
     </SfGrid>
 </div>
 
-@*<div class="line-7"> 
-    <img src="IMG/Köksbild.jpg" class="line-12" />
-    <div id="house-main">
-        <img id="house-main-img" src="IMG/Imagemap.jpg" usemap="#apt-list" @onload="OnLoadImage">
-        <map id="apt-list" name="apt-list">
-            @foreach (HouseImage image in ImageData)
-            {
-                <area id="@GetHouseStatus(image.HouseNumber)" href="#"
-                      @onmouseover="@(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(image.HouseNumber)"
-                      coords="@image.IMCoords" shape="poly">
-            }
-        </map>*@
-
-
-
-
-
-
-
-
-
-
 
 @code{
-
     private SfGrid<House> HouseList;
     private Dictionary<string, string> HouseToArea;
     private bool IsHighlighting { get; set; }
@@ -104,14 +89,13 @@
 
     public void DataBound()
     {
-        if (InitialRender)     //check for initial render and call the JS method
-        {
+        if (InitialRender) {     //check for initial render and call the JS method
             InitialRender = false;
             JSRuntime.InvokeAsync<object>("ResizeComplete");
         }
     }
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         base.OnInitialized();
         this.HouseData = House.GetHouseData();
@@ -119,11 +103,16 @@
         this.HouseToArea = new Dictionary<string, string>();
         this.IsHighlighting = false;
         this.HighlightedRow = -1;
-    }
+        base.StateHasChanged();
 
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+    }
 
     private async void OnLoadImage(ProgressEventArgs e)
     {
+        await JSRuntime.InvokeVoidAsync(
+            "mapster_responsive.setValues", 0, "house-main", "100%"
+        );
         await JSRuntime.InvokeVoidAsync(
             "mapster.addMapHighlights", "house-main", "house-main-img", "apt-list", ""
         );
@@ -133,8 +122,7 @@
             { "booked", 0 },
             { "sold", 0 },
         };
-        foreach (HouseImage img in ImageData)
-        {
+        foreach (HouseImage img in ImageData) {
             string status = HouseData.Find(x => x.HouseNumber == img.HouseNumber).Status;
             HouseToArea.Add(img.HouseNumber,
                             status + statuses[status]++);
@@ -143,8 +131,7 @@
 
     private string GetHouseStatus(string houseNumber)
     {
-        foreach (House house in HouseData)
-        {
+        foreach (House house in HouseData) {
             if (house.HouseNumber == houseNumber)
                 return house.Status;
         }
@@ -159,8 +146,7 @@
 
     private void OnMouseOutIM(MouseEventArgs e)
     {
-        if (IsHighlighting)
-        {
+        if (IsHighlighting) {
             HideTooltip();
             RemoveListHighlight();
             IsHighlighting = false;
@@ -169,10 +155,13 @@
 
     private async void OnMouseOverGrid(MouseEventArgs e)
     {
-        //BUG: mouseover on image map and then to grid causes the first row not to highlight the corresponding housing on the image map (sometimes... -_-)
+        if (IsHighlighting) {
+            HideTooltip();
+            RemoveListHighlight();
+            IsHighlighting = false;
+        }
         int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
-        if (rowInd >= 0 && this.HighlightedRow != rowInd)
-        {
+        if (rowInd >= 0 && this.HighlightedRow != rowInd) {
             HighlightInImageMap((await this.HouseList.GetCurrentViewRecords())[rowInd].HouseNumber);
             this.HighlightedRow = rowInd;
         }
@@ -191,13 +180,10 @@
         await this.HouseList.GoToPage(1);
         bool continuePaging = true;
 
-        for (int i = 1; i <= this.HouseList.PageSettings.PageCount; i += 1)
-        {
+        for (int i = 1; i <= this.HouseList.PageSettings.PageCount; i += 1) {
             List<House> page = await this.HouseList.GetCurrentViewRecords();
-            for (int j = 0; j < page.Count; j += 1)
-            {
-                if (page[j].HouseNumber == houseNumber)
-                {
+            for (int j = 0; j < page.Count; j += 1) {
+                if (page[j].HouseNumber == houseNumber) {
                     await this.HouseList.SelectRow(j);
                     continuePaging = false;
                     IsHighlighting = true;
@@ -220,10 +206,9 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        if (HouseToArea.ContainsKey(houseNumber))
-        {
+        if (HouseToArea.ContainsKey(houseNumber)) {
             string areaID = HouseToArea[houseNumber];
-            await JSRuntime.InvokeVoidAsync("mapster.select", areaID);
+            await JSRuntime.InvokeVoidAsync("mapster.select", "house-main", "house-main-img", areaID);
         }
     }
 
@@ -231,17 +216,14 @@
     {
         string msg;
         House house = null;
-        foreach (House h in HouseData)
-        {
-            if (h.HouseNumber == houseNumber)
-            {
+        foreach (House h in HouseData) {
+            if (h.HouseNumber == houseNumber) {
                 house = h;
                 break;
             }
         }
 
-        switch (house.Status)
-        {
+        switch (house.Status) {
             case "sold":
                 msg = "Såld";
                 break;
@@ -272,10 +254,14 @@
 
     public void HousingClickedGrid(RowSelectEventArgs<House> args)
     {
-        if (args.IsInteracted)
-        {
+        if (args.IsInteracted) {
             //TODO: goto page 'interior' with houseNumber as reference
         }
+    }
+
+    public async void Dispose()
+    {
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 
     public class House
@@ -384,14 +370,9 @@
 
 
 <style>
-
-
-
-
     .e-gridcontent:hover {
         cursor: pointer;
     }
-
 
     .e-grid * {
         font-size: 12px !important;
@@ -410,23 +391,8 @@
         color: white;
     }
 
-    .pic-below {
-        width: 14.57%;
-        float: left;
-    }
-
     .line-1 {
         width: 8.33%;
-        padding: 7px;
-    }
-
-    .line-1last {
-        width: 8.33%;
-    }
-
-    .line-1-5 {
-        width: 25%;
-        padding: 7px;
     }
 
     .line-2 {
@@ -441,22 +407,8 @@
         width: 33.33%;
     }
 
-    .line-4planritning {
-        width: 33.33%;
-    }
-
-    .line-4arkitekt {
-        width: 33.33%;
-        float: left;
-        padding: 7px;
-    }
-
     .line-5 {
         width: 41.66%;
-    }
-
-    .line-6-grid {
-        width: 50%
     }
 
     .line-6 {
@@ -493,29 +445,17 @@
     }
 
     @@media (max-width: 1467px) {
-        .line-4arkitekt {
-            width: 100%;
-        }
+
     }
 
     @@media (max-width: 927px) {
-
 
         .line-1 {
             width: 25%;
         }
 
-        .line-1last {
-            display: none
-        }
-
         .line-2 {
             width: 100%;
-        }
-
-        .line-2knapp {
-            width: 50%;
-            margin: auto;
         }
 
         .line-3 {
@@ -526,14 +466,6 @@
             width: 100%;
         }
 
-        .line-4arkitekt {
-            width: 100%;
-        }
-
-        .line-4planritning {
-            width: 75%;
-        }
-
         .line-5 {
             width: 100%;
         }
@@ -542,10 +474,6 @@
             width: 100%;
         }
 
-
-        .line-6-grid {
-            width: 100%
-        } 
         .line-7 {
             width: 100%;
         }
@@ -583,31 +511,19 @@
             letter-spacing: 1px;
         }
 
-
         .gridwidth {
             width: 100%;
         }
     }
 
-
     @@media (max-width: 600px) {
-
 
         .line-1 {
             width: 25%;
         }
 
-        .line-1last {
-            display: none
-        }
-
         .line-2 {
             width: 100%;
-        }
-
-        .line-2knapp {
-            width: 50%;
-            margin: auto;
         }
 
         .line-3 {
@@ -616,14 +532,6 @@
 
         .line-4 {
             width: 100%;
-        }
-
-        .line-4arkitekt {
-            width: 100%;
-        }
-
-        .line-4planritning {
-            width: 75%;
         }
 
         .line-5 {
@@ -665,10 +573,7 @@
 
         .e-grid * {
             font-size: 10px !important;
-           
         }
-
-
 
         .e-headercelldiv {
             padding: 0px !important;
@@ -676,9 +581,7 @@
 
         .e-rowcell {
             padding-left: 10px !important;
-            
             margin: auto !important;
         }
-
     }
 </style>

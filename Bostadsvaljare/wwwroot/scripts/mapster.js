@@ -52,8 +52,8 @@
             $('#'+ parentID +' img.mapster_el')[0].src = imagePath;
         },
 
-        select: function (areaID) {
-            $('area#'+ areaID).mapster('select');
+        select: function (parentID, imgID, statusKey) {
+            $('#'+ parentID +' #'+ imgID).mapster('highlight', statusKey);
         },
 
         deselect: function () {
