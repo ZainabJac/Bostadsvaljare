@@ -4,7 +4,7 @@
         currentImgInd: 0,
         listeners: {},
 
-        initilalize: function () {
+        initialize: function () {
             var self = this;
             this.listeners.resize = function (e) { self._onResize(e); };
             window.addEventListener('resize', this.listeners.resize, false);
