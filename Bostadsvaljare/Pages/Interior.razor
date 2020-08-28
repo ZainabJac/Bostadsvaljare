@@ -1,5 +1,5 @@
-﻿@page "/interior"
-@*@page "/interior/{Housing}"*@
+﻿@*@page "/interior"*@
+@page "/interior/{HousingID}"
 
 @implements IDisposable
 @inject IJSRuntime JSRuntime
@@ -215,7 +215,7 @@
     };
 
     [Parameter]
-    public string Housing { get; set; }
+    public string HousingID { get; set; }
     [Parameter]
     public List<Order> Orders { get; set; }
     [Parameter]
