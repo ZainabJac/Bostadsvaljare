@@ -42,7 +42,7 @@
                 case '%':
                     // Percentage
                     var perc = parseFloat(view.width) / 100;
-                    newWidth = $(window).width() * perc;
+                    newWidth = $('#'+ view.parentID).parent().width() * perc;
                     break;
                 case 'x':
                     // Pixels
