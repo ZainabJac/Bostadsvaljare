@@ -1,9 +1,8 @@
 ﻿(function () {
-    window.exterior = {
-        views: [],
-        currentView: 0,
+    window.mapster_responsive = {
+        images: [],
+        currentImgInd: 0,
         listeners: {},
-        resizeTimeout: null,
 
         initilalize: function () {
             var self = this;
@@ -12,24 +11,27 @@
         },
 
         dispose: function () {
+            this.images.length = 0;
+            this.currentImgInd = 0;
+
             window.removeEventListener('resize', this.listeners.resize, false);
         },
 
         setValues: function (viewInd, parentID, width) {
-            this.views[viewInd] = {
+            this.images[viewInd] = {
                 parentID: parentID,
                 width: width,
             };
-            this._onResize();
+            this._onResize(undefined);
         },
 
-        changeView: function (newView) {
-            this.currentView = newView;
+        changeImage: function (newImageInd) {
+            this.currentImgInd = newImageInd;
             this._onResize(undefined);
         },
 
         _onResize: function (event) {
-            var view = this.views[this.currentView],
+            var view = this.images[this.currentImgInd],
                 newWidth = 1200, newHeight, diff,
                 wrapper = $('#'+ view.parentID +' div'),
                 areas = $('#'+ view.parentID +' area'),
@@ -52,10 +54,8 @@
 
             wrapper.width(newWidth);
             wrapper.height(newHeight);
-            wrapper.children('img.mapster_el').width(newWidth);
-            wrapper.children('img.mapster_el').height(newHeight);
-            wrapper.children('canvas').width(newWidth);
-            wrapper.children('canvas').height(newHeight);
+            wrapper.children('.mapster_el').width(newWidth);
+            wrapper.children('.mapster_el').height(newHeight);
 
             for (n = 0; n < len; n++) {
                 coords[n] = areas[n].coords.split(',');

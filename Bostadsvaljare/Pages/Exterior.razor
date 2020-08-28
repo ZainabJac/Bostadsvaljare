@@ -139,7 +139,7 @@
         }
         base.StateHasChanged();
 
-        await JSRuntime.InvokeVoidAsync("exterior.initilalize");
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.initilalize");
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
@@ -149,7 +149,7 @@
                 "mapster.addMapHighlights", Views[view].ID, Views[view].ID +"-img", Views[view].ImageMapName, "mapster_el center"
             );
             await JSRuntime.InvokeVoidAsync(
-                "exterior.setValues", view, Views[view].ID, ImgWidth
+                "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
             );
         }
 
@@ -171,7 +171,7 @@
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
-        await JSRuntime.InvokeVoidAsync("exterior.changeView", this.CurrentView);
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
 
         base.StateHasChanged();
     }
@@ -211,7 +211,7 @@
     {
         // Need to make sure that it's not trying to invoke JavaScript interop before initialization
         if (this.Views[0].Initialized)
-            await JSRuntime.InvokeVoidAsync("exterior.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 
     public class Houses
