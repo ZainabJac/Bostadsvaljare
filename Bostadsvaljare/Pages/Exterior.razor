@@ -146,10 +146,10 @@
     {
         if (!Views[view].Initialized) {
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", Views[view].ID, Views[view].ID +"-img", Views[view].ImageMapName, "mapster_el center"
+                "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
             );
             await JSRuntime.InvokeVoidAsync(
-                "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
+                "mapster.addMapHighlights", Views[view].ID, Views[view].ID +"-img", Views[view].ImageMapName, "mapster_el center"
             );
         }
 

@@ -22,12 +22,16 @@
                 parentID: parentID,
                 width: width,
             };
-            this._onResize(undefined);
         },
 
         changeImage: function (newImageInd) {
             this.currentImgInd = newImageInd;
             this._onResize(undefined);
+        },
+
+        resize: function () {
+            if (images.length > 0)
+                this._onResize(undefined);
         },
 
         _onResize: function (event) {
