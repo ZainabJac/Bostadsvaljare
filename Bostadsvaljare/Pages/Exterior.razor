@@ -2,40 +2,41 @@
 
 @using Syncfusion.Blazor.SplitButtons
 
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
 
 <div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;") @(Views[0].Initialized ? "" : "visibility: hidden;")">
-    <img id="@(Views[0].ID)-img" src="@ExteriorImgPaths[0]" style="width: 60%;" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
+    <img id="@(Views[0].ID)-img" style="width: @ImgWidth;" src="@ExteriorImgPaths[0]" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
     <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
-        <area id="booked" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
+        <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
     </map>
 </div>
 <div id="@Views[1].ID" style="@(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;") @(Views[1].Initialized ? "" : "visibility: hidden;")">
-    <img id="@(Views[1].ID)-img" src="@ExteriorImgPaths[1]" style="width: 60%;" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
+    <img id="@(Views[1].ID)-img" src="@ExteriorImgPaths[1]" style="width: @ImgWidth;" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
     <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
-        <area id="booked" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
-        <area id="booked" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
-        <area id="available" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
-        <area id="sold" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
+        <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
+        <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
+        <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
+        <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(""))" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
     </map>
 </div>
 
@@ -125,9 +126,10 @@
 
     private int CurrentView { get; set; } = 0;
     private string[] ExteriorImgPaths { get; set; }
+    private string ImgWidth { get; set; } = "60%";
     public List<Houses> DataSource { get; set; }
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         base.OnInitialized();
         this.DataSource = Houses.GetHouseData();
@@ -135,14 +137,21 @@
         for (int i=0; i < this.Views.Count; i++) {
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
         }
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("exterior.initilalize");
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        if (!Views[view].Initialized)
+        if (!Views[view].Initialized) {
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", Views[view].ID, Views[view].ID +"-img", Views[view].ImageMapName, "center"
+                "mapster.addMapHighlights", Views[view].ID, Views[view].ID +"-img", Views[view].ImageMapName, "mapster_el center"
             );
+            await JSRuntime.InvokeVoidAsync(
+                "exterior.setValues", view, Views[view].ID, ImgWidth
+            );
+        }
 
         Views[view].Initialized = true;
         base.StateHasChanged();
@@ -159,9 +168,12 @@
         args.Element.AddClass(new string[] { "item-background" });
     }
 
-    public void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
+    public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
+        await JSRuntime.InvokeVoidAsync("exterior.changeView", this.CurrentView);
+
+        base.StateHasChanged();
     }
 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
@@ -170,7 +182,7 @@
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies[args.Element.ID];
         }
         await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImage", Views[CurrentView].ID, this.ExteriorImgPaths[CurrentView]
+            "mapster.changeImage", this.Views[this.CurrentView].ID, this.ExteriorImgPaths[CurrentView]
         );
     }
 
@@ -193,6 +205,13 @@
             navManager.NavigateTo("/interior/" + housing);
         else
             navManager.NavigateTo("/interior");
+    }
+
+    public async void Dispose()
+    {
+        // Need to make sure that it's not trying to invoke JavaScript interop before initialization
+        if (this.Views[0].Initialized)
+            await JSRuntime.InvokeVoidAsync("exterior.dispose");
     }
 
     public class Houses

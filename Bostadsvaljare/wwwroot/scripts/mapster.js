@@ -1,6 +1,6 @@
 ﻿(function () {
     window.mapster = {
-        addMapHighlights: function (elementID, imageID, mapID, classList) {
+        addMapHighlights: function (parentID, imgID, mapID, classList) {
             var colors = {
                 available: '5bcb24',
                 booked: 'dfd431',
@@ -10,7 +10,8 @@
             var options = {
                 staticState: false,
                 fill: true,
-                mapKey: 'id',
+                mapKey: 'status',
+                scaleMap: true,
             };
             if (classList !== "")
                 options.wrapClass = classList;
@@ -25,7 +26,7 @@
                     for (var i = 0; i < mapAreas.length; i++) {
                         var area = mapAreas[i];
                         var status = area.attributes.id.value;
-                        area.attributes.id.value = status + statuses[status];
+                        area.attributes.status.value = status + statuses[status];
                         options.areas.push({
                             key: status + statuses[status],
                             fillColor: colors[status],
@@ -37,15 +38,16 @@
 
                     this.css({
                         width: '100%',
+                        height: '100%',
                     });
                 }
             };
 
-            $('#'+ elementID +' #'+ imageID).mapster(initialOptions);
+            $('#'+ parentID +' #'+ imgID).mapster(initialOptions);
         },
 
-        changeImage: function (elementID, imagePath) {
-            $('#'+ elementID +' img.mapster_el')[0].src = imagePath;
+        changeImage: function (parentID, imagePath) {
+            $('#'+ parentID +' img.mapster_el')[0].src = imagePath;
         },
 
         select: function (areaID) {
