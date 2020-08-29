@@ -7,6 +7,7 @@
 @inject NavigationManager navManager
 
 
+
 <div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;") @(Views[0].Initialized ? "" : "visibility: hidden;")">
     <img id="@(Views[0].ID)-img" style="width: @ImgWidth;" src="@ExteriorImgPaths[0]" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
     <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
@@ -138,11 +139,12 @@
         }
         base.StateHasChanged();
 
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+        
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
         if (!Views[view].Initialized) {
             await JSRuntime.InvokeVoidAsync(
                 "mapster_responsive.setValues", view, Views[view].ID, ImgWidth

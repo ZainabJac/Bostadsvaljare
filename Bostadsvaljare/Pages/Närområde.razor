@@ -6,46 +6,54 @@
 
     <div class="line-3">
         <div class="line-12">
-        <SfCard>
-            <CardStacked>
+            <SfCard>
+                <CardStacked>
 
-                <input id="pac-input" class="controls" type="text" placeholder=" Vart vill du åka?">
+                    @*<input id="pac-input" class="controls" type="text" placeholder=" Vart vill du åka?">*@
+
+                    <div class="container">
+
+                        <input id="searchBar" class="searchbar" type="text" placeholder="Sök destination..">
+                        <a id="btnSearch" class="btn-search"><i class="fa fa-search"></i></a>
+                    </div>
 
 
-                <div id="travel-data" class="results">
 
-                    <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance"></a></div>
+                    <div id="travel-data" class="results">
 
-                    <div style="width:100%; padding-bottom:7px;">  <a id="travel-time"></a></div>
+                        <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance"></a></div>
 
-                </div>
-
-                <SfCard>
-                    <div style="padding-left:7px;">
-                        <SfRadioButton Label="Bil" Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                        <br>
-                        <SfRadioButton Label="Cykel" Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                        <br>
-                        <SfRadioButton Label="Kollektivtrafik" Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                        <br>
-                        <SfRadioButton Label="Gång" Name="travelMode" Value="walk" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+                        <div style="width:100%; padding-bottom:7px;">  <a id="travel-time"></a></div>
 
                     </div>
-                </SfCard>
+
+                    <SfCard>
+                        <div class="radiobuttons">
+                            <SfRadioButton Label="Bil" Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+                            <br>
+
+                            <SfRadioButton Label="Cykel" Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+                            <br>
+
+                            <SfRadioButton Label="Kollektivtrafik" Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+                            <br>
+
+                            <SfRadioButton Label="Gång" Name="travelMode" Value="walk" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
+
+                        </div>
+                    </SfCard>
 
 
-            </CardStacked>
-        </SfCard>
-    </div>
+                </CardStacked>
+            </SfCard>
+        </div>
         <div class="line-12">
             <SfCard>
                 <CardStacked>
-                    <SfCard>
-                        <header class="naromrodeheader"> Vad är viktigt för dig? </header>
-                        <text class="naromrodetxt"> Sök efter det du värderar mest, finns det en ica eller coop butik i närheten? Eller Finns det många fotbollsplaner? Sök och utforska området här! </text>
-                    </SfCard>
-                    <input id="pac-input2" class="controls" type="text" placeholder="Vad finns i närheten?">
-
+                    @*<input id="pac-input2" class="controls" type="text" placeholder="Vad finns i närheten?">*@
+                    <div class="container">
+                        <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i närområdet..">
+                    </div>
                     <div id="travel-data" class="results">
 
                         <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance1"></a></div>
@@ -53,9 +61,15 @@
                         <div style="width:100%; padding-bottom:7px;">  <a id="travel-time1"></a></div>
 
                     </div>
-                </CardStacked>
-            </SfCard>
-        </div>
+                    <div class="cardsearch">
+                    <SfCard>
+                        <header class="naromrodeheader"> Vad är viktigt för dig? </header>
+                        <text class="naromrodetxt"> Sök efter det du värderar mest, finns det en ica eller coop butik i närheten? Eller Finns det många fotbollsplaner? Sök och utforska området här! </text>
+                    </SfCard>
+                    </div>
+        </CardStacked>
+        </SfCard>
+    </div>
 
     </div>
       
@@ -88,10 +102,83 @@
                 "googlemaps.setTravelMode", args.Value
             );
         }
+
+
+
     }
 
 
     <style>
+
+        .radiobuttons {
+            padding: 7px;
+           
+        }
+
+       
+
+        input:focus::-webkit-input-placeholder {
+            color: transparent;
+        }
+  
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            margin:auto;
+        }
+
+        .searchbar {
+            float: right;
+            background-color: #415965;
+            color: white;
+        
+            width: 50%;
+            border: none;
+            margin-top: 1px;
+            margin-right: 8px;
+            font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+            font-size: 1em;
+          
+            border-bottom: white solid 2px;
+            transition: 0.3s;
+        }
+
+            .searchbar::placeholder {
+                color: white;
+                font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+                font-size: 1em;
+             
+                text-align: center;
+                /* transition: 0.2s; */
+            }
+
+            .searchbar:focus {
+                width: 90%;
+                font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+                font-size: 1em;
+               
+                transition: 0.3s;
+                /* Stops the input box from inheriting the styling from the inputs on the request form */
+                border-bottom: white solid 2px;
+                outline: none;
+                text-align: center;
+                
+                
+            }
+
+        .btn-search {
+            cursor: pointer;
+            color: white;
+            text-decoration: none !important;
+            font-family: "Segoe UI Light","Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+            font-size: 1.5em;
+        
+            text-align: center;
+        }
+
 
         .naromrodetxt {
             font-family: 'Segoe UI';
@@ -224,5 +311,145 @@
         [class*="line-"] {
             float: left;
             padding: 7px;
+        }
+
+        @@media (max-width: 927px) {
+
+            #gallery {
+                width: 25%;
+                /*height: height(line-4-planritning) + 6px*/
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+                #gallery span {
+                    display: initial;
+                }
+
+            .gallery-img {
+                width: 100%;
+                padding: 0px;
+            }
+
+            .card-info-header-right {
+                font-family: 'Segoe UI';
+                font-size: 14px;
+                float: right;
+                display: inline-block;
+            }
+
+
+            .card-info-header {
+                font-family: 'Segoe UI';
+                font-size: 14px;
+                display: inline-block;
+                Margin: 4px;
+            }
+
+
+            .card-info-text {
+                font-family: 'Segoe UI';
+                font-size: 10px;
+                display: inline-block;
+            }
+
+
+            .line-1 {
+                width: 25%;
+            }
+
+            .line-2 {
+                width: 100%;
+            }
+
+            .line-2knapp {
+                width: 50%;
+                margin: auto;
+            }
+
+            .line-3 {
+                width: 100%;
+            }
+
+            .line-4 {
+                width: 100%;
+            }
+
+            .arkitekt {
+                width: 100%;
+                padding-top: 6px;
+            }
+
+            .line-4-planritning {
+                width: 75%;
+            }
+
+            .line-5 {
+                width: 50%;
+            }
+
+            .line-6 {
+                width: 50%;
+            }
+
+            .line-7 {
+                width: 100%;
+            }
+
+            .line-8 {
+                width: 100%;
+            }
+
+            .line-9 {
+                width: 100%;
+            }
+
+            .line-10 {
+                width: 100%;
+            }
+
+            .line-11 {
+                width: 100%;
+            }
+
+            .line-12 {
+                width: 100%;
+            }
+
+            [class*="line-"] {
+                float: left;
+                padding: 3px;
+            }
+
+            br {
+                display: none;
+            }
+
+           .naromrodeheader{
+               display:none;
+           }
+
+            .naromrodetxt{
+                display:none;
+            }
+
+
+            header {
+                display:initial;
+            }
+
+            .e-radio + label .e-label{
+                padding-left: 20px !important;
+                padding-right: 10px !important;
+            }
+
+            .radiobuttons {
+                padding: 7px;
+                margin: auto;
+            }
+
+            .cardsearch {
+                display:none;
+            }
         }
     </style>
