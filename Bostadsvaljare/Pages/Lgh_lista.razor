@@ -15,7 +15,7 @@
         <map id="apt-list" name="apt-list">
             @foreach (HouseImage image in ImageData) {
                 <area id="@GetHouseStatus(image.HouseNumber)" status="" href="#"
-                      @onmouseover="(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="@(() => HousingClickedIM(0))"
+                      @onmouseover="(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="@(() => HousingClickedIM(image.ID))"
                       coords="@image.IMCoords" shape="poly">
             }
         </map>
@@ -32,7 +32,7 @@
 <div class="line-6" >
     <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-        <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" TValue="Data.House"></GridEvents>
+        <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
         <GridColumns>
             <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
             <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
@@ -72,9 +72,10 @@
 
 @code{
     private SfGrid<Data.House> HouseList;
-    private Dictionary<string, string> HouseToArea;
+    private Dictionary<string, string> HouseToStatus;
     private bool IsHighlighting { get; set; }
     private int HighlightedRow { get; set; }
+    private int MobileSelection { get; set; } = -1;
 
     public List<Data.House> HouseData { get; set; }
     public List<HouseImage> ImageData { get; set; }
@@ -100,9 +101,14 @@
         base.OnInitialized();
         this.HouseData = GetHouseData();
         this.ImageData = HouseImage.GetImageData();
-        this.HouseToArea = new Dictionary<string, string>();
+        this.HouseToStatus = new Dictionary<string, string>();
         this.IsHighlighting = false;
         this.HighlightedRow = -1;
+
+        foreach (HouseImage img in ImageData) {
+            img.ID = HouseData.Find(x => x.HouseNumber == img.HouseNumber).ID;
+        }
+
         base.StateHasChanged();
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
@@ -124,8 +130,8 @@
         };
         foreach (HouseImage img in ImageData) {
             string status = HouseData.Find(x => x.HouseNumber == img.HouseNumber).Status;
-            HouseToArea.Add(img.HouseNumber,
-                            status + statuses[status]++);
+            HouseToStatus.Add(img.HouseNumber,
+                              status + statuses[status]++);
         }
     }
 
@@ -206,9 +212,9 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        if (HouseToArea.ContainsKey(houseNumber)) {
-            string areaID = HouseToArea[houseNumber];
-            await JSRuntime.InvokeVoidAsync("mapster.select", "house-main", "house-main-img", areaID);
+        if (HouseToStatus.ContainsKey(houseNumber)) {
+            string statusKey = HouseToStatus[houseNumber];
+            await JSRuntime.InvokeVoidAsync("mapster.select", "house-main", "house-main-img", statusKey);
         }
     }
 
@@ -249,14 +255,33 @@
 
     private async void HousingClickedIM(int houseID)
     {
-        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-        navManager.NavigateTo("/interior/"+ houseID);
+        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+        if (mobile && MobileSelection != houseID) {
+            MobileSelection = houseID;
+        } else {
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+            navManager.NavigateTo("/interior/"+ houseID);
+        }
     }
 
-    public void HousingClickedGrid(RowSelectEventArgs<Data.House> args)
+    public async void HousingClickedGrid(RowSelectEventArgs<Data.House> args)
     {
         if (args.IsInteracted) {
-            navManager.NavigateTo("/interior/"+ args.Data.ID);
+            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            if (mobile && MobileSelection != args.Data.ID)
+                MobileSelection = args.Data.ID;
+            else
+                navManager.NavigateTo("/interior/"+ args.Data.ID);
+        }
+    }
+
+    public async void HousingClickedTwiceGrid(RowDeselectEventArgs<Data.House> args)
+    {
+        if (args.IsInteracted) {
+            await Task.Delay(50);
+            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            if (mobile && MobileSelection == args.Data.ID)
+                navManager.NavigateTo("/interior/"+ args.Data.ID);
         }
     }
 
@@ -268,72 +293,74 @@
     public static List<Data.House> GetHouseData()
     {
         List<Data.House> houseData = new List<Data.House>();
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "3a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7c", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9c", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9d", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7d", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "9b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "10a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "27b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
-        houseData.Add(new Data.House { Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
-        houseData.Add(new Data.House { Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        int id = 0;
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "3a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7c", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9c", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9d", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7d", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "9b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "10a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "27b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" });
+        houseData.Add(new Data.House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" });
 
         return houseData;
     }
 
     public class HouseImage
     {
+        public int ID { get; set; }
         public string HouseNumber { get; set; }
         public string IMCoords { get; set; }
 
