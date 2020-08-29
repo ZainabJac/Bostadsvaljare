@@ -36,9 +36,9 @@
             });
 
             // Create the search box and link it to the UI element.
-            var input = document.getElementById('pac-input');
+            var input = document.getElementById('searchBar');
             var searchBox = new google.maps.places.SearchBox(input);
-            var input2 = document.getElementById('pac-input2');
+            var input2 = document.getElementById('searchBar2');
             var searchBox2 = new google.maps.places.SearchBox(input2);
 
             // Bias the SearchBox results towards current map's viewport.
