@@ -1,4 +1,6 @@
-﻿(function () {
+﻿
+
+(function () {
     window.googlemaps = {
         displayingDirections: false,
         directionsDisplay: null,
