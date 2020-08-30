@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Goback.js" />
+    <Content Remove="wwwroot\scripts\resizescript - Copy.js" />
   </ItemGroup>
 
   <ItemGroup>
