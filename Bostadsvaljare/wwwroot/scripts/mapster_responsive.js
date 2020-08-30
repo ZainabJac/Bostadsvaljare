@@ -3,9 +3,11 @@
         images: [],
         currentImgInd: 0,
         listeners: {},
+        stayInWindow: false,
 
-        initialize: function () {
+        initialize: function (stayInView) {
             var self = this;
+            this.stayInWindow = stayInView;
             this.listeners.resize = function (e) { self._onResize(e); };
             window.addEventListener('resize', this.listeners.resize, false);
         },
@@ -13,12 +15,22 @@
         dispose: function () {
             this.images.length = 0;
             this.currentImgInd = 0;
+            this.stayInWindow = false;
 
             window.removeEventListener('resize', this.listeners.resize, false);
         },
 
-        setValues: function (viewInd, parentID, width) {
-            this.images[viewInd] = {
+        getMargin: function () {
+            var image = this.images[this.currentImgInd],
+                l = $('#'+ image.parentID).offset().left,
+                r = $(window).width() - $('#'+ image.parentID).width() - l,
+                t = $('#'+ image.parentID).offset().top,
+                b = 0; //TODO: get correct margin-bottom
+            return { left: l, right: r, top: t, bottom: b, width: l + r, height: t + b };
+        },
+
+        setValues: function (imgInd, parentID, width) {
+            this.images[imgInd] = {
                 parentID: parentID,
                 width: width,
             };
@@ -35,41 +47,49 @@
         },
 
         _onResize: function (event) {
-            var view = this.images[this.currentImgInd],
-                newWidth = 1200, newHeight, diff,
-                wrapper = $('#'+ view.parentID +' div'),
-                areas = $('#'+ view.parentID +' area'),
+            var image = this.images[this.currentImgInd],
+                newWidth, newHeight, diff = 1, perc = 1,
+                wrapper = $('#'+ image.parentID +' div'),
+                areas = $('#'+ image.parentID +' area'),
                 n, m, clen, len = areas.length,
-                coords = [];
+                coords = [], margin = this.getMargin(),
+                windowW = $(window).width() - margin.width,
+                windowH = $(window).height() - margin.height;
 
-            switch (view.width.slice(-1)) {
-                case '%':
-                    // Percentage
-                    var perc = parseFloat(view.width) / 100;
-                    newWidth = $('#'+ view.parentID).parent().width() * perc;
-                    break;
-                case 'x':
-                    // Pixels
-                    newWidth = parseFloat(view.width);
-                    break;
+            if (image.width.slice('-1') == '%')
+                perc = parseFloat(image.width) * 0.01;
+
+            if (this.stayInWindow
+            &&  windowH * 3 < windowW * 2 * (perc + (1-perc)*0.5)
+            &&  wrapper.height() !== windowH) {
+                newHeight = windowH;
+                diff = newHeight / wrapper.height();
+                newWidth = wrapper.width() * diff;
+            } else {
+                if (image.width.slice('-1') == '%')
+                    newWidth = $('#'+ image.parentID).parent().width() * perc;
+                else
+                    newWidth = parseFloat(image.width);
+                diff = newWidth / wrapper.width();
+                newHeight = wrapper.height() * diff;
             }
-            diff = newWidth / wrapper.width();
-            newHeight = wrapper.height() * diff;
 
-            wrapper.width(newWidth);
-            wrapper.height(newHeight);
-            wrapper.children('.mapster_el').width(newWidth);
-            wrapper.children('.mapster_el').height(newHeight);
+            if (diff !== 1) {
+                wrapper.width(newWidth);
+                wrapper.height(newHeight);
+                wrapper.children('.mapster_el').width(newWidth);
+                wrapper.children('.mapster_el').height(newHeight);
 
-            for (n = 0; n < len; n++) {
-                coords[n] = areas[n].coords.split(',');
-            }
-            for (n = 0; n < len; n++) {
-                clen = coords[n].length;
-                for (m = 0; m < clen; m++) {
-                    coords[n][m] *= diff;
+                for (n = 0; n < len; n++) {
+                    coords[n] = areas[n].coords.split(',');
                 }
-                areas[n].coords = coords[n].join(',');
+                for (n = 0; n < len; n++) {
+                    clen = coords[n].length;
+                    for (m = 0; m < clen; m++) {
+                        coords[n][m] *= diff;
+                    }
+                    areas[n].coords = coords[n].join(',');
+                }
             }
         },
     };
