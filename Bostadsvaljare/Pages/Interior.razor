@@ -351,9 +351,8 @@
     public async void Dispose()
     {
         await JSRuntime.InvokeVoidAsync("interior.dispose");
-
-        // Need to make sure that it's not trying to invoke JavaScript interop before initialization
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 }
 
