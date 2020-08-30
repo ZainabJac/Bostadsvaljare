@@ -912,19 +912,11 @@
                 tooltipDiv.style.top = tooltipPosition.y - tootipHeight - 5 + 'px';
 
                 tooltipDiv.innerText = util.prettyString(this.hoveringObj.name);
-
-                setTimeout(function () {
-                    tooltipDiv.style.opacity = 1.0;
-                }, 25);
             }
         },
 
         hideTooltip: function () {
-            var tooltipDiv = $('#'+ constants.TOOLTIP)[0];
-            if (tooltipDiv) {
-                tooltipDiv.style.display = "none";
-                tooltipDiv.style.opacity = 0.0;
-            }
+            $('#'+ constants.TOOLTIP).hide();
         },
 
         showMap: function () {
