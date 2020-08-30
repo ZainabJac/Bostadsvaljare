@@ -686,8 +686,6 @@
         },
 
         onMouseUp: function (event) {
-            if (!this.isMouseover) return;
-
             if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
@@ -712,12 +710,6 @@
         },
 
         onTouchMove: function (event) {
-            if (!this.isUserInteracting) return;
-
-            // Ignore if more than one touch is registered
-            if (event.target !== this.canvas || event.touches.length > 1)
-                return;
-
             // Update pointerVector for all the raycasting
             var touchPos = this.getPointerEventPos(event);
             this.pointerVector.x = (touchPos.x / this.canvas.offsetWidth) * 2 - 1;
@@ -733,8 +725,7 @@
         },
 
         onTouchStart: function (event) {
-            // Ignore if more than one touch is registered
-            if (event.target !== this.canvas || event.touches.length > 1)
+            if (event.target !== this.canvas)
                 return;
 
             // Update pointerVector for all the raycasting
@@ -763,12 +754,6 @@
         },
 
         onTouchEnd: function (event) {
-            if (!this.isUserInteracting) return;
-
-            // Ignore if more than one touch is registered
-            if (event.target !== this.canvas)
-                return;
-
             if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
