@@ -51,8 +51,16 @@
 </div>
 
 <div class="line-4-planritning">
-    <div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
-    <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />
+    @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
+        <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
+    <div id="imagemap">
+        <img id="imagemap" style="width: @ImgWidth;" src="IMG/Solstudie Morgon.jpg" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
+        <map id="imagemap-img" name="@Views[0].ImageMapName">
+            <area id="available" status="" href="#" @onclick="@(() =>RoomClicked(0))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
+            <area id="sold" status="" href="#"  @onclick="@(() =>RoomClicked(1))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
+      
+        </map>
+    </div>
 </div>
 
 <div id="gallery" class="line-4">
@@ -140,6 +148,75 @@
 
 
 @code {
+
+
+    public class ViewData
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public string ImageMapName { get; set; }
+        public Dictionary<string, string> SunStudies { get; set; }
+        public bool Initialized { get; set; } = false;
+    }
+
+    List<ViewData> Views = new List<ViewData> {
+        new ViewData() {
+            ID = "view-1",
+            Name = "Vy 1",
+            ImageMapName = "imagemap-1",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Dag.jpg" },
+                { "midday", "IMG/Imagemap.jpg" },
+                { "evening", "IMG/Natt.jpg" },
+            },
+        },
+        new ViewData() {
+            ID = "view-2",
+            Name = "Vy 2",
+            ImageMapName = "imagemap-2",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/ext. 2.jpg" },
+                { "midday", "IMG/ext. 2.jpg" },
+                { "evening", "IMG/ext. 2.jpg" },
+            },
+        },
+    };
+
+
+    private string ImgWidth { get; set; } = "100%";
+    private int MobileSelection { get; set; } = -1;
+
+
+
+    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
+    {
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            await JSRuntime.InvokeVoidAsync(
+                "mapster_responsive.setValues", view, "imagemap", ImgWidth
+            );
+            await JSRuntime.InvokeVoidAsync(
+                "mapster.addMapHighlights", "imagemap", "imagemap", "imagemap-img", "mapster_el center"
+            );
+
+        base.StateHasChanged();
+    }
+
+
+    private async void RoomClicked(int houseID)
+    {
+        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+        if (mobile && MobileSelection != houseID)
+        {
+            MobileSelection = houseID;
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+     
+        }
+    }
+
+
     public enum ImageType
     {
         Image,
@@ -246,6 +323,7 @@
             Freight = 2.1 * x,
             OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
         }).ToList();
+
     }
 
     private async void OnClickGalleryImg(MouseEventArgs ev)
@@ -273,6 +351,9 @@
     public async void Dispose()
     {
         await JSRuntime.InvokeVoidAsync("interior.dispose");
+
+        // Need to make sure that it's not trying to invoke JavaScript interop before initialization
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 }
 
