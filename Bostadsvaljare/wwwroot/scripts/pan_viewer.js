@@ -576,7 +576,7 @@
                 }
             }
 
-            $("canvas").outerHeight(newHeight);
+            $("#"+ constants.CONTAINER +" canvas").outerHeight(newHeight);
             this.resetHUD(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
