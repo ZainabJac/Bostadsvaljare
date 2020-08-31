@@ -15,7 +15,8 @@
     <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == ImageType.Image ? "" : "hidden")">
         <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
-                @for (int i = 0; i < items.Count; i++) {
+                @for (int i = 0; i < items.Count; i++)
+                {
                     if (items[i].ImgType != ImageType.Image)
                         continue;
 
@@ -23,7 +24,8 @@
                 }
             </ol>
             <div class="carousel-inner">
-                @for (int i = 0; i < items.Count; i++) {
+                @for (int i = 0; i < items.Count; i++)
+                {
                     if (items[i].ImgType != ImageType.Image)
                         continue;
 
@@ -54,17 +56,19 @@
     @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
         <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
     <div id="imagemap">
-        <img id="imagemap" style="width: @ImgWidth;" src="IMG/Solstudie Morgon.jpg" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
+        <img id="imagemap" style="width: @ImgWidth;" src="IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
         <map id="imagemap-img" name="@Views[0].ImageMapName">
-            <area id="available" status="" href="#" @onclick="@(() =>RoomClicked(0))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
-            <area id="sold" status="" href="#"  @onclick="@(() =>RoomClicked(1))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
-      
+            <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
+            <area id="interior2" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
+            <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
+
         </map>
     </div>
 </div>
 
 <div id="gallery" class="line-4">
-    @for (int i = 0; i < items.Count; i++) {
+    @for (int i = 0; i < items.Count; i++)
+    {
         <span class="line-3">
             <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
         </span>
@@ -191,37 +195,25 @@
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
-            await JSRuntime.InvokeVoidAsync(
-                "mapster_responsive.setValues", view, "imagemap", ImgWidth
-            );
-            await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", "imagemap", "imagemap", "imagemap-img", "mapster_el center"
-            );
+        await JSRuntime.InvokeVoidAsync(
+            "mapster_responsive.setValues", view, "imagemap", ImgWidth
+        );
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.addMapHighlights", "imagemap", "imagemap", "imagemap-img", "mapster_el center"
+        );
 
         base.StateHasChanged();
     }
 
 
-    private async void RoomClicked(int houseID)
-    {
-        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
-        if (mobile && MobileSelection != houseID)
-        {
-            MobileSelection = houseID;
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-     
-        }
-    }
 
 
     public enum ImageType
     {
         Image,
         Panorama,
-        VR
+        VR,
+        Imagemap
     }
 
     public class Houses
@@ -302,10 +294,14 @@
     [Parameter]
     public ImageType SelectedType { get; set; }
 
+
+
     private void ToggleInfo()
     {
         ShowInfo = !ShowInfo;
     }
+
+
 
     protected override async void OnInitialized()
     {
@@ -326,6 +322,29 @@
 
     }
 
+    private async void OnClickImgagemap(int roomid)
+    {
+
+        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomid);
+
+    }
+
+    //private async void RoomClicked(int houseID)
+    //{
+    //    var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+    //    if (mobile && MobileSelection != houseID)
+    //    {
+    //        MobileSelection = houseID;
+    //    }
+    //    else
+    //    {
+    //        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+
+    //    }
+    //}
+
+
     private async void OnClickGalleryImg(MouseEventArgs ev)
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
@@ -337,7 +356,8 @@
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
         if (items[ind].ImgType == ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
-        else if (items[ind].ImgType == ImageType.Panorama) {
+        else if (items[ind].ImgType == ImageType.Panorama)
+        {
             await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
         }
     }
