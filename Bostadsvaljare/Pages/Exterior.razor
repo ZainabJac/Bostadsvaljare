@@ -131,7 +131,7 @@
     private string ImgWidth { get; set; } = "80%";
     private int MobileSelection { get; set; } = -1;
 
-    protected override async void OnInitialized()
+    protected override void OnInitialized()
     {
         base.OnInitialized();
         this.ExteriorImgPaths = new string[this.Views.Count];
@@ -139,13 +139,11 @@
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
         }
         base.StateHasChanged();
-
-        
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
         if (!Views[view].Initialized) {
             await JSRuntime.InvokeVoidAsync(
                 "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
