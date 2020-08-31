@@ -42,7 +42,7 @@
         },
 
         resize: function () {
-            if (images.length > 0)
+            if (this.images.length > 0)
                 this._onResize(undefined);
         },
 
