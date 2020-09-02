@@ -5,9 +5,9 @@
         listeners: {},
         stayInWindow: false,
 
-        initialize: function (stayInView) {
+        initialize: function (stayInWindow) {
             var self = this;
-            this.stayInWindow = stayInView;
+            this.stayInWindow = stayInWindow;
             this.listeners.resize = function (e) { self._onResize(e); };
             window.addEventListener('resize', this.listeners.resize, false);
         },
@@ -30,9 +30,11 @@
         },
 
         setValues: function (imgInd, parentID, width) {
+            var imgEl = $('#' + parentID +' img');
             this.images[imgInd] = {
                 parentID: parentID,
                 width: width,
+                ratio: imgEl.width() / imgEl.height(),
             };
         },
 
@@ -60,11 +62,12 @@
                 perc = parseFloat(image.width) * 0.01;
 
             if (this.stayInWindow
-            &&  windowH * 3 < windowW * 2 * (perc + (1-perc)*0.5)
-            &&  wrapper.height() !== windowH) {
-                newHeight = windowH;
-                diff = newHeight / wrapper.height();
-                newWidth = wrapper.width() * diff;
+            && windowH * image.ratio < windowW * perc) {
+                if (wrapper.height() !== windowH) {
+                    newHeight = windowH;
+                    newWidth = newHeight * image.ratio;
+                    diff = newWidth / wrapper.width();
+                }
             } else {
                 if (image.width.slice('-1') == '%')
                     newWidth = $('#'+ image.parentID).parent().width() * perc;
