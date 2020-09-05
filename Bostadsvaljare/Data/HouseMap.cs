@@ -1,10 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Syncfusion.Blazor.PivotView;
+using System.Collections.Generic;
 
 namespace Bostadsvaljare.Data
 {
     public class HouseMap
     {
         private static Dictionary<string, List<HouseMap>> data;
+        private static readonly Dictionary<string, string> imageToView = new Dictionary<string, string> {
+            { "IMG/Dag.jpg", "view-1" },
+            { "IMG/Morgon.jpg", "view-1" },
+            { "IMG/Natt.jpg", "view-1" },
+            { "IMG/ext. 2.jpg", "view-2" },
+        };
 
         public int ID { get; set; }
         public string HouseNumber { get; set; }
@@ -14,7 +21,7 @@ namespace Bostadsvaljare.Data
         {
             if (data == null) {
                 data = new Dictionary<string, List<HouseMap>> {
-                    { "IMG/Dag.jpg", new List<HouseMap> {
+                    { "view-1", new List<HouseMap> {
                         new HouseMap { HouseNumber = "7a", IMCoords = "558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" },
                         new HouseMap { HouseNumber = "7b", IMCoords = "311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" },
                         new HouseMap { HouseNumber = "9a", IMCoords = "574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" },
@@ -29,7 +36,7 @@ namespace Bostadsvaljare.Data
                         new HouseMap { HouseNumber = "7c", IMCoords = "942,456,953,458,1389,458,1387,618,956,609,942,607" },
                         new HouseMap { HouseNumber = "7d", IMCoords = "944,609,1387,620,1389,796,944,780" },
                     }},
-                    { "IMG/ext. 2.jpg", new List<HouseMap> {
+                    { "view-2", new List<HouseMap> {
                         new HouseMap { HouseNumber = "7a", IMCoords = "143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" },
                         new HouseMap { HouseNumber = "7b", IMCoords = "144,262,168,402,647,580,760,431,757,394,702,367,640,435" },
                         new HouseMap { HouseNumber = "9a", IMCoords = "167,403,191,540,658,713,760,568,760,527,711,503,653,580" },
@@ -44,6 +51,11 @@ namespace Bostadsvaljare.Data
             }
 
             return data;
+        }
+
+        public static string ImageNameToView(string fileName)
+        {
+            return imageToView[fileName];
         }
     }
 }
