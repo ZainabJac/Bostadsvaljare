@@ -48,6 +48,13 @@ namespace Bostadsvaljare.Data
                         new HouseMap { HouseNumber = "3a", IMCoords = "791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" },
                     }},
                 };
+
+                List<House> houseData = House.GetHouseData();
+                foreach (KeyValuePair<string, List<HouseMap>> view in data) {
+                    foreach (HouseMap map in view.Value) {
+                        map.ID = houseData.Find(x => x.HouseNumber == img.HouseNumber).ID;
+                    }
+                }
             }
 
             return data;
