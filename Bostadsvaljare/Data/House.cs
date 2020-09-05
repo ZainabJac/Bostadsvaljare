@@ -19,6 +19,15 @@ namespace Bostadsvaljare.Data
         public string HouseNumber { get; set; }
         public string Status { get; set; }
 
+        public static string GetHouseStatus(string houseNumber)
+        {
+            foreach (Data.House house in houseData) {
+                if (house.HouseNumber == houseNumber)
+                    return house.Status;
+            }
+            return "";
+        }
+
         public static List<House> GetHouseData()
         {
             if (houseData == null) {

@@ -31,7 +31,7 @@
                             {
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
-                                    <area id="@GetHouseStatus(map.HouseNumber)" status="" href="#"
+                                    <area id="@Data.House.GetHouseStatus(map.HouseNumber)" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
                                           coords="@map.IMCoords" shape="poly">
                                 }
@@ -199,16 +199,6 @@
 
             this.Views[ind].Initialized = true;
         }
-    }
-
-    private string GetHouseStatus(string houseNumber)
-    {
-        foreach (Data.House house in HouseData)
-        {
-            if (house.HouseNumber == houseNumber)
-                return house.Status;
-        }
-        return "";
     }
 
     private void OnMouseOverIM(MouseEventArgs e, string houseNumber)
