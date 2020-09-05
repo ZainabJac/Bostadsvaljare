@@ -2,78 +2,89 @@
 
 @using BlazorStrap
 @using Syncfusion.Blazor.Grids
-@using Syncfusion.Blazor.Spinner
+@using BlazorPro.Spinkit
 
 @implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
 
+<SpinLoader IsLoading="@(ImageData  == null || HouseData == null)">
+    <LoadingTemplate>
+        <div style="text-align:center; padding-top:18%;">
+            <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
+            <Plane Center="true" />
+        </div>
+    </LoadingTemplate>
+    <ContentTemplate>
 
-<div class="line-6">
-    <div id="house-main">
-        <img id="house-main-img" src="IMG/Dag.jpg" style="width: 100%;" usemap="#apt-list" @onload="OnLoadImage">
-        <map id="apt-list" name="apt-list">
-            @foreach (HouseImage image in ImageData)
-            {
-                <area id="@GetHouseStatus(image.HouseNumber)" status="" href="#"
-                      @onmouseover="(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="@(() => HousingClickedIM(image.ID))"
-                      coords="@image.IMCoords" shape="poly">
-            }
-        </map>
-    </div>
-
-    <div>
-        <BSImage id="image" src="IMG/imagemap.jpg" class="line-3" style="display: inline-block;"></BSImage>
-        <BSImage src="IMG/Dag.jpg" class="line-3" style="display: inline-block;"></BSImage>
-        <SfSpinner @ref="SpinnerObj" Target="#image"> </SfSpinner>
-        <BSImage src="IMG/ext. 2.jpg" class="line-3" style="display: inline-block;"></BSImage>
-        <BSImage src="IMG/Natt.jpg" class="line-3" style="display: inline-block;"></BSImage>
-    </div>
-</div>
-
-<div class="line-6">
-    <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
-        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-        <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
-        <GridColumns>
-            <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
-            <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
-            <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
-            <GridColumn Field="@nameof(Data.House.Rent)" Format="C2" HeaderText="Mån. avgift"></GridColumn>
-            <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
-                <Template>
-                    @{
-                        Data.House house = (context as Data.House);
-                        <div>
-                            @if (house.Status == "sold")
-                            {
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
-                                     height="25"
-                                     width="25" />
-                                <span>Såld</span>
-                            }
-                            @if (house.Status == "booked")
-                            {
-                                <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
-                                     height="25"
-                                     width="25" />
-                                <span>Reserverad</span>
-                            }
-                            @if (house.Status == "available")
-                            {
-                                <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
-                                     height="25"
-                                     width="25" />
-                                <span>Ledig</span>
-                            }
-                        </div>
+        <div class="line-6">
+            <div id="house-main">
+                <img id="house-main-img" src="IMG/Dag.jpg" style="width: 100%;" usemap="#apt-list" @onload="OnLoadImage">
+                <map id="apt-list" name="apt-list">
+                    @foreach (HouseImage image in ImageData)
+                    {
+                        <area id="@GetHouseStatus(image.HouseNumber)" status="" href="#"
+                              @onmouseover="(e => OnMouseOverIM(e, image.HouseNumber))" @onmouseout="OnMouseOutIM" @onclick="@(() => HousingClickedIM(image.ID))"
+                              coords="@image.IMCoords" shape="poly">
                     }
-                </Template>
-            </GridColumn>
-        </GridColumns>
-    </SfGrid>
-</div>
+                </map>
+            </div>
+
+            <div>
+                <BSImage id="image" src="IMG/imagemap.jpg" class="line-3" style="display: inline-block;"></BSImage>
+                <BSImage src="IMG/Dag.jpg" class="line-3" style="display: inline-block;"></BSImage>
+             
+                <BSImage src="IMG/ext. 2.jpg" class="line-3" style="display: inline-block;"></BSImage>
+                <BSImage src="IMG/Natt.jpg" class="line-3" style="display: inline-block;"></BSImage>
+            </div>
+        </div>
+
+        <div class="line-6">
+            <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
+                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
+                <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
+                <GridColumns>
+                    <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.Rent)" Format="C2" HeaderText="Mån. avgift"></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
+                        <Template>
+                            @{
+                                Data.House house = (context as Data.House);
+                                <div>
+                                    @if (house.Status == "sold")
+                                    {
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
+                                             height="25"
+                                             width="25" />
+                                        <span>Såld</span>
+                                    }
+                                    @if (house.Status == "booked")
+                                    {
+                                        <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
+                                             height="25"
+                                             width="25" />
+                                        <span>Reserverad</span>
+                                    }
+                                    @if (house.Status == "available")
+                                    {
+                                        <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
+                                             height="25"
+                                             width="25" />
+                                        <span>Ledig</span>
+                                    }
+                                </div>
+                            }
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+
+    </ContentTemplate>
+</SpinLoader>
 
 
 @code{
@@ -409,8 +420,6 @@
 
             return imageData;
 
-
-            Bostadsvaljare.Data.House.ID = HouseImage.ID
         }
     }
 }
@@ -418,17 +427,8 @@
 
 <style>
 
-    @code{
-    SfSpinner SpinnerObj;
 
-    private string Target { get; set; } = "#image";
-
-    private async Task ClickHandler()
-    {
-        SpinnerObj.ShowSpinner(Target);
-        await Task.Delay(2000);
-        SpinnerObj.HideSpinner(Target);
-    }
+ 
 }
 
     .e-gridcontent:hover {

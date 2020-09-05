@@ -1,7 +1,8 @@
 ﻿(function () {
     window.interior = {
-        onResize: function (event) {
+        onResize: async function (event) {
             if ($(window).width() <= 927) {
+                await util.delay(500);
                 var height = parseInt($('.line-4-planritning').height());
                 $('#gallery').height((height + 3) + 'px');
             }
