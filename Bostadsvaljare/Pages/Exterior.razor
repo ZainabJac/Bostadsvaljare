@@ -133,6 +133,7 @@
     private string[] ExteriorImgPaths { get; set; }
     private string ImgWidth { get; set; } = "99%";
     private int MobileSelection { get; set; } = -1;
+    private bool MapsterInitialized { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -147,7 +148,11 @@
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+        if (!MapsterInitialized)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+            MapsterInitialized = true;
+        }
         if (!Views[view].Initialized)
         {
             await JSRuntime.InvokeVoidAsync(
@@ -176,6 +181,9 @@
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.changeImage", this.Views[this.CurrentView].ID, this.ExteriorImgPaths[CurrentView]
+        );
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
         this.MobileSelection = -1;
 

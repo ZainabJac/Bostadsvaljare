@@ -36,16 +36,20 @@
                 width: width,
                 ratio: imgEl.width() / imgEl.height(),
             };
+            this.images[imgInd].margin = this.getMargin();
         },
 
         changeImage: function (newImageInd) {
             this.currentImgInd = newImageInd;
             this._onResize(undefined);
+            this.images[newImageInd].margin = this.getMargin();
         },
 
         resize: function () {
-            if (this.images.length > 0)
+            if (this.images.length > 0) {
                 this._onResize(undefined);
+                this.images[this.currentImgInd].margin = this.getMargin();
+            }
         },
 
         _onResize: function (event) {
@@ -53,10 +57,9 @@
                 newWidth, newHeight, diff = 1, perc = 1,
                 wrapper = $('#'+ image.parentID +' div'),
                 areas = $('#'+ image.parentID +' area'),
-                n, m, clen, len = areas.length,
-                coords = [], margin = this.getMargin(),
-                windowW = $(window).width() - margin.width,
-                windowH = $(window).height() - margin.height;
+                n, m, len = areas.length, clen, coords = [],
+                windowW = $(window).width() - image.margin.width,
+                windowH = $(window).height() - image.margin.height;
 
             if (image.width.slice('-1') == '%')
                 perc = parseFloat(image.width) * 0.01;
@@ -70,7 +73,10 @@
                 }
             } else {
                 if (image.width.slice('-1') == '%')
-                    newWidth = $('#'+ image.parentID).parent().width() * perc;
+                    if (this.stayInWindow && perc === 1)
+                        newWidth = $(window).width() - image.margin.width;
+                    else
+                        newWidth = $('#'+ image.parentID).parent().width() * perc;
                 else
                     newWidth = parseFloat(image.width);
                 diff = newWidth / wrapper.width();
