@@ -52,7 +52,7 @@ namespace Bostadsvaljare.Data
                 List<House> houseData = House.GetHouseData();
                 foreach (KeyValuePair<string, List<HouseMap>> view in data) {
                     foreach (HouseMap map in view.Value) {
-                        map.ID = houseData.Find(x => x.HouseNumber == img.HouseNumber).ID;
+                        map.ID = houseData.Find(x => x.HouseNumber == map.HouseNumber).ID;
                     }
                 }
             }
