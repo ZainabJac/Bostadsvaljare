@@ -176,6 +176,9 @@
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.changeImage", this.Views[this.CurrentView].ID, this.ExteriorImgPaths[CurrentView]
+        );
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
         this.MobileSelection = -1;
 
