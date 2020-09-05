@@ -31,15 +31,15 @@
                 </map>
             </div>
 
-    <div id="gallery">
-        @for (int i = 0; i < GalleryItems.Count; i++)
-        {
-            <span class="line-3">
-                <BSImage index="@i" src="@GalleryItems[i]" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
-            </span>
-        }
-    </div>
-</div>
+            <div id="gallery">
+                @for (int i = 0; i < GalleryItems.Count; i++)
+                {
+                    <span class="line-3">
+                        <BSImage index="@i" src="@GalleryItems[i]" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    </span>
+                }
+            </div>
+        </div>
 
         <div class="line-6">
             <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
@@ -105,7 +105,7 @@
         "IMG/Dag.jpg",
         "IMG/ext. 2.jpg",
         "IMG/Natt.jpg",
-        "IMG/Imagemap.jpg"
+        "IMG/Morgon.jpg"
     };
 
     public async void Created()
@@ -448,19 +448,6 @@
         overflow-x: auto;
         white-space: nowrap;
     }
-
-    @code{
-    SfSpinner SpinnerObj;
-
-    private string Target { get; set; } = "#image";
-
-    private async Task ClickHandler()
-    {
-        SpinnerObj.ShowSpinner(Target);
-        await Task.Delay(2000);
-        SpinnerObj.HideSpinner(Target);
-    }
-}
 
     .e-gridcontent:hover {
         cursor: pointer;
