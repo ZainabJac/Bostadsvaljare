@@ -46,12 +46,12 @@
 
         changeImage: function (newImageInd) {
             this.currentImgInd = newImageInd;
-            this._onResize(undefined);
-            this.margin = this.getMargin();
+            this.resize();
         },
 
         resize: function () {
-            if (this.images.length > 0) {
+            if (this.images.length > 0
+            && $('#'+ this.images[this.currentImgInd].parentID +' div').length > 0) {
                 this._onResize(undefined);
                 this.margin = this.getMargin();
             }
