@@ -133,6 +133,7 @@
     private string[] ExteriorImgPaths { get; set; }
     private string ImgWidth { get; set; } = "100%";
     private int MobileSelection { get; set; } = -1;
+    private bool MapsterInitialized { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -147,7 +148,11 @@
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+        if (!MapsterInitialized)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+            MapsterInitialized = true;
+        }
         if (!Views[view].Initialized)
         {
             await JSRuntime.InvokeVoidAsync(
