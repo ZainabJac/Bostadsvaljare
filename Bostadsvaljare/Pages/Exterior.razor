@@ -9,7 +9,7 @@
 
 
 
-<SpinLoader IsLoading="@(ExteriorImgPaths == null)">
+<SpinLoader IsLoading="@(MapData == null)">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -17,39 +17,29 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
+        
+        @for (int i = 0; i < Views.Count; i++)
+        {
+            var _i = i;
+            <div id="@Views[i].ID" style="@(!Views[_i].Initialized || CurrentView == _i ? "" : "display: none;") @(Views[_i].Initialized ? "" : "visibility: hidden;")">
+                <img id="@(Views[i].ID +"-img")" src="@ExteriorImgPaths[i]" style="width: @ImgWidth;" usemap="#@Views[i].ImageMapName" @onload="e => OnLoadIM(e, _i)">
+                <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
+                    @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
+                    {
+                        if (view.Key == Data.HouseMap.ImageNameToView(ExteriorImgPaths[i]))
+                        {
+                            @foreach (Data.HouseMap map in view.Value)
+                            {
+                                <area id="@Data.House.GetHouseStatus(map.HouseNumber)" status="" href="#"
+                                      @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
+                                      coords="@map.IMCoords" shape="poly">
+                            }
+                        }
+                    }
+                </map>
+            </div>
+        }
 
-        <div id="@Views[0].ID" style="@(!Views[0].Initialized || CurrentView == 0 ? "" : "display: none;") @(Views[0].Initialized ? "" : "visibility: hidden;")">
-            <img id="@(Views[0].ID)-img" style="width: @ImgWidth;" src="@ExteriorImgPaths[0]" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
-            <map id="@Views[0].ImageMapName" name="@Views[0].ImageMapName">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(0))" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(1))" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(2))" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
-                <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(3))" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(4))" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(5))" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(6))" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(7))" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(8))" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(9))" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(10))" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(11))" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(12))" coords="944,609,1387,620,1389,796,944,780" shape="poly">
-            </map>
-        </div>
-        <div id="@Views[1].ID" style="@(!Views[0].Initialized || CurrentView == 1 ? "" : "display: none;") @(Views[1].Initialized ? "" : "visibility: hidden;")">
-            <img id="@(Views[1].ID)-img" src="@ExteriorImgPaths[1]" style="width: @ImgWidth;" class="center" usemap="#@Views[1].ImageMapName" @onload="(e => OnLoadIM(e, 1))">
-            <map id="@Views[1].ImageMapName" name="@Views[1].ImageMapName">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(0))" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e, $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(1))" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(2))" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
-                <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(3))" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(4))" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
-                <area id="booked" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Reserverad"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(5))" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(6))" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
-                <area id="available" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Lgh nr.\t7A\nBoarea:\t91m²\nPris:\t4 800 000Kr"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(7))" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
-                <area id="sold" status="" href="#" @onmouseover="@(e => ShowTooltip(e,  $"Såld"))" @onmouseout="HideTooltip" @onclick="@(() => HousingClicked(8))" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
-            </map>
-        </div>
 
         <div id="view_menu">
             <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
@@ -63,7 +53,6 @@
             </SfDropDownButton>
         </div>
 
-
         <div id="sun_study_menu">
             <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
                 <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
@@ -74,34 +63,6 @@
                 </DropDownButtonItems>
             </SfDropDownButton>
         </div>
-
-        @*<img src="IMG/Vy till Phille.png" usemap="#image-map"> <map name="image-map">
-                <area target="" alt="1" title="1" href="" coords="558,130,558,206,550,212,550,272,576,288,578,315,311,322,307,148,556,130" shape="poly">
-                <area target="" alt="2" title="2" href="" coords="311,324,576,315,571,373,551,380,553,400,553,438,571,447,576,461,313,463" shape="poly">
-                <area target="" alt="3" title="3" href="" coords="574,463,574,539,553,542,553,602,578,609,313,604,308,461,463,461" shape="poly">
-                <area target="" alt="4" title="4" href="" coords="313,607,583,611,576,701,551,712,553,766,313,753" shape="poly">
-                <area target="" alt="5" title="5" href="" coords="580,885,576,773,544,764,313,753,311,870,437,879" shape="poly">
-                <area target="" alt="6" title="6" href="" coords="578,90,940,63,942,281,580,290,551,270,551,211,558,128,558,110,574,106" shape="poly">
-                <area target="" alt="7" title="7" href="" coords="578,292,942,279,942,456,576,461,551,436,551,391,553,378,569,371" shape="poly">
-                <area target="" alt="8" title="8" href="" coords="576,463,942,456,942,616,578,611,553,602,553,546,574,537" shape="poly">
-                <area target="" alt="9" title="9" href="" coords="583,613,947,616,944,784,574,771,551,766,551,710,576,699" shape="poly">
-                <area target="" alt="10" title="10" href="" coords="940,63,953,97,1387,70,1389,281,953,292,940,274" shape="poly">
-                <area target="" alt="11" title="11" href="" coords="940,283,953,290,1387,279,1387,458,956,456,944,456" shape="poly">
-                <area target="" alt="12" title="12" href="" coords="942,456,953,458,1389,458,1387,618,956,609,942,607" shape="poly">
-                <area target="" alt="13" title="13" href="" coords="944,609,1387,620,1389,796,944,780" shape="poly">
-            </map>*@
-        @*<map name="image-map">
-                <area target="" alt="1" title="1" href="#" coords="143,259,119,127,513,262,658,107,673,110,753,137,748,147,749,236,756,240,760,296,643,433" shape="poly">
-                <area target="" alt="2" title="2" href="#" coords="144,262,168,402,647,580,760,431,757,394,702,367,640,435" shape="poly">
-                <area target="" alt="3" title="3" href="#" coords="167,403,191,540,658,713,760,568,760,527,711,503,653,580" shape="poly">
-                <area target="" alt="4" title="4" href="#" coords="195,542,212,649,660,824,762,686,764,643,725,628,658,714" shape="poly">
-                <area target="" alt="5" title="5" href="#" coords="213,653,226,750,681,948,851,685,769,647,769,685,665,828" shape="poly">
-                <area target="" alt="5" title="6" href="#" coords="787,1,786,149,971,211,1074,73,1078,1" shape="poly">
-                <area target="" alt="6" title="7" href="#" coords="791,150,788,289,961,348,1065,215,1070,173,1016,157,969,211" shape="poly">
-                <area target="" alt="7" title="8" href="#" coords="791,292,790,422,957,477,1047,350,1053,310,1015,292,967,351" shape="poly">
-                <area target="" alt="8" title="9" href="#" coords="791,424,957,479,1005,415,1044,429,1041,468,952,602,790,537" shape="poly">
-            </map>*@
-
 
     </ContentTemplate>
 </SpinLoader>
@@ -139,6 +100,7 @@
         },
     };
 
+    public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
     private int CurrentView { get; set; } = 0;
     private string[] ExteriorImgPaths { get; set; }
     private string ImgWidth { get; set; } = "99%";
@@ -149,6 +111,7 @@
     {
         base.OnInitialized();
         this.ExteriorImgPaths = new string[this.Views.Count];
+        this.MapData = Data.HouseMap.GetHouseMapData();
         for (int i = 0; i < this.Views.Count; i++)
         {
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
@@ -175,12 +138,6 @@
         Views[view].Initialized = true;
         base.StateHasChanged();
     }
-
-    //public void OpenTop(Syncfusion.Blazor.SplitButtons.BeforeOpenCloseMenuEventArgs args, int itemNr)
-    //{
-    //    int marginY = 64 + itemNr * 35; //itemNr=3 => 169
-    //    args.Element.SetAttribute("style", "margin:-" + marginY + "px -115px");
-    //}
 
     private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
@@ -213,14 +170,47 @@
         base.StateHasChanged();
     }
 
-    public async void ShowTooltip(MouseEventArgs e, string msg)
+    public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
+        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+    }
+
+    public void OnMouseOutIM(MouseEventArgs e)
+    {
+        HideTooltip();
+    }
+
+    private async void ShowTooltip(double x, double y, string houseNumber)
+    {
+        string msg;
+        Data.House house = null;
+        foreach (Data.House h in Data.House.GetHouseData()) {
+            if (h.HouseNumber == houseNumber) {
+                house = h;
+                break;
+            }
+        }
+
+        switch (house.Status) {
+            case "sold":
+                msg = "Såld";
+                break;
+            case "booked":
+                msg = "Reserverad";
+                break;
+            default:
+                msg = "Lgh nr.\t" + houseNumber +
+                    "\nBoarea:\t" + house.Sqm + "m²" +
+                    "\nPris:\t\t" + house.Price;
+                break;
+        }
+
         await JSRuntime.InvokeVoidAsync(
-            "util.showTooltip", e.ClientX, e.ClientY, msg
+            "util.showTooltip", x, y, msg
         );
     }
 
-    public async void HideTooltip(MouseEventArgs e)
+    private async void HideTooltip()
     {
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
@@ -260,8 +250,6 @@
         top: 65px;
         left: 7px;
     }
-
-
 
     .e-view {
         content: url(IMG/icons/noun_rotate_24052.png);
