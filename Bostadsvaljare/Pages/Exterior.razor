@@ -149,20 +149,19 @@
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
         if (!MapsterInitialized)
-        {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
-            MapsterInitialized = true;
-        }
+
         if (!Views[view].Initialized)
         {
             await JSRuntime.InvokeVoidAsync(
                 "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
             );
             await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", Views[view].ID, Views[view].ID + "-img", Views[view].ImageMapName, "mapster_el center"
+                "mapster.addMapHighlights", Views[view].ID, Views[view].ID + "-img", Views[view].ImageMapName, "center"
             );
         }
 
+        MapsterInitialized = true;
         Views[view].Initialized = true;
         base.StateHasChanged();
     }
