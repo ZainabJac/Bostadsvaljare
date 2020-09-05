@@ -91,7 +91,7 @@
     public void Created()
     {
         InitialRender = true;
-        JSRuntime.InvokeAsync<object>("ResizeScript");
+        JSRuntime.InvokeAsync<object>("grid_responsive.init");
     }
 
     public void DataBound()
@@ -99,7 +99,7 @@
         if (InitialRender)
         {     //check for initial render and call the JS method
             InitialRender = false;
-            JSRuntime.InvokeAsync<object>("ResizeComplete");
+            JSRuntime.InvokeAsync<object>("grid_responsive.resizeComplete");
         }
     }
 
@@ -313,6 +313,7 @@
     public async void Dispose()
     {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        await JSRuntime.InvokeVoidAsync("grid_responsive.dispose");
     }
 
     public static List<Data.House> GetHouseData()
