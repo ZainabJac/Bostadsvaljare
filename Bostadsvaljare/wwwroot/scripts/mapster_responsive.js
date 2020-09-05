@@ -4,6 +4,7 @@
         currentImgInd: 0,
         listeners: {},
         stayInWindow: false,
+        margin: {},
 
         initialize: function (stayInWindow) {
             var self = this;
@@ -16,6 +17,7 @@
             this.images.length = 0;
             this.currentImgInd = 0;
             this.stayInWindow = false;
+            this.margin = {};
 
             window.removeEventListener('resize', this.listeners.resize, false);
         },
@@ -29,26 +31,29 @@
             return { left: l, right: r, top: t, bottom: b, width: l + r, height: t + b };
         },
 
-        setValues: function (imgInd, parentID, width) {
-            var imgEl = $('#' + parentID +' img');
+        setValues: async function (imgInd, parentID, width) {
+            var imgEl = $('#'+ parentID +' img');
             this.images[imgInd] = {
                 parentID: parentID,
                 width: width,
                 ratio: imgEl.width() / imgEl.height(),
             };
-            this.images[imgInd].margin = this.getMargin();
+
+            await util.delay(50);
+            if ($.isEmptyObject(this.margin))
+                this.margin = this.getMargin();
         },
 
         changeImage: function (newImageInd) {
             this.currentImgInd = newImageInd;
             this._onResize(undefined);
-            this.images[newImageInd].margin = this.getMargin();
+            this.margin = this.getMargin();
         },
 
         resize: function () {
             if (this.images.length > 0) {
                 this._onResize(undefined);
-                this.images[this.currentImgInd].margin = this.getMargin();
+                this.margin = this.getMargin();
             }
         },
 
@@ -58,8 +63,8 @@
                 wrapper = $('#'+ image.parentID +' div'),
                 areas = $('#'+ image.parentID +' area'),
                 n, m, len = areas.length, clen, coords = [],
-                windowW = $(window).width() - image.margin.width,
-                windowH = $(window).height() - image.margin.height;
+                windowW = $(window).width() - this.margin.width,
+                windowH = $(window).height() - this.margin.height;
 
             if (image.width.slice('-1') == '%')
                 perc = parseFloat(image.width) * 0.01;
@@ -74,7 +79,7 @@
             } else {
                 if (image.width.slice('-1') == '%')
                     if (this.stayInWindow && perc === 1)
-                        newWidth = $(window).width() - image.margin.width;
+                        newWidth = $(window).width() - this.margin.width;
                     else
                         newWidth = $('#'+ image.parentID).parent().width() * perc;
                 else

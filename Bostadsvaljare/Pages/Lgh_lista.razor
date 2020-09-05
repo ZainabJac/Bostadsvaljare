@@ -31,14 +31,15 @@
                 </map>
             </div>
 
-            <div>
-                <BSImage id="image" src="IMG/imagemap.jpg" class="line-3" style="display: inline-block;"></BSImage>
-                <BSImage src="IMG/Dag.jpg" class="line-3" style="display: inline-block;"></BSImage>
-             
-                <BSImage src="IMG/ext. 2.jpg" class="line-3" style="display: inline-block;"></BSImage>
-                <BSImage src="IMG/Natt.jpg" class="line-3" style="display: inline-block;"></BSImage>
-            </div>
-        </div>
+    <div id="gallery">
+        @for (int i = 0; i < GalleryItems.Count; i++)
+        {
+            <span class="line-3">
+                <BSImage index="@i" src="@GalleryItems[i]" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+            </span>
+        }
+    </div>
+</div>
 
         <div class="line-6">
             <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
@@ -93,24 +94,32 @@
     private bool IsHighlighting { get; set; }
     private int HighlightedRow { get; set; }
     private int MobileSelection { get; set; } = -1;
+    private string SelectedImage { get; set; }
 
     public List<Data.House> HouseData { get; set; }
     public List<HouseImage> ImageData { get; set; }
 
     public bool InitialRender = false;
 
-    public void Created()
+    private IList<string> GalleryItems = new List<string> {
+        "IMG/Dag.jpg",
+        "IMG/ext. 2.jpg",
+        "IMG/Natt.jpg",
+        "IMG/Imagemap.jpg"
+    };
+
+    public async void Created()
     {
         InitialRender = true;
-        JSRuntime.InvokeAsync<object>("grid_responsive.init");
+        await JSRuntime.InvokeVoidAsync("grid_responsive.init");
     }
 
-    public void DataBound()
+    public async void DataBound()
     {
         if (InitialRender)
         {     //check for initial render and call the JS method
             InitialRender = false;
-            JSRuntime.InvokeAsync<object>("grid_responsive.resizeComplete");
+            await JSRuntime.InvokeVoidAsync("grid_responsive.resizeComplete");
         }
     }
 
@@ -284,6 +293,14 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
+    private async void OnClickGalleryImg(MouseEventArgs ev)
+    {
+        int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
+
+        SelectedImage = GalleryItems[ind];
+        base.StateHasChanged();
+    }
+
     private async void HousingClickedIM(int houseID)
     {
         var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
@@ -426,9 +443,23 @@
 
 
 <style>
+    #gallery {
+        overflow-y: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 
+    @code{
+    SfSpinner SpinnerObj;
 
- 
+    private string Target { get; set; } = "#image";
+
+    private async Task ClickHandler()
+    {
+        SpinnerObj.ShowSpinner(Target);
+        await Task.Delay(2000);
+        SpinnerObj.HideSpinner(Target);
+    }
 }
 
     .e-gridcontent:hover {

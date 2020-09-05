@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Data\ImageData.cs" />
+    <Content Include="Data\HouseMap.cs" />
   </ItemGroup>
 
   <ItemGroup>
