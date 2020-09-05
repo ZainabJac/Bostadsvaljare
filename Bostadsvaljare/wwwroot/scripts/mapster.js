@@ -7,7 +7,6 @@
                 sold: 'd32626',
                 interior: 'd3F8E1',
                 interior2: 'd3F8E1'
-
             };
 
             var options = {
@@ -57,6 +56,10 @@
 
         select: function (parentID, imgID, statusKey) {
             $('#'+ parentID +' #'+ imgID).mapster('highlight', statusKey);
+        },
+
+        selectAll: function () {
+            $('area').mapster('select');
         },
 
         deselect: function () {
