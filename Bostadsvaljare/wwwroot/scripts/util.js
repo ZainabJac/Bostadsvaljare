@@ -121,5 +121,13 @@
                 }, ms);
             });
         },
+
+        disableScroll: function () {
+            $('body').css({ overflow: 'hidden'});
+        },
+
+        enableScroll: function () {
+            $('body').css({ overflow: 'visible'});
+        },
     };
 })();

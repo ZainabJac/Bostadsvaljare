@@ -728,6 +728,8 @@
             if (event.target !== this.canvas)
                 return;
 
+            util.disableScroll();
+
             // Update pointerVector for all the raycasting
             var touchPos = this.getPointerEventPos(event);
             this.pointerVector.x = (touchPos.x / this.canvas.offsetWidth) * 2 - 1;
@@ -787,6 +789,8 @@
 
                 this.isUserInteracting = false;
             }
+
+            util.enableScroll();
         },
 
         animate: function () {
