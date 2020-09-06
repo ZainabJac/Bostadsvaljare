@@ -45,6 +45,7 @@
         isShowingMeasurements: false,
         canvasWidth: 0, canvasHeight: 0,
         startingWidth: 0, startingHeight: 0,
+        sizeAlt: 1,
         mapSprite: null, currentRoom: null,
         raycaster: new THREE.Raycaster(),
         pointerVector: new THREE.Vector2(),
@@ -92,6 +93,7 @@
             var containerDims = this.getContainerDimensions();
             this.startingWidth = this.canvasWidth = containerDims.width;
             this.startingHeight = this.canvasHeight = containerDims.height;
+            this.sizeAlt = this.getSizeAlt();
 
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
@@ -110,8 +112,8 @@
             this.mapSprite = this.createHUDElement(this.aptData.map,
                 constants.MAP,
                 transform,
-                undefined,
-                function() { self.initMap(); });
+                { onloadCB: function() { self.initMap(); },
+                  onresizeCB: self.hudMapResize });
 
             // Hide map, which is always shown (for some reason)
             this.hideMap();
@@ -204,7 +206,7 @@
             this.createHUDElement(mapData,
                 constants.MAP_ICON,
                 transform,
-                function() { self.showMap(); });
+                { onclickCB: function() { self.showMap(); } });
 
             // Fullscreen button setup
             var fullscreenData = this.options.fullscreen_icon;
@@ -212,7 +214,7 @@
             this.createHUDElement(fullscreenData,
                 constants.FULLSCREEN_ICON,
                 transform,
-                function() { self.toggleFullscreen(); });
+                { onclickCB: function() { self.toggleFullscreen(); } });
 
             // Measurements button setup
             // TODO: Be able to show apartment measurements on walls, etc.
@@ -222,19 +224,15 @@
             this.createHUDElement(measurementsData,
                 constants.MEASUREMENTS_ICON,
                 transform,
-                function() { self.toggleMeasurements(); });*/
+                { onclickCB: function() { self.toggleMeasurements(); } });*/
         },
 
         initMap: function () {
-            var self = this;
-            var mapImg = this.mapSprite.material.map.image;
-            var origHeight = mapImg.height;
-            mapImg.height = this.canvas.offsetHeight * this.aptData.map.size;
-            var sizeOffset = mapImg.height / origHeight;
-            mapImg.width = mapImg.width * sizeOffset;
-
-            var imgWidth = mapImg.width,
-                imgHeight = mapImg.height;
+            var self = this,
+                mapImg = this.mapSprite.material.map.image,
+                imgHeight = this.canvas.offsetHeight * this.aptData.map.size,
+                sizeOffset = imgHeight / mapImg.height,
+                imgWidth = mapImg.width * sizeOffset;
 
             this.options.map.transform.size = {
                 width: imgWidth,
@@ -269,7 +267,7 @@
                 var hotspotSprite = this.createHUDElement(hotspotData,
                     room,
                     transform,
-                    function() { self.changeRoom(this.name); });
+                    { onclickCB: function() { self.changeRoom(this.name); } });
                 this.mapSprite.add(hotspotSprite);
             }
 
@@ -290,27 +288,27 @@
             var minSprite = this.createHUDElement(minData,
                 constants.MINIMIZE_ICON,
                 transform,
-                function() { self.hideMap(); });
+                { onclickCB: function() { self.hideMap(); } });
             this.mapSprite.add(minSprite);
         },
 
-        createHUDElement: function (matData, name, transform, onclick, onload) {
+        createHUDElement: function (matData, name, transform, opts) {
             var sprite = new THREE.Sprite(
                 new THREE.SpriteMaterial({
-                    map: new THREE.TextureLoader().load(matData.image, onload),
+                    map: new THREE.TextureLoader().load(matData.image, opts.onloadCB),
                     color: matData.color || '#fff',
                     opacity: matData.hidden_at_start ? 0 : 1
                 })
             );
             var pos = transform.pos,
-                scale = transform.scale,
-                sizeAlt = this.getSizeAlt();
+                scale = transform.scale;
 
             sprite.name = name;
             if (transform.center) sprite.center = transform.center;
             sprite.position.set(pos.x, pos.y, pos.z);
-            sprite.scale.set(scale.x*sizeAlt, scale.y*sizeAlt, scale.z*sizeAlt);
-            sprite.onclick = onclick || undefined;
+            sprite.scale.set(scale.x*this.sizeAlt, scale.y*this.sizeAlt, scale.z*this.sizeAlt);
+            sprite.onclick = opts.onclickCB || undefined;
+            sprite.resize = opts.onresizeCB || this.hudElementResize;
             this.HUDGroup.add(sprite);
             if (matData.background) {
                 var bg = this.createBackground(matData.background, sprite);
@@ -539,19 +537,44 @@
         },
 
         resetHUD: function (width, height) {
-            var self = this,
-                scaleDiffW = this.startingWidth / width,
-                scaleDiffH = this.startingHeight / height;
-
-            var sizeAlt = this.getSizeAlt();
-            this.HUDGroup.children.forEach(function (hudEl) {
-                var size = self.getSize(self.options[hudEl.name].transform.size);
-                hudEl.scale.x = size.x * scaleDiffW * sizeAlt;
-                hudEl.scale.y = size.y * scaleDiffH * sizeAlt;
-            });
+            for (var hudEl of this.HUDGroup.children) {
+                hudEl.resize(width, height);
+            }
 
             this.canvasHUD.width = width;
             this.canvasHUD.height = height;
+        },
+
+        hudElementResize: function (width, height) {
+            var pan = window.pan_viewer,
+                diffWidth = pan.startingWidth / width,
+                diffHeight = pan.startingHeight / height,
+                size = pan.getSize(pan.options[this.name].transform.size);
+
+            this.scale.x = size.x * diffWidth * pan.sizeAlt;
+            this.scale.y = size.y * diffHeight * pan.sizeAlt;
+        },
+
+        hudMapResize: function (width, height) {
+            var pan = window.pan_viewer;
+            var mapSize = function () {
+                var size = pan.aptData.map.size;
+                if (width <= pan.options.hud.mobile.size_at_most)
+                    size = Math.min(size + 0.2, 0.9);
+                return size;
+            };
+
+            var diffHeight = pan.startingHeight / height,
+                mapImg = this.material.map.image,
+                imgHeight = height * mapSize() * diffHeight,
+                imgWidth = mapImg.width * (imgHeight / mapImg.height);
+
+            pan.options.map.transform.size = {
+                width: imgWidth,
+                height: imgHeight,
+            };
+
+            this.scale.set(imgWidth, imgHeight, 1);
         },
 
         onResize: async function (event) {
