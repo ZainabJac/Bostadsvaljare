@@ -661,28 +661,26 @@
 
             // Raycast the hotspots for the tooltip system
             this.hoveringObj = null;
-            this.raycaster.setFromCamera(this.pointerVector, this.camera);
-            var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
-            if (intersects.length > 0) {
-                this.latestPointerProjection = intersects[0].point;
-                this.hoveringObj = intersects[0].object;
-                this.showTooltip();
-            }
-            else {
-                this.hideTooltip();
+            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            if (!objHUD) {
+                this.raycaster.setFromCamera(this.pointerVector, this.camera);
+                var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
+                if (intersects.length > 0) {
+                    this.latestPointerProjection = intersects[0].point;
+                    this.hoveringObj = intersects[0].object;
+                    this.showTooltip();
+                }
             }
 
+            if (!this.hoveringObj)
+                this.hideTooltip();
+
             // Change mouse cursor to 'pointer' when hovering over a clickable element
-            if (this.hoveringObj) {
+            if (this.hoveringObj || (objHUD && objHUD.onclick))
                 $('html,body').css('cursor', 'pointer');
-            } else {
-                this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-                var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
-                if (obj && obj.onclick)
-                    $('html,body').css('cursor', 'pointer');
-                else
-                    $('html,body').css('cursor', 'default');
-            }
+            else
+                $('html,body').css('cursor', 'default');
         },
 
         onMouseDown: function (event) {
