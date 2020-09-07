@@ -1,6 +1,6 @@
 ﻿(function () {
     window.mapster = {
-        addMapHighlights: function (parentID, imgID, mapID, classList) {
+        addMapHighlights: function (parentID, imgID, mapID, classList, highlightOpacity, selectOpacity) {
             var colors = {
                 available: '5bcb24',
                 booked: 'dfd431',
@@ -17,6 +17,8 @@
             };
             if (classList !== "")
                 options.wrapClass = classList;
+            if (highlightOpacity)
+                options.render_highlight = { fillOpacity: highlightOpacity };
 
             var initialOptions = { ...options };
             initialOptions.onConfigured = function (success) {
@@ -29,10 +31,13 @@
                         var area = mapAreas[i];
                         var status = area.attributes.id.value;
                         area.attributes.status.value = status + statuses[status];
-                        options.areas.push({
+                        var areaOpt = {
                             key: status + statuses[status],
                             fillColor: colors[status],
-                        });
+                        };
+                        if (selectOpacity)
+                            areaOpt.render_select = { fillOpacity: selectOpacity };
+                        options.areas.push(areaOpt);
                         statuses[status] += 1;
                     }
 
