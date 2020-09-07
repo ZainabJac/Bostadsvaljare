@@ -66,7 +66,12 @@
         </div>
 
         <div id="highlight_all_checker">
-            <SfCheckBox Label="Highlight houses" @bind-Checked="@highlightAllIsChecked" @onchange="OnChangeHighlight"></SfCheckBox>
+            <SfChipList Selection="Selection.Single">
+                <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
+                <ChipCollection>
+                    <ChipListChip Text="Highlight houses"></ChipListChip>
+                </ChipCollection>
+            </SfChipList>
         </div>
 
     </ContentTemplate>
@@ -195,8 +200,9 @@
         HideTooltip();
     }
 
-    public async void OnChangeHighlight(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    public async void OnChangeHighlight(Syncfusion.Blazor.Buttons.ClickEventArgs e)
     {
+        highlightAllIsChecked = !highlightAllIsChecked;
         if (highlightAllIsChecked)
             await JSRuntime.InvokeVoidAsync("mapster.selectAll");
         else
