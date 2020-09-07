@@ -64,6 +64,9 @@
 
         deselect: function () {
             $('area').mapster('deselect');
+            //Need to resize mapster twice after this
+            mapster_responsive.resize();
+            mapster_responsive.resize();
         },
     };
 })();
