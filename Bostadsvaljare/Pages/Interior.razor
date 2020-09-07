@@ -248,6 +248,7 @@
     public ImageType SelectedType { get; set; }
 
     private string ImgWidth { get; set; } = "100%";
+    private bool firstRenderDone = false;
 
 
     protected override void OnInitialized()
@@ -272,14 +273,18 @@
             await JSRuntime.InvokeVoidAsync("pan_viewer.init");
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.onResize", null);
+            firstRenderDone = true;
         }
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
     {
+        while (!firstRenderDone)
+            await Task.Delay(10);
+
         await JSRuntime.InvokeVoidAsync(
-            "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
-        );
+        "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
+    );
         await JSRuntime.InvokeVoidAsync(
             "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im"
         );
@@ -336,6 +341,9 @@
 
     public async void Dispose()
     {
+        if (!firstRenderDone)
+            return;
+
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");

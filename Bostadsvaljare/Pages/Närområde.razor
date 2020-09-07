@@ -17,8 +17,6 @@
                         <a id="btnSearch" class="btn-search"><i class="fa fa-search"></i></a>
                     </div>
 
-
-
                     <div id="travel-data" class="results">
 
                         <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance"></a></div>
@@ -62,213 +60,307 @@
 
                     </div>
                     <div class="cardsearch">
-                    <SfCard>
-                        <header class="naromrodeheader"> Vad är viktigt för dig? </header>
-                        <text class="naromrodetxt"> Sök efter det du värderar mest, finns det en ica eller coop butik i närheten? Eller Finns det många fotbollsplaner? Sök och utforska området här! </text>
-                    </SfCard>
+                        <SfCard>
+                            <header class="naromrodeheader"> Vad är viktigt för dig? </header>
+                            <text class="naromrodetxt"> Sök efter det du värderar mest, finns det en ica eller coop butik i närheten? Eller Finns det många fotbollsplaner? Sök och utforska området här! </text>
+                        </SfCard>
                     </div>
-        </CardStacked>
-        </SfCard>
-    </div>
-
-    </div>
-      
-
-
-    
-        <div class="line-9">
-            <div id="map" style="width:100%; "></div>
+                </CardStacked>
+            </SfCard>
         </div>
-
+    </div>
+    
+    <div class="line-9">
+        <div id="map" style="width:100%; "></div>
     </div>
 
+</div>
 
-    @code {
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                await JSRuntime.InvokeVoidAsync(
-                    "googlemaps.initAutocomplete", 59.534533, 17.940488
-                    
-                    
-                );
-            }
-        }
 
-        private async void OnTravelModeValueChange(Syncfusion.Blazor.Buttons.ChangeArgs args)
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync(
-                "googlemaps.setTravelMode", args.Value
+                "googlemaps.initAutocomplete", 59.534533, 17.940488
             );
         }
+    }
+
+    private async void OnTravelModeValueChange(Syncfusion.Blazor.Buttons.ChangeArgs args)
+    {
+        await JSRuntime.InvokeVoidAsync(
+            "googlemaps.setTravelMode", args.Value
+        );
+    }
+}
 
 
+<style>
+    .radiobuttons {
+        padding: 7px;
+           
+    }
 
+    input:focus::-webkit-input-placeholder {
+        color: transparent;
+    }
+  
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }
+
+    .searchbar {
+        float: right;
+        background-color: #415965;
+        color: white;
+        width: 50%;
+        border: none;
+        margin-top: 1px;
+        margin-right: 8px;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1em;
+        border-bottom: white solid 2px;
+        transition: 0.3s;
+    }
+
+    .searchbar::placeholder {
+        color: white;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1em;
+        text-align: center;
+        /* transition: 0.2s; */
+    }
+
+    .searchbar:focus {
+        width: 90%;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1em;
+        transition: 0.3s;
+        /* Stops the input box from inheriting the styling from the inputs on the request form */
+        border-bottom: white solid 2px;
+        outline: none;
+        text-align: center;
+    }
+
+    .btn-search {
+        cursor: pointer;
+        color: white;
+        text-decoration: none !important;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1.5em;
+        text-align: center;
     }
 
 
-    <style>
+    .naromrodetxt {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+        margin: auto;
+        font-size: 14px;
+        padding: 7px;
+    }
 
-        .radiobuttons {
-            padding: 7px;
-           
+    .naromrodeheader {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+        margin: auto;
+        font-size: 20px;
+    }
+
+    #pac-input2 {
+        width: 90%;
+        font-family: acumin-pro,sans-serif;
+        padding: 1px;
+    }
+
+    .e-card-stacked {
+        background-color: #415965;
+    }
+
+    .controls {
+        margin-top: 14px;
+        margin-left: 7px;
+        width: 100%;
+    }
+
+    .results {
+        font-family: acumin-pro,sans-serif;
+        color: white;
+        width: 80%;
+        margin: auto;
+        font-size: 15px;
+        font-style: oblique;
+        font-weight: bold;
+    }
+
+    #map {
+        margin: auto;
+        width: 1000px;
+        height: 800px;
+    }
+
+    #pac-input {
+        width: 90%;
+        font-family: acumin-pro,sans-serif;
+        padding: 1px;
+    }
+
+    .e-radio + label .e-label {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+    }
+
+
+    .italicfont {
+        font-family: acumin-pro,sans-serif;
+        font-size: 12px;
+        font-style: italic;
+        text-size-adjust: none;
+    }
+
+    .line-1 {
+        width: 8.33%;
+    }
+
+    .last {
+        margin-right: initial;
+    }
+
+    .line-2 {
+        width: 16.66%;
+    }
+
+    .line-3 {
+        width: 25%;
+    }
+
+    .line-4 {
+        width: 33.33%;
+    }
+
+    .line-4-planritning {
+        width: 33.33%;
+    }
+
+    .arkitekt {
+        padding-top: 14px;
+    }
+
+    .line-5 {
+        width: 41.66%;
+    }
+
+    .line-6 {
+        width: 50%;
+    }
+
+    .line-7 {
+        width: 58.33%;
+    }
+
+    .line-8 {
+        width: 66.66%;
+    }
+
+    .line-9 {
+        width: 75%;
+    }
+
+    .line-10 {
+        width: 83.33%;
+    }
+
+    .line-11 {
+        width: 91.66%;
+    }
+
+    .line-12 {
+        width: 100%;
+    }
+
+    [class*="line-"] {
+        float: left;
+        padding: 7px;
+    }
+
+    @@media (max-width: 927px) {
+
+        #gallery {
+            width: 25%;
+            /*height: height(line-4-planritning) + 6px*/
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
-       
-
-        input:focus::-webkit-input-placeholder {
-            color: transparent;
-        }
-  
-
-        .container {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            margin:auto;
+        #gallery span {
+            display: initial;
         }
 
-        .searchbar {
-            float: right;
-            background-color: #415965;
-            color: white;
-            width: 50%;
-            border: none;
-            margin-top: 1px;
-            margin-right: 8px;
-            font-family: acumin-pro,sans-serif;
-            font-size: 1em;
-            border-bottom: white solid 2px;
-            transition: 0.3s;
-        }
-
-            .searchbar::placeholder {
-                color: white;
-                font-family: acumin-pro,sans-serif;
-                font-size: 1em;
-                text-align: center;
-                /* transition: 0.2s; */
-            }
-
-            .searchbar:focus {
-                width: 90%;
-                font-family: acumin-pro,sans-serif;
-                font-size: 1em;
-                transition: 0.3s;
-                /* Stops the input box from inheriting the styling from the inputs on the request form */
-                border-bottom: white solid 2px;
-                outline: none;
-                text-align: center;
-            }
-
-        .btn-search {
-            cursor: pointer;
-            color: white;
-            text-decoration: none !important;
-            font-family: acumin-pro,sans-serif;
-            font-size: 1.5em;
-            text-align: center;
-        }
-
-
-        .naromrodetxt {
-            font-family: acumin-pro,sans-serif;
-            color: black;
-            margin: auto;
-            font-size: 14px;
-            padding: 7px;
-        }
-
-        .naromrodeheader {
-            font-family: acumin-pro,sans-serif;
-            color: black;
-            margin: auto;
-            font-size: 20px;
-        }
-
-        #pac-input2 {
-            width: 90%;
-            font-family: acumin-pro,sans-serif;
-            padding: 1px;
-        }
-
-        .e-card-stacked {
-            background-color: #415965;
-        }
-
-        .controls {
-            margin-top: 14px;
-            margin-left: 7px;
+        .gallery-img {
             width: 100%;
+            padding: 0px;
         }
 
-        .results {
+        .card-info-header-right {
             font-family: acumin-pro,sans-serif;
-            color: white;
-            width: 80%;
-            margin: auto;
-            font-size: 15px;
-            font-style: oblique;
-            font-weight: bold;
+            font-size: 14px;
+            float: right;
+            display: inline-block;
         }
 
-        #map {
-            margin: auto;
-            width: 1000px;
-            height: 800px;
-        }
 
-        #pac-input {
-            width: 90%;
+        .card-info-header {
             font-family: acumin-pro,sans-serif;
-            padding: 1px;
-        }
-
-        .e-radio + label .e-label {
-            font-family: acumin-pro,sans-serif;
-            color: black;
+            font-size: 14px;
+            display: inline-block;
+            Margin: 4px;
         }
 
 
-        .italicfont {
+        .card-info-text {
             font-family: acumin-pro,sans-serif;
-            font-size: 12px;
-            font-style: italic;
-            text-size-adjust: none;
+            font-size: 10px;
+            display: inline-block;
         }
 
         .line-1 {
-            width: 8.33%;
-        }
-
-        .last {
-            margin-right: initial;
-        }
-
-        .line-2 {
-            width: 16.66%;
-        }
-
-        .line-3 {
             width: 25%;
         }
 
-        .line-4 {
-            width: 33.33%;
+        .line-2 {
+            width: 100%;
         }
 
-        .line-4-planritning {
-            width: 33.33%;
+        .line-2knapp {
+            width: 50%;
+            margin: auto;
+        }
+
+        .line-3 {
+            width: 100%;
+        }
+
+        .line-4 {
+            width: 100%;
         }
 
         .arkitekt {
-            padding-top: 14px;
+            width: 100%;
+            padding-top: 6px;
+        }
+
+        .line-4-planritning {
+            width: 75%;
         }
 
         .line-5 {
-            width: 41.66%;
+            width: 50%;
         }
 
         .line-6 {
@@ -276,23 +368,23 @@
         }
 
         .line-7 {
-            width: 58.33%;
+            width: 100%;
         }
 
         .line-8 {
-            width: 66.66%;
+            width: 100%;
         }
 
         .line-9 {
-            width: 75%;
+            width: 100%;
         }
 
         .line-10 {
-            width: 83.33%;
+            width: 100%;
         }
 
         .line-11 {
-            width: 91.66%;
+            width: 100%;
         }
 
         .line-12 {
@@ -301,146 +393,37 @@
 
         [class*="line-"] {
             float: left;
+            padding: 3px;
+        }
+
+        br {
+            display: none;
+        }
+
+        .naromrodeheader{
+            display:none;
+        }
+
+        .naromrodetxt{
+            display:none;
+        }
+
+        header {
+            display:initial;
+        }
+
+        .e-radio + label .e-label{
+            padding-left: 20px !important;
+            padding-right: 10px !important;
+        }
+
+        .radiobuttons {
             padding: 7px;
+            margin: auto;
         }
 
-        @@media (max-width: 927px) {
-
-            #gallery {
-                width: 25%;
-                /*height: height(line-4-planritning) + 6px*/
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-
-                #gallery span {
-                    display: initial;
-                }
-
-            .gallery-img {
-                width: 100%;
-                padding: 0px;
-            }
-
-            .card-info-header-right {
-                font-family: acumin-pro,sans-serif;
-                font-size: 14px;
-                float: right;
-                display: inline-block;
-            }
-
-
-            .card-info-header {
-                font-family: acumin-pro,sans-serif;
-                font-size: 14px;
-                display: inline-block;
-                Margin: 4px;
-            }
-
-
-            .card-info-text {
-                font-family: acumin-pro,sans-serif;
-                font-size: 10px;
-                display: inline-block;
-            }
-
-
-            .line-1 {
-                width: 25%;
-            }
-
-            .line-2 {
-                width: 100%;
-            }
-
-            .line-2knapp {
-                width: 50%;
-                margin: auto;
-            }
-
-            .line-3 {
-                width: 100%;
-            }
-
-            .line-4 {
-                width: 100%;
-            }
-
-            .arkitekt {
-                width: 100%;
-                padding-top: 6px;
-            }
-
-            .line-4-planritning {
-                width: 75%;
-            }
-
-            .line-5 {
-                width: 50%;
-            }
-
-            .line-6 {
-                width: 50%;
-            }
-
-            .line-7 {
-                width: 100%;
-            }
-
-            .line-8 {
-                width: 100%;
-            }
-
-            .line-9 {
-                width: 100%;
-            }
-
-            .line-10 {
-                width: 100%;
-            }
-
-            .line-11 {
-                width: 100%;
-            }
-
-            .line-12 {
-                width: 100%;
-            }
-
-            [class*="line-"] {
-                float: left;
-                padding: 3px;
-            }
-
-            br {
-                display: none;
-            }
-
-           .naromrodeheader{
-               display:none;
-           }
-
-            .naromrodetxt{
-                display:none;
-            }
-
-
-            header {
-                display:initial;
-            }
-
-            .e-radio + label .e-label{
-                padding-left: 20px !important;
-                padding-right: 10px !important;
-            }
-
-            .radiobuttons {
-                padding: 7px;
-                margin: auto;
-            }
-
-            .cardsearch {
-                display:none;
-            }
+        .cardsearch {
+            display:none;
         }
-    </style>
+    }
+</style>

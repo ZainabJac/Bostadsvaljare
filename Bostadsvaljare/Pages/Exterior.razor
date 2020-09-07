@@ -112,6 +112,7 @@
     private int MobileSelection { get; set; } = -1;
 
     private bool highlightAllIsChecked = false;
+    private bool firstRenderDone = false;
 
     protected override void OnInitialized()
     {
@@ -130,11 +131,15 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+            firstRenderDone = true;
         }
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
+        while (!firstRenderDone)
+            await Task.Delay(10);
+
         if (!Views[view].Initialized)
         {
             await JSRuntime.InvokeVoidAsync(
@@ -250,8 +255,10 @@
     public async void Dispose()
     {
         // Need to make sure that it's not trying to invoke JavaScript interop before initialization
-        if (this.Views[0].Initialized)
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        if (!firstRenderDone)
+            return;
+
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 }
 

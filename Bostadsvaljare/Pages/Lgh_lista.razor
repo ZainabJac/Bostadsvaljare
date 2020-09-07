@@ -118,7 +118,8 @@
     public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
 
-    public bool InitialRender = false;
+    private bool InitialRender = false;
+    private bool firstRenderDone = false;
 
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
@@ -190,11 +191,15 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            firstRenderDone = true;
         }
     }
 
     private async void OnLoadImage(ProgressEventArgs e, int ind)
     {
+        while (!firstRenderDone)
+            await Task.Delay(10);
+
         if (!this.Views[ind].Initialized) {
             await JSRuntime.InvokeVoidAsync(
                 "mapster_responsive.setValues", ind, this.Views[ind].ID, this.ImgSize
@@ -379,6 +384,9 @@
 
     public async void Dispose()
     {
+        if (!firstRenderDone)
+            return;
+
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("grid_responsive.dispose");
     }
