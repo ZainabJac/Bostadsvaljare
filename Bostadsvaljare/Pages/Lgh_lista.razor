@@ -221,9 +221,9 @@
 
     private void OnMouseOutIM(MouseEventArgs e)
     {
+        HideTooltip();
         if (IsHighlighting)
         {
-            HideTooltip();
             RemoveListHighlight();
             IsHighlighting = false;
         }
@@ -355,7 +355,7 @@
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+            HideTooltip();
             navManager.NavigateTo("/interior/" + houseID);
         }
     }
