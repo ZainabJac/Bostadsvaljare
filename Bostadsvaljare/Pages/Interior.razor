@@ -283,11 +283,13 @@
             await Task.Delay(10);
 
         await JSRuntime.InvokeVoidAsync(
-        "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
-    );
+            "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
+        );
         await JSRuntime.InvokeVoidAsync(
             "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im"
         );
+        await Task.Delay(150);
+        await JSRuntime.InvokeVoidAsync("mapster.selectAll");
 
         base.StateHasChanged();
     }
