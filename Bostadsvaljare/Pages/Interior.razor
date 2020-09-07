@@ -18,8 +18,6 @@
     </LoadingTemplate>
     <ContentTemplate>
 
-
-
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <div class="line-8">
             <!-- Stillbilder -->
@@ -65,10 +63,10 @@
 
         <div class="line-4-planritning">
             @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
-                <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
-            <div id="imagemap">
-                <img id="imagemap" style="width: @ImgWidth;" src="IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg" class="center" usemap="#@Views[0].ImageMapName" @onload="(e => OnLoadIM(e, 0))">
-                <map id="imagemap-img" name="@Views[0].ImageMapName">
+            <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
+            <div id="floorplan-main">
+                <img id="floorplan-img" style="width: @ImgWidth;" src="IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
+                <map id="floorplan-im" name="floorplan-im">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
                     <area id="interior2" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
@@ -133,95 +131,36 @@
             </div>
         </div>
 
+
         @*<div class="line-2knapp">
-
-
-                <div>
-                    <div> <SfButton> Bofaktablad </SfButton> </div>
-                </div>
+            <div>
+                <div> <SfButton> Bofaktablad </SfButton> </div>
             </div>
-            <div class="line-2knapp">
-
-                <div>
-                    <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
-
-                </div>
-            </div>*@
+        </div>
+        <div class="line-2knapp">
+            <div>
+                <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
+            </div>
+        </div>*@
 
 
         @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
         @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
+
         @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-                <GridColumns>
-                    <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                    <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-                    <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                </GridColumns>
-            </SfGrid>*@
+            <GridColumns>
+                <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+                <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+            </GridColumns>
+        </SfGrid>*@
 
     </ContentTemplate>
 </SpinLoader>
 
 @code {
-
-
-
-    public class ViewData
-    {
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string ImageMapName { get; set; }
-        public Dictionary<string, string> SunStudies { get; set; }
-        public bool Initialized { get; set; } = false;
-    }
-
-    List<ViewData> Views = new List<ViewData> {
-        new ViewData() {
-            ID = "view-1",
-            Name = "Vy 1",
-            ImageMapName = "imagemap-1",
-            SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Dag.jpg" },
-                { "midday", "IMG/Imagemap.jpg" },
-                { "evening", "IMG/Natt.jpg" },
-            },
-        },
-        new ViewData() {
-            ID = "view-2",
-            Name = "Vy 2",
-            ImageMapName = "imagemap-2",
-            SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/ext. 2.jpg" },
-                { "midday", "IMG/ext. 2.jpg" },
-                { "evening", "IMG/ext. 2.jpg" },
-            },
-        },
-    };
-
-
-    private string ImgWidth { get; set; } = "100%";
-    private int MobileSelection { get; set; } = -1;
-
-
-
-    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
-    {
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
-        await JSRuntime.InvokeVoidAsync(
-            "mapster_responsive.setValues", view, "imagemap", ImgWidth
-        );
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.addMapHighlights", "imagemap", "imagemap", "imagemap-img", "mapster_el center"
-        );
-
-        base.StateHasChanged();
-    }
-
-
-
-
     public enum ImageType
     {
         Image,
@@ -302,31 +241,19 @@
     [Parameter]
     public List<Order> Orders { get; set; }
     [Parameter]
-    public bool ShowInfo { get; set; }
+    public bool ShowInfo { get; set; } = true;
     [Parameter]
     public Item SelectedImage { get; set; }
     [Parameter]
     public ImageType SelectedType { get; set; }
 
+    private string ImgWidth { get; set; } = "100%";
 
 
-    private void ToggleInfo()
+    protected override void OnInitialized()
     {
-        ShowInfo = !ShowInfo;
-    }
-
-
-
-    protected override async Task OnInitializedAsync()
-    {
-
         base.OnInitialized();
-        //await Task.Delay(3000);
         SelectedImage = items[0];
-        ShowInfo = true;
-        await JSRuntime.InvokeVoidAsync("pan_viewer.init");
-        await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-        await JSRuntime.InvokeVoidAsync("interior.onResize", null);
 
         Orders = Enumerable.Range(1, 75).Select(x => new Order()
         {
@@ -335,15 +262,35 @@
             Freight = 2.1 * x,
             OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
         }).ToList();
+    }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            await JSRuntime.InvokeVoidAsync("pan_viewer.init");
+            await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
+            await JSRuntime.InvokeVoidAsync("interior.onResize", null);
+        }
+    }
+
+    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
+    {
+        await JSRuntime.InvokeVoidAsync(
+            "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
+        );
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im"
+        );
+
+        base.StateHasChanged();
     }
 
     private async void OnClickImgagemap(int roomid)
     {
-
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
         await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomid);
-
     }
 
     //private async void RoomClicked(int houseID)
@@ -356,10 +303,8 @@
     //    else
     //    {
     //        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-
     //    }
     //}
-
 
     private async void OnClickGalleryImg(MouseEventArgs ev)
     {
@@ -384,6 +329,11 @@
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
     }
 
+    private void ToggleInfo()
+    {
+        ShowInfo = !ShowInfo;
+    }
+
     public async void Dispose()
     {
         await JSRuntime.InvokeVoidAsync("interior.dispose");
@@ -393,9 +343,6 @@
 }
 
 <style>
-
-
-
     /* width */
     ::-webkit-scrollbar {
        height:10px;
@@ -414,12 +361,10 @@
         border-radius: 8px;
     }
 
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #576a74;
-        }
-
-
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #576a74;
+    }
 
     .e-card {
         font-family: acumin-pro,sans-serif;
@@ -739,6 +684,5 @@
             height: 0px;
             width: 4px;
         }
-
     }
 </style>

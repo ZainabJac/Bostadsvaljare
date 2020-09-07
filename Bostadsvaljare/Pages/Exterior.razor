@@ -110,7 +110,6 @@
     private string[] ExteriorImgPaths { get; set; }
     private string ImgWidth { get; set; } = "99%";
     private int MobileSelection { get; set; } = -1;
-    private bool MapsterInitialized { get; set; } = false;
 
     private bool highlightAllIsChecked = false;
 
@@ -126,11 +125,16 @@
         base.StateHasChanged();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+        }
+    }
+
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
     {
-        if (!MapsterInitialized)
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
-
         if (!Views[view].Initialized)
         {
             await JSRuntime.InvokeVoidAsync(
@@ -141,7 +145,6 @@
             );
         }
 
-        MapsterInitialized = true;
         Views[view].Initialized = true;
         base.StateHasChanged();
     }

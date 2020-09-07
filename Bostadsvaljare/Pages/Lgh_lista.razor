@@ -158,7 +158,7 @@
         }
     }
 
-    protected override async void OnInitialized()
+    protected override void OnInitialized()
     {
         base.OnInitialized();
         this.HouseData = Data.House.GetHouseData();
@@ -183,8 +183,14 @@
         }
 
         base.StateHasChanged();
+    }
 
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+        }
     }
 
     private async void OnLoadImage(ProgressEventArgs e, int ind)
