@@ -83,7 +83,7 @@
             this.animate();
         },
 
-        reset: function () {
+        reset: async function () {
             var self = this;
 
             var container = $('#' + constants.CONTAINER)[0];
@@ -114,6 +114,9 @@
                 transform,
                 { onloadCB: function() { self.initMap(); },
                   onresizeCB: self.hudMapResize });
+
+            while (!this.mapSprite.material.map.image)
+                await util.delay(20);
 
             // Hide map, which is always shown (for some reason)
             this.hideMap();
