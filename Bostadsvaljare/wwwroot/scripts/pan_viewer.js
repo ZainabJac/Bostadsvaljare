@@ -138,8 +138,7 @@
 
             var self = this;
 
-            var aspect = this.canvasWidth ? this.canvasWidth / this.canvasHeight
-                                          : 100 / (100*this.options.canvas.height_difference);
+            var aspect = 100 / (100*this.options.canvas.height_difference);
             this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
             this.camera.target = new THREE.Vector3(0, 0, 0);
             this.scene = new THREE.Scene();
@@ -556,23 +555,23 @@
         },
 
         hudMapResize: function (width, height) {
-            var pan = window.pan_viewer;
+            var pan = window.pan_viewer,
+                aspect = height / width,
+                diffHeight = pan.startingHeight / height,
+                diffAspect = aspect / pan.options.canvas.height_difference,
+                mapImg = this.material.map.image;
+
             var mapSize = function () {
-                var size = pan.aptData.map.size;
-                if (width <= pan.options.hud.mobile.size_at_most)
-                    size = Math.min(size + 0.2, 0.9);
+                var sizeMin = pan.aptData.map.size,
+                    sizeMax = 0.9,
+                    size = sizeMin;
+                if (util.isDevice())
+                    size = Math.max(sizeMin, Math.min(size * diffHeight, sizeMax));
                 return size;
             };
 
-            var diffHeight = pan.startingHeight / height,
-                mapImg = this.material.map.image,
-                imgHeight = height * mapSize() * diffHeight,
-                imgWidth = mapImg.width * (imgHeight / mapImg.height);
-
-            pan.options.map.transform.size = {
-                width: imgWidth,
-                height: imgHeight,
-            };
+            var imgHeight = height * mapSize() * diffHeight,
+                imgWidth = mapImg.width * (imgHeight / mapImg.height) * diffAspect;
 
             this.scale.set(imgWidth, imgHeight, 1);
         },
