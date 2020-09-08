@@ -17,7 +17,7 @@
     },
     canvas: {
         cover_window: true,
-        height_difference: 0.6666666666666666
+        height_difference: 0.75
     },
     hud: {
         mobile: {
