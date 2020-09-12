@@ -1,10 +1,11 @@
 ﻿(function () {
     window.interior = {
-        onResize: async function (event) {
+        onResize: function (event) {
             if ($(window).width() <= 927) {
-                await util.delay(500);
                 var height = parseInt($('.line-4-planritning').height());
                 $('#gallery').height((height + 3) + 'px');
+            } else {
+                $('#gallery').height('100%');
             }
         },
 
@@ -15,5 +16,5 @@
         dispose: function () {
             window.removeEventListener('resize', this.onResize, false);
         },
-    }
+    };
 })();
