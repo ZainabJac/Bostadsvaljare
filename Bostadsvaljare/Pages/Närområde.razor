@@ -50,14 +50,11 @@
                 <CardStacked>
                     @*<input id="pac-input2" class="controls" type="text" placeholder="Vad finns i närheten?">*@
                     <div class="container">
-                        <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i närområdet..">
+                        <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i området..">
                     </div>
                     <div id="travel-data" class="results">
-
-                        <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance1"></a></div>
-
-                        <div style="width:100%; padding-bottom:7px;">  <a id="travel-time1"></a></div>
-
+                        <div style= "padding-bottom: 7px;" display: inline-block;> <a id="travel-distance1"></a> </div>
+                        <div style=" padding-bottom:7px;">  <a id="travel-time1"></a></div>
                     </div>
                     <div class="cardsearch">
                         <SfCard>
@@ -68,7 +65,12 @@
                 </CardStacked>
             </SfCard>
         </div>
+        <div class="line-12">
+            
+        </div>
     </div>
+
+    
     
     <div class="line-9">
         <div id="map" style="width:100%; "></div>
@@ -192,11 +194,15 @@
     .results {
         font-family: acumin-pro,sans-serif;
         color: white;
-        width: 80%;
+        display: inline-block;
+        width: 70%;
         margin: auto;
         font-size: 15px;
-        font-style: oblique;
-        font-weight: bold;
+        font-weight:500;
+    
+
+            
+
     }
 
     #map {
@@ -289,7 +295,7 @@
         padding: 7px;
     }
 
-    @@media (max-width: 927px) {
+    @@media (max-width: 3000px) {
 
         #gallery {
             width: 25%;
@@ -298,9 +304,9 @@
             overflow-x: hidden;
         }
 
-        #gallery span {
-            display: initial;
-        }
+            #gallery span {
+                display: initial;
+            }
 
         .gallery-img {
             width: 100%;
@@ -400,19 +406,19 @@
             display: none;
         }
 
-        .naromrodeheader{
-            display:none;
+        .naromrodeheader {
+            display: none;
         }
 
-        .naromrodetxt{
-            display:none;
+        .naromrodetxt {
+            display: none;
         }
 
         header {
-            display:initial;
+            display: initial;
         }
 
-        .e-radio + label .e-label{
+        .e-radio + label .e-label {
             padding-left: 20px !important;
             padding-right: 10px !important;
         }
@@ -423,7 +429,14 @@
         }
 
         .cardsearch {
-            display:none;
+            display: none;
+        }
+
+
+        @@media (max-width: 600px) {
+            .results{
+                width:auto;
+            }
         }
     }
 </style>

@@ -18,7 +18,7 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
-        
+
         @for (int i = 0; i < Views.Count; i++)
         {
             var _i = i;
@@ -41,7 +41,7 @@
             </div>
         }
 
-
+        <div class="buttonrow"> 
         <div id="view_menu">
             <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
                 <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
@@ -69,11 +69,11 @@
             <SfChipList Selection="Selection.Single">
                 <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
                 <ChipCollection>
-                    <ChipListChip Text="Highlight houses"></ChipListChip>
+                    <ChipListChip Text="Visa ledigt"></ChipListChip>
                 </ChipCollection>
             </SfChipList>
         </div>
-
+        </div>
     </ContentTemplate>
 </SpinLoader>
 
@@ -118,6 +118,7 @@
 
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
+   
 
     protected override void OnInitialized()
     {
@@ -129,7 +130,11 @@
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
         }
         base.StateHasChanged();
+      
+
     }
+
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -138,6 +143,8 @@
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
             firstRenderDone = true;
         }
+
+    
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
@@ -157,6 +164,7 @@
 
         Views[view].Initialized = true;
         base.StateHasChanged();
+
     }
 
     private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
@@ -266,53 +274,94 @@
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
+
+
 }
 
 
 <style>
+
+    .buttonrow {
+        position: fixed;
+        top: 60px;
+        left: 10px;
+        display: inline-block;
+    }
+
+    .e-chip-list.e-chip, .e-chip-list .e-chip {
+        border-radius: 3px;
+        background-color: #fafafa;
+        color: #415965;
+        font-family: acumin-pro,sans-serif;
+        padding: 7px;
+    }
+
 
 
     .e-checkicon {
         background-color: white;
         padding: 6px 12px 4px;
         padding-top: 6px;
-        padding-right: 12px;
+        padding-right: 6px;
         padding-bottom: 4px;
-        padding-left: 12px
+        padding-left: 6px
     }
 
 
     #view_menu {
-        position: fixed;
+     /*   position: fixed;
         top: 65px;
-        left: 130px;
+        left: 130px;*/
+        display: inline-block;
     }
 
     #sun_study_menu {
-        position: fixed;
+     /*   position: fixed;
         top: 65px;
-        left: 7px;
+        left: 7px;*/
+        display: inline-block;
     }
 
     #highlight_all_checker {
-        position: fixed;
+     /*   position: fixed;
         top: 65px;
-        left: 265px;
+        left: 265px;*/
+        display: inline-block;
+        padding: 0px;
     }
 
     .e-view {
         content: url(IMG/icons/noun_rotate_24052.png);
         /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
         color: white;
+        font-family: acumin-pro,sans-serif;
     }
 
     .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
         color: #415965;
+        font-family: acumin-pro,sans-serif;
     }
 
     .e-sun-study {
         content: url(IMG/icons/icons8-day-and-night-100.png);
         /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
         color: white;
+        font-family: acumin-pro,sans-serif;
+    }
+
+    @@media (max-width: 363px) {
+
+
+        .e-chip-list.e-chip, .e-chip-list .e-chip {
+          
+            padding: 2px;
+        }
+
+        .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
+            color: #415965;
+            font-family: acumin-pro,sans-serif;
+            padding: 2px;
+        }
+
     }
 </style>
