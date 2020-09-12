@@ -11,7 +11,14 @@ namespace Bostadsvaljare.Data
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
             { "IMG/ext. 2.jpg", "view-2" },
+            {"IMG/G3K(t) - svart- röd.jpg", "view-1" },
+            {"IMG/G3K(t) - röd.jpg", "view-1" },
+            {"IMG/G3K(t) - svart.jpg", "view-1" },
+            {"Extra_G3K(t).png", "view-1" }
         };
+
+
+
 
         public int ID { get; set; }
         public string HouseNumber { get; set; }

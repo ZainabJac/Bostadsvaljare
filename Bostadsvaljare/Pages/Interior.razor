@@ -25,22 +25,22 @@
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == ImageType.Image ? "" : "hidden")">
                 <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
-                        @for (int i = 0; i < items.Count; i++)
+                        @for (int i = 0; i < Views.Count; i++)
                         {
-                            if (items[i].ImgType != ImageType.Image)
+                            if (Views[i].ImgType != ImageType.Image)
                                 continue;
 
                             <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                         }
                     </ol>
                     <div class="carousel-inner">
-                        @for (int i = 0; i < items.Count; i++)
+                        @for (int i = 0; i <Views.Count; i++)
                         {
-                            if (items[i].ImgType != ImageType.Image)
+                            if (Views[i].ImgType != ImageType.Image)
                                 continue;
 
                             <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@items[i].Source" alt="@items[i].Alt">
+                                <img class="d-block w-100" src="@Views[i].Source" alt="@Views[i].Alt">
                             </div>
                         }
                     </div>
@@ -78,10 +78,10 @@
         </div>
 
         <div id="gallery" class="line-4">
-            @for (int i = 0; i < items.Count; i++)
+            @for (int i = 0; i < Views.Count; i++)
             {
                 <span class="line-3">
-                    <BSImage index="@i" src="@items[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    <BSImage index="@i" src="@Views[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
                 </span>
             }
         </div>
@@ -181,13 +181,19 @@
         public string Comments { get; set; }
     }
 
-    public class Item
+    public class ViewData
     {
+        public string ID { get; set; }
+        public string ImgSource { get; set; }
+        public string ImageMapName { get; set; }
+        public bool Initialized { get; set; } = false;
         public string Source { get; set; }
         public string Alt { get; set; }
         public ImageType ImgType { get; set; }
         public string Link { get; set; }
     }
+
+
 
     public class Order
     {
@@ -197,6 +203,48 @@
         public double? Freight { get; set; }
     }
 
+    public List<Data.House> HouseData { get; set; }
+    public Dictionary<string, List<Data.House>> MapData { get; set; }
+
+    List<ViewData> Views = new List<ViewData> {
+        new ViewData {
+            ID = "house-main-1",
+            ImgSource = "IMG/G3K(t) - Soffgrupp.png",
+            ImageMapName = "house-map-1",
+                Alt ="First Slide",
+            ImgType = ImageType.Image
+        },
+        new ViewData {
+            ID = "house-main-2",
+            ImgSource = "IMG/G3K(t) - röd.jpg",
+            ImageMapName = "house-map-2",
+                Alt ="Fourth Slide",
+            ImgType = ImageType.Image,
+        },
+        new ViewData {
+            ID = "house-main-3",
+            ImgSource = "IMG/G3K(t) - svart.jpg",
+            ImageMapName = "house-map-3",
+                 Alt ="Third Slide",
+            ImgType = ImageType.Image
+
+        },
+        new ViewData {
+            ID = "house-main-4",
+            ImgSource = "Extra_G3K(t).png",
+            ImageMapName = "house-map-4",
+            ImgType = ImageType.VR,
+            Link = "https://player.vimeo.com/video/393178231"
+        },
+
+                new ViewData {
+            ID = "house-main-4",
+            ImgSource = "Extra_G3K(t).png",
+            ImageMapName = "house-map-4",
+            ImgType = ImageType.Panorama,
+            Link = "apt_data"
+        },
+    };
 
     private Houses house1 = new Houses
     {
@@ -208,38 +256,38 @@
         Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
     };
 
-    private IList<Item> items = new List<Item> {
-        new Item {
-            Source ="IMG/G3K(t) - Soffgrupp.png",
-            Alt ="First Slide",
-            ImgType = ImageType.Image
-        },
-          new Item {
-            Source = "IMG/G3K(t)Vind Vardagsrum.png",
-            Alt ="Fourth Slide",
-            ImgType = ImageType.Image,
+    //private IList<Item> items = new List<Item> {
+    //    new Item {
+    //        Source ="IMG/G3K(t) - Soffgrupp.png",
+    //        Alt ="First Slide",
+    //        ImgType = ImageType.Image
+    //    },
+    //      new Item {
+    //        Source = "IMG/G3K(t)Vind Vardagsrum.png",
+    //        Alt ="Fourth Slide",
+    //        ImgType = ImageType.Image,
 
-           },
-        new Item {
-            Source = "IMG/G3K(t) - Översikt.png",
-            Alt ="Third Slide",
-            ImgType = ImageType.Image
-        },
-   
-        new Item {
-            Source = "IMG/soffavinkel3.jpg",
-            Alt ="Fourth Slide",
-            ImgType = ImageType.VR,
-            Link = "https://player.vimeo.com/video/393178231"
-        },
-        new Item {
-            Source = "IMG/soffavinkel1.jpg",
-            Alt ="Fifth Slide",
-            ImgType = ImageType.Panorama,
-            Link = "apt_data"
-        }
+    //       },
+    //    new Item {
+    //        Source = "IMG/G3K(t) - Översikt.png",
+    //        Alt ="Third Slide",
+    //        ImgType = ImageType.Image
+    //    },
 
-    };
+    //    new Item {
+    //        Source = "IMG/soffavinkel3.jpg",
+    //        Alt ="Fourth Slide",
+    //        ImgType = ImageType.VR,
+    //        Link = "https://player.vimeo.com/video/393178231"
+    //    },
+    //    new Item {
+    //        Source = "IMG/soffavinkel1.jpg",
+    //        Alt ="Fifth Slide",
+    //        ImgType = ImageType.Panorama,
+    //        Link = "apt_data"
+    //    }
+
+    //};
 
     [Parameter]
     public string HousingID { get; set; }
@@ -248,7 +296,7 @@
     [Parameter]
     public bool ShowInfo { get; set; } = true;
     [Parameter]
-    public Item SelectedImage { get; set; }
+    public ViewData SelectedImage { get; set; }
     [Parameter]
     public ImageType SelectedType { get; set; }
 
@@ -259,7 +307,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SelectedImage = items[0];
+        SelectedImage = Views[0];
 
         Orders = Enumerable.Range(1, 75).Select(x => new Order()
         {
@@ -321,14 +369,14 @@
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
 
-        SelectedImage = items[ind];
+        SelectedImage = Views[ind];
         SelectedType = SelectedImage.ImgType;
         base.StateHasChanged();
 
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        if (items[ind].ImgType == ImageType.Image)
+        if (Views[ind].ImgType == ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
-        else if (items[ind].ImgType == ImageType.Panorama)
+        else if (Views[ind].ImgType == ImageType.Panorama)
         {
             await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
         }

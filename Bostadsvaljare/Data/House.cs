@@ -28,14 +28,16 @@ namespace Bostadsvaljare.Data
             return "";
         }
 
+     
+
         public static List<House> GetHouseData()
         {
             if (houseData == null) {
                 int id = 0;
                 houseData = new List<House> {
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "3a", Status = "booked" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available",  Housetype="G3K"},
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "3a", Status = "booked", Housetype="V2" },
                     new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4b", Status = "sold" },
                     new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
                     new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9b", Status = "sold" },
