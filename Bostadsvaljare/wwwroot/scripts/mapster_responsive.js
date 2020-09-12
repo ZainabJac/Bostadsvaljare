@@ -5,12 +5,17 @@
         listeners: {},
         stayInWindow: false,
         margin: {},
+        disposed: true,
 
-        initialize: function (stayInWindow) {
+        initialize: async function (stayInWindow) {
+            while (!this.disposed) {
+                await util.delay(50);
+            }
             var self = this;
             this.stayInWindow = stayInWindow;
             this.listeners.resize = function (e) { self._onResize(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+            this.disposed = false;
         },
 
         dispose: function () {
@@ -20,6 +25,7 @@
             this.margin = {};
 
             window.removeEventListener('resize', this.listeners.resize, false);
+            this.disposed = true;
         },
 
         getMargin: function () {
