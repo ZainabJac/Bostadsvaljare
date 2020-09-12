@@ -19,16 +19,19 @@ namespace Bostadsvaljare.Data
         public string HouseNumber { get; set; }
         public string Status { get; set; }
 
+        public static House Get(int id)
+        {
+            return houseData.Find(house => house.ID == id);
+        }
+
         public static string GetHouseStatus(string houseNumber)
         {
-            foreach (Data.House house in houseData) {
+            foreach (House house in houseData) {
                 if (house.HouseNumber == houseNumber)
                     return house.Status;
             }
             return "";
         }
-
-     
 
         public static List<House> GetHouseData()
         {
@@ -36,65 +39,65 @@ namespace Bostadsvaljare.Data
                 int id = 0;
                 houseData = new List<House> {
                     new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available",  Housetype="G3K"},
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "1b", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "3a", Status = "booked", Housetype="V2" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9b", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7c", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9c", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9d", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7d", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "9b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "10a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "27b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked" },
-                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold" },
-                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold" },
-                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4b", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9b", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7c", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "4a", Status = "booked", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9c", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9d", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7d", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "9b", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="V2" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "10a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "27b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7a", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8a", Status = "booked", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "8b", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 110, Price = "5 200 000 ", Rent = "5 900 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 120, Price = "5 400 000 ", Rent = "5 400 ", HouseNumber = "9a", Status = "sold", Housetype="G3K" },
                 };
             }
 
