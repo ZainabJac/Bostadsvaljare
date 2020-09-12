@@ -31,7 +31,7 @@
                             {
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
-                                    <area id="@Data.House.GetHouseStatus(map.HouseNumber)" status="" href="#"
+                                    <area id="@Data.House.Get(map.ID).Status" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
                                           coords="@map.IMCoords" shape="poly">
                                 }

@@ -24,15 +24,6 @@ namespace Bostadsvaljare.Data
             return houseData.Find(house => house.ID == id);
         }
 
-        public static string GetHouseStatus(string houseNumber)
-        {
-            foreach (House house in houseData) {
-                if (house.HouseNumber == houseNumber)
-                    return house.Status;
-            }
-            return "";
-        }
-
         public static List<House> GetHouseData()
         {
             if (houseData == null) {
