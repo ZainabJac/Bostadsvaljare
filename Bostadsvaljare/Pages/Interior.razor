@@ -1,5 +1,5 @@
 ﻿@*@page "/interior"*@
-@page "/interior/{HousingID}"
+@page "/interior/{HouseID}"
 
 @implements IDisposable
 @inject IJSRuntime JSRuntime
@@ -22,25 +22,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <div class="line-8">
             <!-- Stillbilder -->
-            <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == ImageType.Image ? "" : "hidden")">
+            <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
                 <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
-                        @for (int i = 0; i < Views.Count; i++)
+                        @for (int i = 0; i < Data.Images.Count; i++)
                         {
-                            if (Views[i].ImgType != ImageType.Image)
+                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
                             <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                         }
                     </ol>
                     <div class="carousel-inner">
-                        @for (int i = 0; i <Views.Count; i++)
+                        @for (int i = 0; i <Data.Images.Count; i++)
                         {
-                            if (Views[i].ImgType != ImageType.Image)
+                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
                             <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@Views[i].Source" alt="@Views[i].Alt">
+                                <img class="d-block w-100" src="@Data.Images[i].Source">
                             </div>
                         }
                     </div>
@@ -56,23 +56,21 @@
             </div>
 
             <!-- 360-bilder -->
-            <div id="pan_container" class="select-none @(SelectedType == ImageType.Panorama ? "" : "hidden")"></div>
+            <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")"></div>
 
             <!-- VR-video -->
-            <iframe id="vr_video" src="@SelectedImage.Link" class=" @(SelectedType == ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
+            <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
 
         <div class="line-4-planritning">
             @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
         <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
             <div id="floorplan-main">
-                <img id="floorplan-img" style="width: @ImgWidth;" src="IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
+                <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
                     <area id="interior2" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
-
-
                 </map>
             </div>
             <div class="btn-group">
@@ -83,10 +81,10 @@
         </div>
 
         <div id="gallery" class="line-4">
-            @for (int i = 0; i < Views.Count; i++)
+            @for (int i = 0; i < Data.Images.Count; i++)
             {
                 <span class="line-3">
-                    <BSImage index="@i" src="@Views[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    <BSImage index="@i" src="@Data.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
                 </span>
             }
         </div>
@@ -98,18 +96,18 @@
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Pris </text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@house1.Price</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">@House.Price</text>
                         </div>
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Boarea</text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@house1.Sqm</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">@House.Sqm</text>
                         </div>
 
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@house1.HouseNumber</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">@House.HouseNumber</text>
                         </div>
 
                         <div>
@@ -131,7 +129,7 @@
                 <SfCard ID="ArkitektenHarOrdet">
                     <CardStacked>
                         <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-                        <text class="italicfont" style="margin-left:6px;">"@house1.Comments" </text>
+                        <text class="italicfont" style="margin-left:6px;">"@Data.Comment" </text>
                     </CardStacked>
                 </SfCard>
 
@@ -168,37 +166,6 @@
 </SpinLoader>
 
 @code {
-    public enum ImageType
-    {
-        Image,
-        Panorama,
-        VR,
-        Imagemap
-    }
-
-    public class Houses
-    {
-        public string Sqm { get; set; }
-        public string Price { get; set; }
-        public string LandArea { get; set; }
-        public string HouseNumber { get; set; }
-        public string Status { get; set; }
-        public string Comments { get; set; }
-    }
-
-    public class ViewData
-    {
-        public string ID { get; set; }
-        public string ImgSource { get; set; }
-        public string ImageMapName { get; set; }
-        public bool Initialized { get; set; } = false;
-        public string Source { get; set; }
-        public string Alt { get; set; }
-        public ImageType ImgType { get; set; }
-        public string Link { get; set; }
-    }
-
-
 
     public class Order
     {
@@ -208,103 +175,23 @@
         public double? Freight { get; set; }
     }
 
-    public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
-    List<ViewData> Views = new List<ViewData> {
-        new ViewData {
-            ID = "house-main-1",
-            ImgSource = "IMG/G3K(t) - Soffgrupp.png",
-            ImageMapName = "house-map-1",
-                Alt ="First Slide",
-            ImgType = ImageType.Image
-        },
-        new ViewData {
-            ID = "house-main-2",
-            ImgSource = "IMG/G3K(t) - röd.jpg",
-            ImageMapName = "house-map-2",
-                Alt ="Fourth Slide",
-            ImgType = ImageType.Image,
-        },
-        new ViewData {
-            ID = "house-main-3",
-            ImgSource = "IMG/G3K(t) - svart.jpg",
-            ImageMapName = "house-map-3",
-                 Alt ="Third Slide",
-            ImgType = ImageType.Image
-
-        },
-        new ViewData {
-            ID = "house-main-4",
-            ImgSource = "Extra_G3K(t).png",
-            ImageMapName = "house-map-4",
-            ImgType = ImageType.VR,
-            Link = "https://player.vimeo.com/video/393178231"
-        },
-
-                new ViewData {
-            ID = "house-main-4",
-            ImgSource = "Extra_G3K(t).png",
-            ImageMapName = "house-map-4",
-            ImgType = ImageType.Panorama,
-            Link = "apt_data"
-        },
-    };
-
-    private Houses house1 = new Houses
-    {
-        Sqm = "152m²",
-        Price = "5 000 000",
-
-        HouseNumber = "7a",
-        Status = "Ledig",
-        Comments = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
-    };
-
-    //private IList<Item> items = new List<Item> {
-    //    new Item {
-    //        Source ="IMG/G3K(t) - Soffgrupp.png",
-    //        Alt ="First Slide",
-    //        ImgType = ImageType.Image
-    //    },
-    //      new Item {
-    //        Source = "IMG/G3K(t)Vind Vardagsrum.png",
-    //        Alt ="Fourth Slide",
-    //        ImgType = ImageType.Image,
-
-    //       },
-    //    new Item {
-    //        Source = "IMG/G3K(t) - Översikt.png",
-    //        Alt ="Third Slide",
-    //        ImgType = ImageType.Image
-    //    },
-
-    //    new Item {
-    //        Source = "IMG/soffavinkel3.jpg",
-    //        Alt ="Fourth Slide",
-    //        ImgType = ImageType.VR,
-    //        Link = "https://player.vimeo.com/video/393178231"
-    //    },
-    //    new Item {
-    //        Source = "IMG/soffavinkel1.jpg",
-    //        Alt ="Fifth Slide",
-    //        ImgType = ImageType.Panorama,
-    //        Link = "apt_data"
-    //    }
-
-    //};
-
     [Parameter]
-    public string HousingID { get; set; }
+    public string HouseID { get; set; }
+    [Parameter]
+    public Data.House House { get; set; }
     [Parameter]
     public List<Order> Orders { get; set; }
     [Parameter]
     public bool ShowInfo { get; set; } = true;
     [Parameter]
-    public ViewData SelectedImage { get; set; }
+    public Data.HouseType.Image SelectedImage { get; set; }
     [Parameter]
-    public ImageType SelectedType { get; set; }
+    public Data.ImageType SelectedType { get; set; }
 
+    private Data.HouseType Data { get; set; }
+    private int Floor { get; set; } = 0;
     private string ImgWidth { get; set; } = "100%";
     private bool firstRenderDone = false;
 
@@ -312,7 +199,11 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SelectedImage = Views[0];
+
+        House = Bostadsvaljare.Data.House.Get(int.Parse(HouseID));
+        string houseType = House.Housetype;
+        Data = Bostadsvaljare.Data.HouseType.GetData(houseType);
+        SelectedImage = Data.Images[0];
 
         Orders = Enumerable.Range(1, 75).Select(x => new Order()
         {
@@ -374,17 +265,20 @@
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
 
-        SelectedImage = Views[ind];
-        SelectedType = SelectedImage.ImgType;
-        base.StateHasChanged();
+        Data.ImageType prevType = SelectedType;
+        SelectedImage = Data.Images[ind];
+        SelectedType = SelectedImage.Type;
 
-        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        if (Views[ind].ImgType == ImageType.Image)
+        if (prevType == Bostadsvaljare.Data.ImageType.Panorama
+        && SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
+            await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+
+        if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
-        else if (Views[ind].ImgType == ImageType.Panorama)
-        {
+        else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama)
             await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
-        }
+
+        base.StateHasChanged();
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
