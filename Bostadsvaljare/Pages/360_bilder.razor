@@ -8,14 +8,21 @@
 
 
 @code {
-    protected override async void OnInitialized() {
-        base.OnInitialized();
-        await JSRuntime.InvokeVoidAsync("pan_viewer.init");
-        await Task.Delay(100);
-        await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
+    private bool firstRenderDone = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
+            firstRenderDone = true;
+        }
     }
 
     public async void Dispose() {
+        if (!firstRenderDone)
+            return;
+
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
 }
