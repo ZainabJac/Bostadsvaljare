@@ -2,7 +2,7 @@
     window.interior = {
         onResize: function (event) {
             if ($(window).width() <= 927) {
-                var height = parseInt($('.line-4-planritning').height());
+                var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
             } else {
                 $('#gallery').height('100%');

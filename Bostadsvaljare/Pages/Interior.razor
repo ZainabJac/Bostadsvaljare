@@ -62,19 +62,21 @@
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
 
-        <div class="line-4-planritning">
+        <div class="planritning line-4">
             <div id="floorplan-main">
                 <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
-                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(1)" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(2)" coords="931,386,470,387,473,175,934,172" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(0)" coords="1369,619,999,610,999,400,1366,394" shape="poly">
                 </map>
             </div>
             <div class="btn-group">
-                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
-                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
-                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
+                @for (int i = 0; i < Data.Floorplans.Count; i++)
+                {
+                    int _i = i;
+                    <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                }
             </div>
         </div>
 
@@ -284,6 +286,11 @@
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
     }
 
+    private void ChangeFloor(int floor)
+    {
+        //TODO: change the floor
+    }
+
     private void ToggleInfo()
     {
         ShowInfo = !ShowInfo;
@@ -367,10 +374,6 @@
     }
 
     .line-4 {
-        width: 33.33%;
-    }
-
-    .line-4-planritning {
         width: 33.33%;
     }
 
@@ -534,10 +537,6 @@
         width: 32px;
     }
 
-    .planritning {
-        width: 100%;
-    }
-
     @@media (max-width: 1467px) {
         .arkitekt {
             width: 100%;
@@ -548,7 +547,6 @@
 
         #gallery {
             width: 25%;
-            /*height: height(line-4-planritning) + 6px*/
             overflow-y: auto;
             overflow-x: hidden;
         }
@@ -611,7 +609,7 @@
             padding-top: 6px;
         }
 
-        .line-4-planritning {
+        .planritning {
             width: 75%;
         }
 
