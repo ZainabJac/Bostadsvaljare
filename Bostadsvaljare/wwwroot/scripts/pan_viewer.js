@@ -23,22 +23,22 @@
 (function () {
     window.pan_viewer = {
         options: { ...panOptions }, aptData: {},
-        roomImages: {},
+        roomTextures: {},
         renderer: null, skybox: null,
         camera: null, scene: null, canvas: null,
         cameraHUD: null, sceneHUD: null, canvasHUD: null,
         clock: new THREE.Clock(),
-        initiated: null, animating: null,
+        disposed: true, animating: null,
         isUserInteracting: false,
         clientXStart: 0, clientYStart: 0,
         lon: 180, lonLast: 0, lonStart: 0,
         lat: 0, LatLast: 0, latStart: 0,
         phi: 0, theta: 0,
+        velCam: new THREE.Vector2(),
         autoRotate: true,
         autoRotateTimeout: null,
         lonAcc: new Accumulator(20, true),
         latAcc: new Accumulator(20, true),
-        velCam: new THREE.Vector2(),
         decRotationRate: 0,
         isMouseover: false,
         isFullscreen: false,
@@ -54,7 +54,6 @@
         holdingHUDEl: null, holdingHotspot: null,
         hoveringObj: null,
         latestPointerProjection: null,
-        tooltipDisplayTimeout: null,
         listeners: {},
 
         start: function (aptID, coverWindow) {
@@ -62,39 +61,25 @@
             if (coverWindow === undefined)
                 coverWindow = true;
             this.options.canvas.cover_window = coverWindow;
+            this.init();
             this.reset();
             this.onResize();
 
             // Preload images to avoid loading them each time when changing rooms
-            if (this.initiated !== aptID) {
-                this.roomImages = {};
-                for (var room in this.aptData.rooms) {
-                    var panorama = this.aptData.rooms[room].panorama;
-                    if (panorama.type === constants.PAN_TYPE.SPHERE)
-                        this.roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
-                    else if (panorama.type === constants.PAN_TYPE.CUBE)
-                        this.roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
-                }
-
-                this.changeRoom(this.aptData.entry);
-                this.initiated = aptID;
+            this.roomTextures = {};
+            for (var room in this.aptData.rooms) {
+                var panorama = this.aptData.rooms[room].panorama;
+                if (panorama.type === constants.PAN_TYPE.SPHERE)
+                    this.roomTextures[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                else if (panorama.type === constants.PAN_TYPE.CUBE)
+                    this.roomTextures[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
             }
 
+            this.changeRoom(this.aptData.entry);
             this.animate();
         },
 
         reset: async function () {
-            var self = this;
-
-            var container = $('#' + constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
-            container.appendChild(this.canvas);
-
-            var containerDims = this.getContainerDimensions();
-            this.startingWidth = this.canvasWidth = containerDims.width;
-            this.startingHeight = this.canvasHeight = containerDims.height;
-            this.sizeAlt = this.getSizeAlt();
-
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
             this.lon = 180, this.lonLast = 0, this.lonStart = 0,
@@ -103,41 +88,11 @@
             this.velCam = new THREE.Vector2();
             this.autoRotate = true;
             this.autoRotateTimeout = undefined;
-
-            this.initHUD();
-
-            // Map setup
-            var transform = this.getTransform(this.options.map.transform);
-            transform.pos.z = -10;
-            this.mapSprite = this.createHUDElement(this.aptData.map,
-                constants.MAP,
-                transform,
-                { onloadCB: function() { self.initMap(); },
-                  onresizeCB: self.hudMapResize });
-
-            while (!this.mapSprite.material.map.image)
-                await util.delay(20);
-
-            // Hide map, which is always shown (for some reason)
-            this.hideMap();
-
-            // Adding event listeners
-            document.addEventListener('mouseover', this.listeners.mouseover, false);
-            document.addEventListener('mouseout', this.listeners.mouseout, false);
-            document.addEventListener('mousemove', this.listeners.mousemove, false);
-            document.addEventListener('mousedown', this.listeners.mousedown, false);
-            document.addEventListener('mouseup', this.listeners.mouseup, false);
-
-            document.addEventListener('touchmove', this.listeners.touchmove, false);
-            document.addEventListener('touchstart', this.listeners.touchstart, false);
-            document.addEventListener('touchend', this.listeners.touchend, false);
-
-            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
-            window.addEventListener('resize', this.listeners.resize, false);
+            this.decRotationRate = 0;
         },
 
-        init: function () {
-            if (this.initiated) return;
+        init: async function () {
+            while (!this.disposed) await util.delay(50);
 
             var self = this;
 
@@ -154,51 +109,25 @@
             this.renderer.autoClear = false;
             this.renderer.setPixelRatio(window.devicePixelRatio);
 
-            this.listeners.mouseover = function (e) { self.onMouseover(e); };
-            this.listeners.mouseout = function (e) { self.onMouseout(e); };
-            this.listeners.mousemove = function (e) { self.onMouseMove(e); };
-            this.listeners.mousedown = function (e) { self.onMouseDown(e); };
-            this.listeners.mouseup = function (e) { self.onMouseUp(e); };
-            this.listeners.touchmove = function (e) { self.onTouchMove(e); };
-            this.listeners.touchstart = function (e) { self.onTouchStart(e); };
-            this.listeners.touchend = function (e) { self.onTouchEnd(e); };
-            this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
-            this.listeners.resize = function (e) { self.onResize(e); };
+            var container = $('#'+ constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            container.appendChild(this.canvas);
 
-            this.initiated = true;
-        },
+            var containerDims = this.getContainerDimensions();
+            this.startingWidth = this.canvasWidth = containerDims.width;
+            this.startingHeight = this.canvasHeight = containerDims.height;
+            this.sizeAlt = this.getSizeAlt();
 
-        initHUD: function () {
-            var self = this;
-            var halfWidth = this.canvasWidth * 0.5,
-                halfHeight = this.canvasHeight * 0.5;
+            this.initHUD();
 
-            // We will use 2D canvas element to render our HUD
-            this.canvasHUD = document.createElement("canvas");
-
-            // Again, set dimensions to fit the screen
-            this.canvasHUD.width = this.canvasWidth;
-            this.canvasHUD.height = this.canvasHeight;
-
-            // Create the camera and set the viewport to match the screen dimensions
-            this.cameraHUD = new THREE.OrthographicCamera(-halfWidth, halfWidth, halfHeight, -halfHeight, 0, 30);
-
-            // Create also a custom scene for HUD
-            this.sceneHUD = new THREE.Scene();
-
-            // Create texture from rendered graphics
-            var textureHUD = new THREE.Texture(this.canvasHUD);
-            textureHUD.needsUpdate = true;
-
-            // Create HUD material
-            var materialHUD = new THREE.MeshBasicMaterial({ map: textureHUD });
-            materialHUD.transparent = true;
-
-            // Create plane to render the HUD. This plane fills the whole screen
-            var planeGeometry = new THREE.PlaneBufferGeometry(this.canvasWidth, this.canvasHeight);
-            var plane = new THREE.Mesh(planeGeometry, materialHUD);
-            this.sceneHUD.add(plane);
-            this.sceneHUD.add(this.HUDGroup);
+            // Map setup
+            var transform = this.getTransform(this.options.map.transform);
+            transform.pos.z = -10;
+            this.mapSprite = this.createHUDElement(this.aptData.map,
+                constants.MAP,
+                transform,
+                { onloadCB: function() { self.initMap(); },
+                  onresizeCB: self.hudMapResize });
 
             // Map button setup
             // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
@@ -227,6 +156,65 @@
                 constants.MEASUREMENTS_ICON,
                 transform,
                 { onclickCB: function() { self.toggleMeasurements(); } });*/
+
+            this.listeners.mouseover = function (e) { self.onMouseover(e); };
+            this.listeners.mouseout = function (e) { self.onMouseout(e); };
+            this.listeners.mousemove = function (e) { self.onMouseMove(e); };
+            this.listeners.mousedown = function (e) { self.onMouseDown(e); };
+            this.listeners.mouseup = function (e) { self.onMouseUp(e); };
+            this.listeners.touchmove = function (e) { self.onTouchMove(e); };
+            this.listeners.touchstart = function (e) { self.onTouchStart(e); };
+            this.listeners.touchend = function (e) { self.onTouchEnd(e); };
+            this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
+            this.listeners.resize = function (e) { self.onResize(e); };
+
+            // Adding event listeners
+            document.addEventListener('mouseover', this.listeners.mouseover, false);
+            document.addEventListener('mouseout', this.listeners.mouseout, false);
+            document.addEventListener('mousemove', this.listeners.mousemove, false);
+            document.addEventListener('mousedown', this.listeners.mousedown, false);
+            document.addEventListener('mouseup', this.listeners.mouseup, false);
+
+            document.addEventListener('touchmove', this.listeners.touchmove, false);
+            document.addEventListener('touchstart', this.listeners.touchstart, false);
+            document.addEventListener('touchend', this.listeners.touchend, false);
+
+            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
+            window.addEventListener('resize', this.listeners.resize, false);
+
+            this.disposed = false;
+        },
+
+        initHUD: function () {
+            var halfWidth = this.canvasWidth * 0.5,
+                halfHeight = this.canvasHeight * 0.5;
+
+            // We will use 2D canvas element to render our HUD
+            this.canvasHUD = document.createElement("canvas");
+
+            // Again, set dimensions to fit
+            this.canvasHUD.width = this.canvasWidth;
+            this.canvasHUD.height = this.canvasHeight;
+
+            // Create the camera and set the viewport to match the screen dimensions
+            this.cameraHUD = new THREE.OrthographicCamera(-halfWidth, halfWidth, halfHeight, -halfHeight, 0, 30);
+
+            // Create also a custom scene for HUD
+            this.sceneHUD = new THREE.Scene();
+
+            // Create texture from rendered graphics
+            var textureHUD = new THREE.Texture(this.canvasHUD);
+            textureHUD.needsUpdate = true;
+
+            // Create HUD material
+            var materialHUD = new THREE.MeshBasicMaterial({ map: textureHUD });
+            materialHUD.transparent = true;
+
+            // Create plane to render the HUD. This plane fills the whole screen
+            var planeGeometry = new THREE.PlaneBufferGeometry(this.canvasWidth, this.canvasHeight);
+            var plane = new THREE.Mesh(planeGeometry, materialHUD);
+            this.sceneHUD.add(plane);
+            this.sceneHUD.add(this.HUDGroup);
         },
 
         initMap: function () {
@@ -392,14 +380,14 @@
                     geometry.scale(-1, 1, 1);
 
                     material = new THREE.MeshBasicMaterial({
-                        map: this.roomImages[roomId]
+                        map: this.roomTextures[roomId]
                     });
                     break;
                 case constants.PAN_TYPE.CUBE:
                     geometry = new THREE.BoxBufferGeometry(1, 1, 1);
                     geometry.scale(1, 1, -1);
 
-                    var textures = this.roomImages[roomId];
+                    var textures = this.roomTextures[roomId];
                     material = [];
                     for (var i=0; i < 6; i+=1) {
                         material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
@@ -557,7 +545,10 @@
             this.scale.y = size.y * diffHeight * pan.sizeAlt;
         },
 
-        hudMapResize: function (width, height) {
+        hudMapResize: async function (width, height) {
+            while (!this.mapSprite.material.map.image)
+                await util.delay(20);
+
             var pan = window.pan_viewer,
                 aspect = height / width,
                 diffHeight = pan.startingHeight / height,
@@ -889,7 +880,34 @@
             if (!this.animating) return;
 
             cancelAnimationFrame(this.animating);
-            this.HUDGroup.children.length = 0;
+
+            $('#'+ constants.CONTAINER)[0].removeChild(this.canvas);
+            this.renderer.dispose();
+            this.skybox.geometry.dispose();
+            this.skybox.material.dispose();
+            for (var roomID in this.roomTextures) {
+                if (Array.isArray(this.roomTextures[roomID])) {
+                    for (var atlasTexture of this.roomTextures[roomID]) {
+                        atlasTexture.dispose();
+                    }
+                } else {
+                    this.roomTextures[roomID].dispose();
+                }
+            }
+            this.roomTextures = {};
+
+            this.disposeHotspots();
+            for (var hudEl of this.HUDGroup.children) {
+                hudEl.material.map.dispose();
+                hudEl.material.dispose();
+            }
+
+            this.HUDGroup = new THREE.Group();
+            this.renderer = this.scene = this.skybox =
+            this.camera = this.canvas =
+            this.canvasHUD = this.cameraHUD =
+            this.sceneHUD = this.mapSprite = undefined;
+            this.currentRoom = null;
 
             document.removeEventListener('mouseover', this.listeners.mouseover, false);
             document.removeEventListener('mouseout', this.listeners.mouseout, false);
@@ -901,6 +919,16 @@
             document.removeEventListener('touchend', this.listeners.touchend, false);
             document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
             window.removeEventListener('resize', this.listeners.resize, false);
+
+            this.disposed = true;
+        },
+
+        disposeHotspots: function () {
+            for (var hotspot of this.hotspotGroup.children) {
+                hotspot.material.map.dispose();
+                hotspot.material.dispose();
+            }
+            this.hotspotGroup = new THREE.Group();
         },
 
         showTooltip: function () {
@@ -952,9 +980,8 @@
         },
 
         changeRoom: function (roomId) {
-            if (roomId === this.currentRoom) {
+            if (roomId === this.currentRoom)
                 return;
-            }
 
             // Update map hotspot images to show which is the current room
             if (this.HUDGroup.getObjectByName(this.currentRoom)) {
@@ -975,7 +1002,7 @@
 
             // Change the hotspots
             this.scene.remove(this.hotspotGroup);
-            this.hotspotGroup = new THREE.Group();
+            this.disposeHotspots();
             this.addHotspots();
 
             this.hideTooltip();
@@ -1009,7 +1036,7 @@
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: this.roomImages[this.currentRoom]
+                map: this.roomTextures[this.currentRoom]
             });
             var mesh = new THREE.Mesh(geometry, material);
             this.scene.add(mesh);
