@@ -63,22 +63,16 @@
         </div>
 
         <div class="line-4-planritning">
-            @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
-        <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
-            
             <div id="floorplan-main">
-
-
-
                 <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
-                    <area id="interior2" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
                 </map>
             </div>
             <div class="btn-group">
-                <button  class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
+                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
                 <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
                 <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
             </div>
@@ -447,7 +441,7 @@
         position: absolute;
         left: 0px;
         top: 0px;
-        z-index: 1000000;
+        z-index: 100000;
     }
 
     #housing_info {
