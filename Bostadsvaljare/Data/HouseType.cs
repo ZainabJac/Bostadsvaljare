@@ -26,8 +26,8 @@ namespace Bostadsvaljare.Data
         {
             public class Room
             {
-                public Vector2 Coords { get; set; }
                 public int RoomID { get; set; }
+                public Vector2 Coords { get; set; }
             }
 
             public string Source { get; set; }
@@ -45,19 +45,19 @@ namespace Bostadsvaljare.Data
                     { "G3K", new HouseType {
                         Floorplans = new List<Floorplan> {
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                         },
                         Images = new List<Image> {
@@ -72,19 +72,19 @@ namespace Bostadsvaljare.Data
                     { "V2", new HouseType {
                         Floorplans = new List<Floorplan> {
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                             new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { Coords = new Vector2 { X = 700, Y = 300 }, RoomID = 0 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 1160, Y = 510 }, RoomID = 1 },
-                                new Floorplan.Room { Coords = new Vector2 { X = 800, Y = 720 }, RoomID = 4 },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
                         },
                         Images = new List<Image> {

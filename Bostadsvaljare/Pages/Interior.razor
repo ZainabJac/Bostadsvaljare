@@ -25,22 +25,22 @@
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
                 <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
-                        @for (int i = 0; i < Data.Images.Count; i++)
+                        @for (int i = 0; i < HouseData.Images.Count; i++)
                         {
-                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
+                            if (HouseData.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
                             <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                         }
                     </ol>
                     <div class="carousel-inner">
-                        @for (int i = 0; i <Data.Images.Count; i++)
+                        @for (int i = 0; i <HouseData.Images.Count; i++)
                         {
-                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
+                            if (HouseData.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
                             <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@Data.Images[i].Source">
+                                <img class="d-block w-100" src="@HouseData.Images[i].Source">
                             </div>
                         }
                     </div>
@@ -64,22 +64,21 @@
 
         <div class="planritning line-4 pan_el">
             <div id="floorplan-main">
-                @*<img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
-                <map id="floorplan-im" name="floorplan-im">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(1)" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(2)" coords="931,386,470,387,473,175,934,172" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(0)" coords="1369,619,999,610,999,400,1366,394" shape="poly">
-                </map>*@
-                @for (int i = 0; i < Data.Floorplans.Count; i++)
+                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                 {
                     var _i = i;
                     <div id="floorplan-@_i" style="position: relative" class="@(Floor == _i ? "" : "hidden")">
-                        <img src="@Data.Floorplans[i].Source" style="width: 100%;" @onload="(e) => OnLoadFloorplan(e, _i)">
+                        <img src="@HouseData.Floorplans[_i].Source" style="width: 100%;" @onload="(e) => OnLoadFloorplan(e, _i)">
+                        @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                        {
+                            var _j = j;
+                            <a id="@_j" class="hotspot" @onclick="(e) => OnClickHotspot(e, HouseData.Floorplans[_i].Rooms[_j].RoomID)"></a>
+                        }
                     </div>
                 }
             </div>
             <div class="btn-group">
-                @for (int i = 0; i < Data.Floorplans.Count; i++)
+                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                 {
                     var _i = i;
                     <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
@@ -88,10 +87,10 @@
         </div>
 
         <div id="gallery" class="line-4">
-            @for (int i = 0; i < Data.Images.Count; i++)
+            @for (int i = 0; i < HouseData.Images.Count; i++)
             {
                 <span class="line-3">
-                    <BSImage index="@i" src="@Data.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    <BSImage index="@i" src="@HouseData.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
                 </span>
             }
         </div>
@@ -136,7 +135,7 @@
                 <SfCard ID="ArkitektenHarOrdet">
                     <CardStacked>
                         <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-                        <text class="italicfont" style="margin-left:6px;">"@Data.Comment" </text>
+                        <text class="italicfont" style="margin-left:6px;">"@HouseData.Comment" </text>
                     </CardStacked>
                 </SfCard>
 
@@ -165,9 +164,8 @@
     [Parameter]
     public bool ShowInfo { get; set; } = true;
 
-    private Data.HouseType Data { get; set; }
+    private Data.HouseType HouseData { get; set; }
     private int Floor { get; set; } = 0;
-    private string ImgWidth { get; set; } = "100%";
     private int Radius { get; set; } = 10;
     private bool firstRenderDone = false;
 
@@ -178,75 +176,57 @@
 
         House = Bostadsvaljare.Data.House.Get(int.Parse(HouseID));
         string houseType = House.Housetype;
-        Data = Bostadsvaljare.Data.HouseType.GetData(houseType);
-        SelectedImage = Data.Images[0];
+        HouseData = Bostadsvaljare.Data.HouseType.GetData(houseType);
+        SelectedImage = HouseData.Images[0];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            //await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.onResize");
             firstRenderDone = true;
         }
     }
 
-    //public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
-    //{
-    //    while (!firstRenderDone)
-    //        await Task.Delay(20);
-
-    //    await JSRuntime.InvokeVoidAsync(
-    //        "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
-    //    );
-    //    await JSRuntime.InvokeVoidAsync(
-    //        "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im", "", 0.5, 0.65
-    //    );
-
-    //    base.StateHasChanged();
-    //}
-
     private async void OnLoadFloorplan(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev, int floor)
     {
         while (!firstRenderDone)
             await Task.Delay(20);
 
-        //TODO: add buttons on image to take us to a still image or 360 images
-        string id = "floorplan-" + floor;
-        Data.Floorplans[floor].Rooms.ForEach(async room => {
+        // Add buttons on image to take us to a still image or 360 images
+        string parentID = "#floorplan-"+ floor;
+        for (int i = 0; i < HouseData.Floorplans[floor].Rooms.Count; i++) {
+            var room = HouseData.Floorplans[floor].Rooms[i];
+            string aID = "a#"+ i;
             float x = room.Coords.X,
                   y = room.Coords.Y;
-            await JSRuntime.InvokeVoidAsync("interior.addHotspot", id, x, y, Radius);
-        });
+            await JSRuntime.InvokeVoidAsync("interior.setHotspot", parentID, aID, x, y, Radius);
+        }
     }
 
-    private async void OnClickFloorplan(int roomID)
+    private void OnClickHotspot(MouseEventArgs ev, int roomID)
     {
-        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomID);
+        ChangeImage(roomID);
     }
-
-    //private async void RoomClicked(int houseID)
-    //{
-    //    var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
-    //    if (mobile && MobileSelection != houseID)
-    //    {
-    //        MobileSelection = houseID;
-    //    }
-    //    else
-    //    {
-    //        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-    //    }
-    //}
 
     private async void OnClickGalleryImg(MouseEventArgs ev)
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
+        ChangeImage(ind);
+    }
 
+    private async void OnLoadVR(ProgressEventArgs ev)
+    {
+        // Change height on #vr_video to be its width*2/3
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
+    }
+
+    private async void ChangeImage(int ind)
+    {
         Data.ImageType prevType = SelectedType;
-        SelectedImage = Data.Images[ind];
+        SelectedImage = HouseData.Images[ind];
         SelectedType = SelectedImage.Type;
 
         if (prevType == Bostadsvaljare.Data.ImageType.Panorama
@@ -256,15 +236,9 @@
         if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
         else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link); //TODO: start in a specific room
 
         base.StateHasChanged();
-    }
-
-    private async void OnLoadVR(ProgressEventArgs ev)
-    {
-        // Change height on #vr_video to be its width*2/3
-        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
     }
 
     private void ChangeFloor(int floor)
@@ -285,7 +259,6 @@
 
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        //await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 }
 
