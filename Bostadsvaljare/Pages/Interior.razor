@@ -64,17 +64,24 @@
 
         <div class="planritning line-4 pan_el">
             <div id="floorplan-main">
-                <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
+                @*<img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(1)" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(2)" coords="931,386,470,387,473,175,934,172" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="() =>OnClickImgagemap(0)" coords="1369,619,999,610,999,400,1366,394" shape="poly">
-                </map>
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(1)" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(2)" coords="931,386,470,387,473,175,934,172" shape="poly">
+                    <area id="interior" status="" href="#" @onclick="() =>OnClickFloorplan(0)" coords="1369,619,999,610,999,400,1366,394" shape="poly">
+                </map>*@
+                @for (int i = 0; i < Data.Floorplans.Count; i++)
+                {
+                    var _i = i;
+                    <div id="floorplan-@_i" style="position: relative" class="@(Floor == _i ? "" : "hidden")">
+                        <img src="@Data.Floorplans[i].Source" style="width: 100%;" @onload="(e) => OnLoadFloorplan(e, _i)">
+                    </div>
+                }
             </div>
             <div class="btn-group">
                 @for (int i = 0; i < Data.Floorplans.Count; i++)
                 {
-                    int _i = i;
+                    var _i = i;
                     <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
                 }
             </div>
@@ -137,43 +144,13 @@
         </div>
 
 
-        @*<div class="line-2knapp">
-                <div>
-                    <div> <SfButton> Bofaktablad </SfButton> </div>
-                </div>
-            </div>
-            <div class="line-2knapp">
-                <div>
-                    <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
-                </div>
-            </div>*@
-
-
         @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
         @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
-
-
-        @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-                <GridColumns>
-                    <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                    <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-                    <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                </GridColumns>
-            </SfGrid>*@
 
     </ContentTemplate>
 </SpinLoader>
 
 @code {
-
-    public class Order
-    {
-        public int? OrderID { get; set; }
-        public string CustomerID { get; set; }
-        public DateTime? OrderDate { get; set; }
-        public double? Freight { get; set; }
-    }
 
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
@@ -182,17 +159,16 @@
     [Parameter]
     public Data.House House { get; set; }
     [Parameter]
-    public List<Order> Orders { get; set; }
-    [Parameter]
-    public bool ShowInfo { get; set; } = true;
-    [Parameter]
     public Data.HouseType.Image SelectedImage { get; set; }
     [Parameter]
     public Data.ImageType SelectedType { get; set; }
+    [Parameter]
+    public bool ShowInfo { get; set; } = true;
 
     private Data.HouseType Data { get; set; }
     private int Floor { get; set; } = 0;
     private string ImgWidth { get; set; } = "100%";
+    private int Radius { get; set; } = 10;
     private bool firstRenderDone = false;
 
 
@@ -204,47 +180,52 @@
         string houseType = House.Housetype;
         Data = Bostadsvaljare.Data.HouseType.GetData(houseType);
         SelectedImage = Data.Images[0];
-
-        Orders = Enumerable.Range(1, 75).Select(x => new Order()
-        {
-            OrderID = 1000 + x,
-            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
-            Freight = 2.1 * x,
-            OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
-        }).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            //await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            await JSRuntime.InvokeVoidAsync("interior.onResize", null);
+            await JSRuntime.InvokeVoidAsync("interior.onResize");
             firstRenderDone = true;
         }
     }
 
-    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
+    //public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
+    //{
+    //    while (!firstRenderDone)
+    //        await Task.Delay(20);
+
+    //    await JSRuntime.InvokeVoidAsync(
+    //        "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
+    //    );
+    //    await JSRuntime.InvokeVoidAsync(
+    //        "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im", "", 0.5, 0.65
+    //    );
+
+    //    base.StateHasChanged();
+    //}
+
+    private async void OnLoadFloorplan(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev, int floor)
     {
         while (!firstRenderDone)
-            await Task.Delay(10);
+            await Task.Delay(20);
 
-        await JSRuntime.InvokeVoidAsync(
-            "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
-        );
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im", "", 0.5, 0.65
-        );
-
-
-        base.StateHasChanged();
+        //TODO: add buttons on image to take us to a still image or 360 images
+        string id = "floorplan-" + floor;
+        Data.Floorplans[floor].Rooms.ForEach(async room => {
+            float x = room.Coords.X,
+                  y = room.Coords.Y;
+            await JSRuntime.InvokeVoidAsync("interior.addHotspot", id, x, y, Radius);
+        });
     }
 
-    private async void OnClickImgagemap(int roomid)
+    private async void OnClickFloorplan(int roomID)
     {
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomid);
+        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomID);
     }
 
     //private async void RoomClicked(int houseID)
@@ -288,7 +269,8 @@
 
     private void ChangeFloor(int floor)
     {
-        //TODO: change the floor
+        Floor = floor;
+        base.StateHasChanged();
     }
 
     private void ToggleInfo()
@@ -303,7 +285,7 @@
 
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        //await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 }
 
@@ -331,7 +313,6 @@
         clear: both;
         display: table;
     }
-
 
     /* Add a background color on hover */
     .btn-group button:hover {
@@ -482,6 +463,21 @@
         display: contents;
     }
 
+    .hotspot {
+        display: inline-block;
+        position: absolute;
+        width: @(Radius*2)px;
+        height: @(Radius*2)px;
+        background-color: #415965;
+        border: none;
+        border-radius: 50%;
+        text-decoration: none;
+        text-align: center;
+        overflow: hidden;
+        cursor: pointer;
+        z-index: 10;
+    }
+
     #hide_info {
         position: fixed;
         bottom: 0px;
@@ -596,11 +592,6 @@
 
         .line-2 {
             width: 100%;
-        }
-
-        .line-2knapp {
-            width: 50%;
-            margin: auto;
         }
 
         .line-3 {

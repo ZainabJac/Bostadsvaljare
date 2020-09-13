@@ -13,6 +13,22 @@
             window.addEventListener('resize', this.onResize, false);
         },
 
+        addHotspot: function (id, x, y, r) {
+            var a = document.createElement("a");
+            //a.href = '#';
+            $(a).addClass('hotspot');
+
+            var img = $('#' + id + ' img');
+            x = x * (img.width() / img[0].naturalWidth) - r;
+            y = y * (img.height() / img[0].naturalHeight) - r;
+            $(a).css({
+                left: x + 'px',
+                top: y + 'px',
+            });
+
+            $('#'+ id).append(a);
+        },
+
         dispose: function () {
             window.removeEventListener('resize', this.onResize, false);
         },
