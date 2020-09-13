@@ -64,7 +64,7 @@
 
         <div class="line-4-planritning">
             @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
-                <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
+        <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
             <div id="floorplan-main">
                 <img id="floorplan-img" style="width: @ImgWidth;" src="IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
@@ -74,6 +74,11 @@
 
 
                 </map>
+            </div>
+            <div class="btn-group">
+                <button @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
+                <button @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
+                <button @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
             </div>
         </div>
 
@@ -406,6 +411,38 @@
 
 <style>
 
+    .btn-group button {
+        background-color: #415965; /* Green background */
+        border: 1px solid white; /* Green border */
+        color: white; /* White text */
+        padding: 10px 10px; /* Some padding */
+        cursor: pointer; /* Pointer/hand icon */
+        float: left; /* Float the buttons side by side */
+    }
+
+    /* Clear floats (clearfix hack) */
+    .btn-group:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .btn-group button:not(:last-child) {
+        border-right: none; /* Prevent double borders */
+    }
+
+    /* Add a background color on hover */
+    .btn-group button:hover {
+        background-color: #576f7a;
+    }
+
+    .e-chip-list.e-chip, .e-chip-list .e-chip {
+        border-radius: 3px;
+        background-color: #fafafa;
+        color: #415965;
+        font-family: acumin-pro,sans-serif;
+        padding: 7px;
+    }
 
     .e-card {
         font-family: acumin-pro,sans-serif;
