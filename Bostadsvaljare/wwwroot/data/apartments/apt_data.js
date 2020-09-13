@@ -3,9 +3,8 @@
     map: {
         image: "IMG/apts/floor_plan.png",
         background: {
-            type: "image",
-            image: "IMG/apts/bg.png",
-            color: "#1fa2a7"
+          
+           
         },
         size: 0.6,
         hidden_at_start: true,

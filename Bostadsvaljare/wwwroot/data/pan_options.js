@@ -36,7 +36,7 @@
     },
     map_icon: {
         image: "IMG/icons/pan/map_icon.png",
-        color: "#fff",
+        color: "#415965",
         transform: {
             position: {
                 bottom: 15,
@@ -47,20 +47,16 @@
                 width: 50,
                 height: 50
             }
-        },
-        background: {
-            type: "image",
-            image: "IMG/icons/pan/bg.png",
-            color: "#1fa2a7"
         }
+        
     },
     map_hotspot: {
         image: "IMG/icons/pan/plan_hotspot.png",
-        color: "#2c91d2",
+        color: "#415965",
         transform: {
             size: {
-                width: 22,
-                height: 22
+                width: 13,
+                height: 13
             }
         },
         current: {
@@ -68,8 +64,8 @@
         }
     },
     minimize_icon: {
-        image: "IMG/icons/pan/minimize_bg.png",
-        color: "#c6b73a",
+        image: "IMG/icons/pan/Closeicon.png",
+        color: "#415965",
         transform: {
             position: {
                 top: 0,
@@ -77,14 +73,15 @@
                 center: { x: 1, y: 1 }
             },
             size: {
-                width: 28,
-                height: 20
-            }
-        }
+                width: 15,
+                height: 15
+            },
+        },
+      
     },
     hotspot: {
         image: "IMG/icons/pan/hotspot.png",
-        color: "#57b9de",
+        color: "#415965",
         transform: {
             size: {
                 width: 16,
@@ -94,7 +91,7 @@
     },
     fullscreen_icon: {
         image: "IMG/icons/pan/fullscreen_on_icon.png",
-        color: "#eee",
+        color: "#415965",
         transform: {
             position: {
                 bottom: 15,
@@ -106,18 +103,14 @@
                 height: 50
             }
         },
-        background: {
-            type: "image",
-            image: "IMG/icons/pan/bg.png",
-            color: "#1fa2a7"
-        },
+       
         off_icon: {
             image: "IMG/icons/pan/fullscreen_off_icon.png"
         }
     },
     measurements_icon: {
         image: "IMG/icons/pan/fullscreen_on_icon.png",
-        color: "#eee",
+        color: "#415965",
         transform: {
             position: {
                 bottom: 15,
@@ -129,11 +122,7 @@
                 height: 50
             }
         },
-        background: {
-            type: "image",
-            image: "IMG/icons/pan/bg.png",
-            color: "#1fa2a7"
-        },
+     
         off_icon: {
             image: "IMG/icons/pan/fullscreen_off_icon.png"
         }

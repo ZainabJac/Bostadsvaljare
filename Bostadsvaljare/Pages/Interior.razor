@@ -65,7 +65,11 @@
         <div class="line-4-planritning">
             @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
         <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
+            
             <div id="floorplan-main">
+
+
+
                 <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
                     <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
@@ -74,9 +78,9 @@
                 </map>
             </div>
             <div class="btn-group">
-                <button @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
-                <button @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
-                <button @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
+                <button  class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
+                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
+                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
             </div>
         </div>
 
@@ -314,6 +318,13 @@
         float: left; /* Float the buttons side by side */
     }
 
+    .BtnInbtngrp:active,
+    .BtnInbtngrp:focus
+    {
+        border: 0.2em solid white; /* here configure as your needs */
+        color: white;
+    }
+
     /* Clear floats (clearfix hack) */
     .btn-group:after {
         content: "";
@@ -321,9 +332,6 @@
         display: table;
     }
 
-    .btn-group button:not(:last-child) {
-        border-right: none; /* Prevent double borders */
-    }
 
     /* Add a background color on hover */
     .btn-group button:hover {

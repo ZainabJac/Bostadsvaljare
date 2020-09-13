@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Goback.js" />
+    <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.css" />
+    <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.scss" />
     <Content Remove="wwwroot\scripts\resizescript - Copy.js" />
   </ItemGroup>
 
@@ -31,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\IMG\icons\pan\" />
     <Folder Include="wwwroot\IMG\apts\" />
+    <Folder Include="wwwroot\material-202006041330139071-99945271\compatibility\" />
   </ItemGroup>
 
 </Project>
