@@ -1,5 +1,6 @@
 ﻿const constants = {
     CONTAINER: 'pan_container',
+    PAN_ELEMENT: 'pan_el',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
     MAP_ICON: 'map_icon',
@@ -118,34 +119,34 @@
             this.startingHeight = this.canvasHeight = containerDims.height;
             this.sizeAlt = this.getSizeAlt();
 
-            this.initHUD();
+            //this.initHUD();
 
             // Map setup
-            var transform = this.getTransform(this.options.map.transform);
-            transform.pos.z = -10;
-            this.mapSprite = this.createHUDElement(this.aptData.map,
-                constants.MAP,
-                transform,
-                { onloadCB: function() { self.initMap(); },
-                  onresizeCB: self.hudMapResize });
+            //var transform = this.getTransform(this.options.map.transform);
+            //transform.pos.z = -10;
+            //this.mapSprite = this.createHUDElement(this.aptData.map,
+            //    constants.MAP,
+            //    transform,
+            //    { onloadCB: function() { self.initMap(); },
+            //      onresizeCB: self.hudMapResize });
 
-            // Map button setup
-            // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
-            //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = this.options.map_icon;
-            var transform = this.getTransform(mapData.transform);
-            this.createHUDElement(mapData,
-                constants.MAP_ICON,
-                transform,
-                { onclickCB: function() { self.showMap(); } });
+            //// Map button setup
+            //// TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
+            ////       Need to make sure the background is clickable as well (to bring up the map)
+            //var mapData = this.options.map_icon;
+            //var transform = this.getTransform(mapData.transform);
+            //this.createHUDElement(mapData,
+            //    constants.MAP_ICON,
+            //    transform,
+            //    { onclickCB: function() { self.showMap(); } });
 
-            // Fullscreen button setup
-            var fullscreenData = this.options.fullscreen_icon;
-            var transform = this.getTransform(fullscreenData.transform);
-            this.createHUDElement(fullscreenData,
-                constants.FULLSCREEN_ICON,
-                transform,
-                { onclickCB: function() { self.toggleFullscreen(); } });
+            //// Fullscreen button setup
+            //var fullscreenData = this.options.fullscreen_icon;
+            //var transform = this.getTransform(fullscreenData.transform);
+            //this.createHUDElement(fullscreenData,
+            //    constants.FULLSCREEN_ICON,
+            //    transform,
+            //    { onclickCB: function() { self.toggleFullscreen(); } });
 
             // Measurements button setup
             // TODO: Be able to show apartment measurements on walls, etc.
@@ -521,8 +522,8 @@
         resetCamera: function (width, height) {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
-            this.cameraHUD.aspect = width / height;
-            this.cameraHUD.updateProjectionMatrix();
+            //this.cameraHUD.aspect = width / height;
+            //this.cameraHUD.updateProjectionMatrix();
             this.renderer.setSize(width, height);
         },
 
@@ -593,7 +594,7 @@
             }
 
             $("#"+ constants.CONTAINER +" canvas").outerHeight(newHeight);
-            this.resetHUD(newWidth, newHeight);
+            //this.resetHUD(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
             this.canvas.style.width = "";
@@ -604,28 +605,30 @@
         onFullscreenChange: function (event) {
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                this.resetHUD($(window).width(), $(window).height());
+                //this.resetHUD($(window).width(), $(window).height());
                 this.resetCamera($(window).width(), $(window).height());
 
                 // TODO: Change color and background when changing image too
-                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.off_icon.image);
-                fsMat.color.set(this.options.fullscreen_icon.off_icon.color
-                             || this.options.fullscreen_icon.color);
-                fsMat.needsUpdate = true;
+                //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.off_icon.image);
+                //fsMat.color.set(this.options.fullscreen_icon.off_icon.color
+                //             || this.options.fullscreen_icon.color);
+                //fsMat.needsUpdate = true;
 
-                $('#'+constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('#'+ constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).addClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': 'hidden' });
             } else {
-                this.resetHUD(this.canvasWidth, this.canvasHeight);
+                //this.resetHUD(this.canvasWidth, this.canvasHeight);
                 this.resetCamera(this.canvasWidth, this.canvasHeight);
 
-                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
-                fsMat.color.set(this.options.fullscreen_icon.color);
-                fsMat.needsUpdate = true;
+                //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
+                //fsMat.color.set(this.options.fullscreen_icon.color);
+                //fsMat.needsUpdate = true;
 
-                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('#'+ constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': '' });
             }
         },
@@ -654,8 +657,9 @@
 
             // Raycast the hotspots for the tooltip system
             this.hoveringObj = null;
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            var objHUD = undefined;
             if (!objHUD) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
@@ -680,8 +684,8 @@
             if (!this.isMouseover) return;
 
             // Raycast the HUD elements
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
@@ -750,8 +754,8 @@
             this.pointerVector.y = -(touchPos.y / this.canvas.offsetHeight) * 2 + 1;
 
             // Raycast the HUD elements
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
@@ -873,7 +877,7 @@
             this.camera.lookAt(this.camera.target);
 
             this.renderer.render(this.scene, this.camera);
-            this.renderer.render(this.sceneHUD, this.cameraHUD);
+            //this.renderer.render(this.sceneHUD, this.cameraHUD);
         },
 
         dispose: function () {
@@ -897,16 +901,10 @@
             this.roomTextures = {};
 
             this.disposeHotspots();
-            for (var hudEl of this.HUDGroup.children) {
-                hudEl.material.map.dispose();
-                hudEl.material.dispose();
-            }
+            //this.disposeHUD();
 
-            this.HUDGroup = new THREE.Group();
             this.renderer = this.scene = this.skybox =
-            this.camera = this.canvas =
-            this.canvasHUD = this.cameraHUD =
-            this.sceneHUD = this.mapSprite = undefined;
+            this.camera = this.canvas = undefined;
             this.currentRoom = null;
 
             document.removeEventListener('mouseover', this.listeners.mouseover, false);
@@ -921,6 +919,16 @@
             window.removeEventListener('resize', this.listeners.resize, false);
 
             this.disposed = true;
+        },
+
+        disposeHUD: function () {
+            for (var hudEl of this.HUDGroup.children) {
+                hudEl.material.map.dispose();
+                hudEl.material.dispose();
+            }
+            this.HUDGroup = new THREE.Group();
+            this.canvasHUD = this.cameraHUD =
+            this.sceneHUD = this.mapSprite = undefined;
         },
 
         disposeHotspots: function () {

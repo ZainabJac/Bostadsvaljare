@@ -62,7 +62,7 @@
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
 
-        <div class="planritning line-4">
+        <div class="planritning line-4 pan_el">
             <div id="floorplan-main">
                 <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
                 <map id="floorplan-im" name="floorplan-im">
@@ -445,6 +445,13 @@
         left: 0px;
         top: 0px;
         z-index: 100000;
+    }
+
+    .pan_el.fullscreen {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        z-index: 110000;
     }
 
     #housing_info {
