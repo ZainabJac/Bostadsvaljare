@@ -4,21 +4,20 @@
 @inject IJSRuntime JSRuntime
 
 
-<div id="topnav">
+<div id="topnav" @onfullscreenchange="FullscreenChange">
     <header class="header">
         <input  class="menu-btn" type="checkbox" id="menu-btn" />
         <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
         <ul class="menu" style="color:white;">
             <li><a style="color:white" @onclick="@MenuOnClick" href="">Bostadsväljare</a></li>
-            <li><a style="color:white"  @onclick="@MenuOnClick" href="lgh_lista">Lägenhetslista</a></li>
-            <li><a style="color:white"  @onclick="@MenuOnClick" href="närområde">Närområde</a></li>
+            <li><a style="color:white" @onclick="@MenuOnClick" href="lgh_lista">Lägenhetslista</a></li>
+            <li><a style="color:white" @onclick="@MenuOnClick" href="närområde">Närområde</a></li>
             @*<li><a style="color:#415965" href="VR-video">VR-video</a></li>
-        <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
+            <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
             <li><a style="color:white" href="interior">Interior</a></li>*@
         </ul>
     </header>
 
-   
 
     <span style="float: right;margin-top: 10px; margin-right:30px;">
         <SfButton CssClass="e-flat" IconCss="e-icons e-search" OnClick="@ToggleFullscreen"></SfButton>
@@ -31,9 +30,7 @@
 
     public async Task ToggleFullscreen()
     {
-        Fullscreen = !Fullscreen;
-
-        if (Fullscreen)
+        if (!Fullscreen)
             await JSRuntime.InvokeVoidAsync(
                 "util.openFullscreen"
             );
@@ -43,7 +40,12 @@
             );
     }
 
-    private async void MenuOnClick(MouseEventArgs E)
+    private void FullscreenChange(System.EventArgs ev)
+    {
+        Fullscreen = !Fullscreen;
+    }
+
+    private async void MenuOnClick(MouseEventArgs ev)
     {
         await JSRuntime.InvokeVoidAsync(
             "MenuOnClick"
@@ -55,10 +57,16 @@
 
 <style>
 
-
+    body {
+        margin: 0;
+        font-family: acumin-pro,sans-serif;
+        font-size: 15px;
+        background-color: #f4f4f4;
+    }
 
     a {
         padding-bottom: 20px;
+        color: #000;
     }
 
     ul.menu li {
@@ -81,8 +89,6 @@
         display: inline-block;
         font-family: acumin-pro,sans-serif;
         font-size: 15px;
-        
-        
     }
 
     .e-search::before {
@@ -92,88 +98,68 @@
        
     }
 
-    body {
-        margin: 0;
-        font-family: acumin-pro,sans-serif;
-        font-size: 15px;
-        background-color: #f4f4f4;
-    }
-
-
-
-    a {
-        color: #000;
-    }
-
     /* header */
 
     .header {
         display: block;
         float: left;
-        
     }
 
-        .header ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            overflow: hidden;
-          background-color: #fff;
-        
-        }
+    .header ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
 
     .header li a {
         display: block;
-       
     }
 
     .header li a:hover,
     .header .menu-btn:hover {
         background-color:  #576a74;
-
     }
 
     /* menu */
 
-        .header .menu {
-            clear: both;
-            max-height: 0;
-            transition: max-height .2s ease-out;
-       
-           
-        }
+    .header .menu {
+        clear: both;
+        max-height: 0;
+        transition: max-height .2s ease-out;
+    }
 
     /* menu icon */
 
-        .header .menu-icon {
-            cursor: pointer;
-            display: inline-block;
-            float: left;
-            padding: 28px 20px;
-            position: relative;
-            user-select: none;
-           
-        }
+    .header .menu-icon {
+        cursor: pointer;
+        display: inline-block;
+        float: left;
+        padding: 28px 20px;
+        position: relative;
+        user-select: none;
+    }
 
-            .header .menu-icon .navicon {
-                background: white;
-                display: block;
-                height: 2px;
-                position: relative;
-                transition: background .2s ease-out;
-                width: 18px;
-            }
+    .header .menu-icon .navicon {
+        background: white;
+        display: block;
+        height: 2px;
+        position: relative;
+        transition: background .2s ease-out;
+        width: 18px;
+    }
 
-        .header .menu-icon .navicon:before,
-        .header .menu-icon .navicon:after {
-            background: white;
-            content: '';
-            display: block;
-            height: 100%;
-            position: absolute;
-            transition: all .2s ease-out;
-            width: 100%;
-        }
+    .header .menu-icon .navicon:before,
+    .header .menu-icon .navicon:after {
+        background: white;
+        content: '';
+        display: block;
+        height: 100%;
+        position: absolute;
+        transition: all .2s ease-out;
+        width: 100%;
+    }
 
     .header .menu-icon .navicon:before {
         top: 5px;
@@ -218,21 +204,18 @@
            
         }
 
-            .header li a {
-                padding: 20px 30px;
-                
-            }
+        .header li a {
+            padding: 20px 30px;
+        }
 
         .header .menu {
             clear: none;
             float: left;
             max-height: none;
-           
         }
 
         .header .menu-icon {
             display: none;
         }
-
     }
 </style>
