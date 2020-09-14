@@ -271,10 +271,12 @@
         base.StateHasChanged();
     }
 
-    private void ChangeFloor(int floor)
+    private async void ChangeFloor(int floor)
     {
         Floor = floor;
         base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
     }
 
     private void ToggleInfo()
