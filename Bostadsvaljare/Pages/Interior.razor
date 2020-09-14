@@ -226,7 +226,7 @@
             "mapster_responsive.setValues", floor, parentID, ImgWidth
         );
         await JSRuntime.InvokeVoidAsync(
-            "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor
+            "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor, "", 0.6, 0.9
         );
         await Task.Delay(100);
         await JSRuntime.InvokeVoidAsync("mapster.selectAll");
