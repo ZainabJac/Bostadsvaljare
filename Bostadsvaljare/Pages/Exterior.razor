@@ -5,6 +5,7 @@
 @using BlazorPro.Spinkit
 
 @implements IDisposable
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
@@ -118,7 +119,7 @@
 
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
-   
+
 
     protected override void OnInitialized()
     {
@@ -130,7 +131,7 @@
             this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
         }
         base.StateHasChanged();
-      
+
 
     }
 
@@ -144,7 +145,7 @@
             firstRenderDone = true;
         }
 
-    
+
     }
 
     public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
@@ -266,12 +267,17 @@
         }
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
         // Need to make sure that it's not trying to invoke JavaScript interop before initialization
         if (!firstRenderDone)
             return;
 
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
 

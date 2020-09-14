@@ -1,6 +1,7 @@
 ﻿@page "/360_bilder"
 
-@implements IDisposable
+@implements IDisposable 
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
 
@@ -19,10 +20,15 @@
         }
     }
 
-    public async void Dispose() {
+    public void Dispose()
+    {
         if (!firstRenderDone)
             return;
 
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync() {
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
 }

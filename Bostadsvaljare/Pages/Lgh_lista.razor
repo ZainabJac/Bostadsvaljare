@@ -5,6 +5,7 @@
 @using BlazorPro.Spinkit
 
 @implements IDisposable
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
@@ -379,11 +380,16 @@
         }
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
         if (!firstRenderDone)
             return;
 
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("grid_responsive.dispose");
     }
