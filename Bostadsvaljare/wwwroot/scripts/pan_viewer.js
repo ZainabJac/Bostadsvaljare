@@ -29,6 +29,7 @@
         camera: null, scene: null, canvas: null,
         cameraHUD: null, sceneHUD: null, canvasHUD: null,
         clock: new THREE.Clock(),
+        pressedFullscreenButton: false,
         disposed: true, animating: null,
         isUserInteracting: false,
         clientXStart: 0, clientYStart: 0,
@@ -603,6 +604,10 @@
         },
 
         onFullscreenChange: function (event) {
+            // Ignore if this event triggered outside of here
+            if (!this.pressedFullscreenButton)
+                return;
+
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
                 //this.resetHUD($(window).width(), $(window).height());
@@ -631,6 +636,7 @@
                 $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': '' });
             }
+            this.pressedFullscreenButton = false;
         },
 
         onMouseover: function (event) {
@@ -1065,6 +1071,7 @@
         },
 
         toggleFullscreen: function () {
+            this.pressedFullscreenButton = true;
             if (this.isFullscreen)
                 util.closeFullscreen();
             else

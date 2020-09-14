@@ -21,6 +21,16 @@
     <ContentTemplate>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <div id="fullscreen-image" class="@(FullscreenImage != null ? "" : "hidden")">
+            <div class="fs-bg" @onclick="OnClickClose">
+                <div class="fs-border" @onclick:stopPropagation="true">
+                    <span class="fs-close" @onclick="OnClickClose"></span>
+                    <img src="@FullscreenImage" style="width: 100%;" @onload="OnLoadFSImg" />
+                </div>
+            </div>
+        </div>
+
         <div class="line-8">
             <!-- Stillbilder -->
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
@@ -37,11 +47,12 @@
                     <div class="carousel-inner">
                         @for (int i = 0; i < HouseData.Images.Count; i++)
                         {
-                            if (HouseData.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
+                            var _i = i;
+                            if (HouseData.Images[_i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
-                            <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@HouseData.Images[i].Source" @onload="OnLoadImg">
+                            <div class="carousel-item @(_i == 0 ? "active" : "")">
+                                <img class="d-block w-100" src="@HouseData.Images[_i].Source" @onload="OnLoadImg" @onclick="(e) => OnClickCarousel(e, HouseData.Images[_i].Source)">
                             </div>
                         }
                     </div>
@@ -165,16 +176,13 @@
 
     [Parameter]
     public string HouseID { get; set; }
-    [Parameter]
     public Data.House House { get; set; }
-    [Parameter]
     public Data.HouseType.Image SelectedImage { get; set; }
-    [Parameter]
     public Data.ImageType SelectedType { get; set; }
-    [Parameter]
     public bool ShowInfo { get; set; } = true;
 
     private Data.HouseType HouseData { get; set; }
+    private string FullscreenImage { get; set; } = null;
     private bool[] FloorsInit { get; set; }
     private int Floor { get; set; } = 0;
     private string ImgWidth { get; set; } = "99.99%";
@@ -210,7 +218,7 @@
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            await JSRuntime.InvokeVoidAsync("interior.onResize");
+            await JSRuntime.InvokeVoidAsync("interior.resize");
             firstRenderDone = true;
         }
     }
@@ -234,6 +242,17 @@
     private void OnLoadImg(ProgressEventArgs ev)
     {
         LoadingImages -= 1;
+        base.StateHasChanged();
+    }
+
+    private async void OnLoadFSImg(ProgressEventArgs ev)
+    {
+        await JSRuntime.InvokeVoidAsync("interior.resize");
+    }
+
+    private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
+    {
+        FullscreenImage = imgSrc;
         base.StateHasChanged();
     }
 
@@ -272,6 +291,12 @@
     {
         // Change height on #vr_video to be its width*2/3
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
+    }
+
+    private void OnClickClose(MouseEventArgs ev)
+    {
+        FullscreenImage = null;
+        base.StateHasChanged();
     }
 
     private async void ChangeImage(int ind)
@@ -324,6 +349,61 @@
 }
 
 <style>
+
+    #fullscreen-image {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        z-index: 18;
+    }
+
+    .fs-bg {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        background: rgba(32, 32, 32, 0.3);
+    }
+
+    .fs-border {
+        position: relative;
+        width: 90%;
+        margin: auto;
+        top: 87px;
+        border: 5px solid #fafafa;
+        border-radius: 11px;
+        box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .fs-close {
+        position: absolute;
+        top: -25px;
+        right: -25px;
+        background: #fafafa;
+        width: 46px;
+        height: 46px;
+        border: 3px solid #fafafa;
+        border-radius: 50%;
+        box-shadow: inset 0 0 9px rgba(16, 16, 16, 0.35);
+    }
+    .fs-close:hover {
+        cursor: pointer;
+    }
+    .fs-close:before, .fs-close:after {
+        content: '';
+        height: 30px;
+        border-left: 4px solid #4f4f4f;
+        position: absolute;
+        left: 19px;
+        top: 5px;
+    }
+    .fs-close:after {
+        transform: rotate(45deg);
+    }
+    .fs-close:before {
+        transform: rotate(-45deg);
+    }
 
    
     .e-checkbox-wrapper .e-frame{
