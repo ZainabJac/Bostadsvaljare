@@ -882,7 +882,6 @@
 
         dispose: function () {
             if (!this.animating) return;
-
             cancelAnimationFrame(this.animating);
 
             $('#'+ constants.CONTAINER)[0].removeChild(this.canvas);
@@ -918,6 +917,13 @@
             document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
             window.removeEventListener('resize', this.listeners.resize, false);
 
+            if (this.isFullscreen) {
+                util.closeFullscreen();
+                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('.' + constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': '' });
+                this.isFullscreen = false;
+            }
             this.disposed = true;
         },
 
