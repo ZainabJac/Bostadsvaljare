@@ -14,7 +14,9 @@
             var self = this;
             this.stayInWindow = stayInWindow;
             this.listeners.resize = function (e) { self._onResize(e); };
+            this.listeners.fullscreenchange = function (e) { self._onFullscreenChange(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
             this.disposed = false;
         },
 
@@ -25,6 +27,7 @@
             this.margin = {};
 
             window.removeEventListener('resize', this.listeners.resize, false);
+            document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
             this.disposed = true;
         },
 
@@ -61,6 +64,11 @@
                 this._onResize(undefined);
                 this.margin = this.getMargin();
             }
+        },
+
+        _onFullscreenChange: async function (event) {
+            await util.delay(20);
+            this.resize();
         },
 
         _onResize: function (event) {
