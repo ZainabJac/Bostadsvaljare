@@ -35,7 +35,7 @@
                         }
                     </ol>
                     <div class="carousel-inner">
-                        @for (int i = 0; i <HouseData.Images.Count; i++)
+                        @for (int i = 0; i < HouseData.Images.Count; i++)
                         {
                             if (HouseData.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
@@ -55,6 +55,7 @@
                     </a>
                 </div>
             </div>
+            
 
             <!-- 360-bilder -->
             <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")"></div>
@@ -62,8 +63,17 @@
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
+        <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon box pan_el"></SfCheckBox>
 
         <div class="planritning line-4 pan_el">
+
+            <div class="btn-group">
+                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                {
+                    var _i = i;
+                    <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                }
+            </div>
             <div id="floorplan-main">
                 @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                 {
@@ -80,13 +90,6 @@
                             }
                         </map>
                     </div>
-                }
-            </div>
-            <div class="btn-group">
-                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                {
-                    var _i = i;
-                    <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
                 }
             </div>
         </div>
@@ -155,7 +158,9 @@
 </SpinLoader>
 
 @code {
-
+    public string MoveIcon = " position: absolute; right: 25px; top: 5px;";
+    public string minimaphide = "Display:initial;";
+    private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
     [Parameter]
@@ -208,6 +213,22 @@
             await JSRuntime.InvokeVoidAsync("interior.onResize");
             firstRenderDone = true;
         }
+    }
+
+    public void HideMinimap()
+    {
+        if (isChecked == false)
+        {
+            minimaphide = "display:none;";
+            MoveIcon ="position: absolute; right: -19%; top: 15px;";
+
+        }
+        else
+        {
+            MoveIcon = "position: absolute; right: +10%; top: 15px;";
+            minimaphide = "display:initial;";
+        }
+
     }
 
     private void OnLoadImg(ProgressEventArgs ev)
@@ -298,24 +319,88 @@
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
+
+
 }
 
 <style>
 
+   
+    .e-checkbox-wrapper .e-frame{
+        border:none;
+    }
+
+    .e-checkicon {
+        height: 40px;
+        width: 40px;
+        display:none;
+
+    }
+
+    .e-checkbox-wrapper .e-frame::before {
+        content: '\e78c';
+        font-size: 35px;
+        color: white;
+        background-color: #F9B256;
+        border-color: none;
+        outline: none;
+        height: 40px;
+        width: 40px;
+      
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
+        content: '\e799';
+        height: 40px;
+        width: 40px;
+      
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-check {
+        font-size: 35px;
+    }
+
+
+
+
+    /*  .hide {
+        display: none;
+    }
+
+    .buttonwdith.pan_el.fullscreen {
+        width: initial;
+        display: initial;
+        z-index: 110000;
+        left: 500px;
+        bottom: 500px;
+        position: absolute;
+    }
+
+    .btn-group button {
+        background-color: #415965;
+        border: 1px solid white;
+        color: white;
+        padding: 10px 10px;
+        cursor: pointer;
+        float: left;
+    }
+
+    .Buttons.pan_el.full {
+        padding: 4px 4px;
+    }
+
+    .buttonsinbtngrp.pan_el.full {
+        width: 100px;
+    }
+*/
     .btn-group button {
         background-color: #415965; /* Green background */
         border: 1px solid white; /* Green border */
         color: white; /* White text */
-        padding: 10px 10px; /* Some padding */
         cursor: pointer; /* Pointer/hand icon */
-        float: left; /* Float the buttons side by side */
-    }
-
-    .BtnInbtngrp:active,
-    .BtnInbtngrp:focus
-    {
-        border: 0.2em solid white; /* here configure as your needs */
-        color: white;
+        float: right; /* Float the buttons side by side */
+        width: 100%;
+        border-radius: 2px;
     }
 
     /* Clear floats (clearfix hack) */
@@ -430,6 +515,7 @@
 
     #pan_container {
         width: 100%;
+
     }
 
     #pan_container.fullscreen {
@@ -444,6 +530,20 @@
         right: 0px;
         top: 0px;
         z-index: 110000;
+        width: 20%;
+
+    }
+
+    .planritning.pan_el.fullscreen {
+      
+        @minimaphide
+    }
+
+    .e-checkicon.pan_el.fullscreen {
+      @MoveIcon
+       z-index: 110000;
+       display:initial;
+
     }
 
     #housing_info {
@@ -474,20 +574,6 @@
         display: contents;
     }
 
-    .hotspot {
-        display: inline-block;
-        position: absolute;
-        width: @(Radius*2)px;
-        height: @(Radius*2)px;
-        background-color: #415965;
-        border: none;
-        border-radius: 50%;
-        text-decoration: none;
-        text-align: center;
-        overflow: hidden;
-        cursor: pointer;
-        z-index: 10;
-    }
 
     #hide_info {
         position: fixed;
@@ -664,5 +750,25 @@
             height: 0px;
             width: 4px;
         }
+
+        #pan_container.fullscreen {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 100000;
+        }
+
+        .pan_el.fullscreen {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            z-index: 110000;
+            width: 40%;
+            font-size: 11px;
+    
+        }
+
+
+
     }
 </style>
