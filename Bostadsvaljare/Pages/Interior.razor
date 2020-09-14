@@ -68,13 +68,17 @@
                 @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                 {
                     var _i = i;
-                    <div id="floorplan-@_i" style="position: relative" class="@(Floor == _i ? "" : "hidden")">
-                        <img src="@HouseData.Floorplans[_i].Source" style="width: 100%;" @onload="(e) => OnLoadFloorplan(e, _i)">
-                        @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
-                        {
-                            var _j = j;
-                            <a id="@_j" class="hotspot" @onclick="(e) => OnClickHotspot(e, HouseData.Floorplans[_i].Rooms[_j].RoomID)"></a>
-                        }
+                    <div id="floorplan-@_i" style="position: relative; @(!FloorsInit[_i] || Floor == _i ? "" : "display: none;") @(FloorsInit[_i] ? "" : "visibility: hidden;")">
+                        <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">
+                        <map id="hotspots-@_i" name="hotspots-@_i">
+                            @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                            {
+                                var _j = j;
+                                var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
+                                <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
+                                      coords="@coords.X,@coords.Y,@Radius" shape="circle">
+                            }
+                        </map>
                     </div>
                 }
             </div>
@@ -166,8 +170,10 @@
     public bool ShowInfo { get; set; } = true;
 
     private Data.HouseType HouseData { get; set; }
+    private bool[] FloorsInit { get; set; }
     private int Floor { get; set; } = 0;
-    private int Radius { get; set; } = 10;
+    private string ImgWidth { get; set; } = "99.99%";
+    private int Radius { get; set; } = 25;
     private int LoadingImages { get; set; } = 0;
     private bool firstRenderDone = false;
 
@@ -187,6 +193,8 @@
                 LoadingImages += 1;
         }
 
+        FloorsInit = new bool[HouseData.Floorplans.Count];
+
         SelectedImage = HouseData.Images[0];
         base.StateHasChanged();
     }
@@ -195,6 +203,7 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.onResize");
             firstRenderDone = true;
@@ -212,20 +221,22 @@
         while (!firstRenderDone)
             await Task.Delay(20);
 
-        // Add buttons on image to take us to a still image or 360 images
-        string parentID = "#floorplan-"+ floor;
-        for (int i = 0; i < HouseData.Floorplans[floor].Rooms.Count; i++) {
-            var room = HouseData.Floorplans[floor].Rooms[i];
-            string aID = "a#"+ i;
-            float x = room.Coords.X,
-                  y = room.Coords.Y;
-            await JSRuntime.InvokeVoidAsync("interior.setHotspot", parentID, aID, x, y, Radius);
-        }
+        string parentID = "floorplan-" + floor;
+        await JSRuntime.InvokeVoidAsync(
+            "mapster_responsive.setValues", floor, parentID, ImgWidth
+        );
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor
+        );
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("mapster.selectAll");
+
+        FloorsInit[floor] = true;
         LoadingImages -= 1;
         base.StateHasChanged();
     }
 
-    private void OnClickHotspot(MouseEventArgs ev, int roomID)
+    private void OnClickHotspot(int roomID)
     {
         ChangeImage(roomID);
     }
@@ -281,6 +292,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
