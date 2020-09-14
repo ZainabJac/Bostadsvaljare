@@ -16,7 +16,6 @@ namespace Bostadsvaljare.Data
 
         public class Image
         {
-            public int RoomID { get; set; }
             public string Source { get; set; }
             public ImageType Type { get; set; }
             public string Link { get; set; }
@@ -61,11 +60,11 @@ namespace Bostadsvaljare.Data
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { RoomID = 0, Source="IMG/G3K(t) - Översikt.png", Type=ImageType.Image },
-                            new Image { RoomID = 1, Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
-                            new Image { RoomID = 2, Source="IMG/G3K(t)Vind Vardagsrum.png", Type=ImageType.Image },
-                            new Image { RoomID = 3, Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
-                            new Image { RoomID = 4, Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.Panorama, Link="apt_data" },
+                            new Image { Source="IMG/G3K(t) - Översikt.png", Type=ImageType.Image },
+                            new Image { Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
+                            new Image { Source="IMG/G3K(t)Vind Vardagsrum.png", Type=ImageType.Image },
+                            new Image { Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
+                            new Image { Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.Panorama, Link="apt_data" },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
@@ -88,11 +87,11 @@ namespace Bostadsvaljare.Data
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { RoomID = 0, Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
-                            new Image { RoomID = 1, Source="IMG/G3K(t) - röd.jpg", Type=ImageType.Image },
-                            new Image { RoomID = 2, Source="IMG/G3K(t) - svart.jpg", Type=ImageType.Image },
-                            new Image { RoomID = 3, Source="IMG/Extra_G3K(t).png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
-                            new Image { RoomID = 4, Source="IMG/Extra 2_G3K(t).png", Type=ImageType.Panorama, Link="apt_data" },
+                            new Image { Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
+                            new Image { Source="IMG/G3K(t) - röd.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3K(t) - svart.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Extra_G3K(t).png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
+                            new Image { Source="IMG/Extra 2_G3K(t).png", Type=ImageType.Panorama, Link="apt_data" },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
