@@ -66,7 +66,7 @@
                     </a>
                 </div>
             </div>
-            
+
 
             <!-- 360-bilder -->
             <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")">
@@ -78,8 +78,7 @@
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
-        <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon box pan_el"></SfCheckBox>
-
+        <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
         <div class="planritning line-4 pan_el">
 
             <div class="btn-group">
@@ -173,7 +172,7 @@
 </SpinLoader>
 
 @code {
-    public string MoveIcon = " position: absolute; right: 25px; top: 5px;";
+    public string MoveIcon = " position: absolute; left: 78%; top: 15px;";
     public string minimaphide = "Display:initial;";
     private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
@@ -231,13 +230,14 @@
     {
         if (isChecked == false)
         {
+            MoveIcon = "position: absolute; left:98%; top: 15px;";
             minimaphide = "display:none;";
-            MoveIcon ="position: absolute; right: -19%; top: 15px;";
+          
 
         }
         else
         {
-            MoveIcon = "position: absolute; right: +10%; top: 15px;";
+            MoveIcon = "position: absolute; left: 78%; top: 15px;";
             minimaphide = "display:initial;";
         }
 
@@ -610,6 +610,7 @@
         position: absolute;
         right: 5px;
         bottom: 5px;
+        
     }
     #pan_fullscreen-btn:hover {
         cursor: pointer;
