@@ -1107,7 +1107,9 @@
 
         toggleFullscreen: function () {
             this.pressedFullscreenButton = true;
-            if (this.isFullscreen)
+            if (bv.isFullscreen)
+                this.onFullscreenChange();
+            else if (this.isFullscreen)
                 util.closeFullscreen();
             else
                 util.openFullscreen();
