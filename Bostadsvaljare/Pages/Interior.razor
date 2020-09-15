@@ -76,7 +76,7 @@
             </div>
 
             <!-- VR-video -->
-            <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
+            <iframe id="vr_video" src="@SelectedImage.Link" class="@(!InitVR || SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%; @(InitVR ? "" : "visibility: hidden;")" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
         <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
         <div class="planritning line-4 pan_el">
@@ -195,6 +195,7 @@
     private string ImgWidth { get; set; } = "99.99%";
     private int Radius { get; set; } = 15;
     private int LoadingImages { get; set; } = 0;
+    private bool InitVR { get; set; } = false;
     private bool firstRenderDone = false;
 
 
@@ -226,6 +227,7 @@
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.resize");
+            await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
             firstRenderDone = true;
         }
     }
@@ -255,6 +257,13 @@
     private async void OnLoadFSImg(ProgressEventArgs ev)
     {
         await JSRuntime.InvokeVoidAsync("interior.resize");
+    }
+
+    private async void OnLoadVR(ProgressEventArgs ev)
+    {
+        // Change height on #vr_video to be its width*2/3
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
+        InitVR = true;
     }
 
     private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
@@ -294,12 +303,6 @@
         ChangeRoom(ind);
     }
 
-    private async void OnLoadVR(ProgressEventArgs ev)
-    {
-        // Change height on #vr_video to be its width*2/3
-        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
-    }
-
     private void OnClickClose(MouseEventArgs ev)
     {
         FullscreenImage = null;
@@ -314,7 +317,7 @@
 
         if (prevType == Bostadsvaljare.Data.ImageType.Panorama &&
             SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+            await JSRuntime.InvokeVoidAsync("pan_viewer.softDispose");
 
         if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);

@@ -34,7 +34,7 @@
         /*cameraHUD: null, sceneHUD: null, canvasHUD: null,*/
         clock: new THREE.Clock(),
         pressedFullscreenButton: false,
-        disposed: true, animating: null,
+        disposed: true, softDisposed: true, animating: null,
         isUserInteracting: false,
         clientXStart: 0, clientYStart: 0,
         lon: 180, lonLast: 0, lonStart: 0,
@@ -63,30 +63,21 @@
         listeners: {},
 
         start: async function (aptID, roomID, coverWindow) {
-            this.aptData = window.apartments[aptID];
+            //this.aptData = window.apartments[aptID];
             if (coverWindow === undefined)
                 coverWindow = false;
             this.options.canvas.cover_window = coverWindow;
-            this.init();
+            if (this.softDisposed)
+                this.init(aptID);
             this.reset();
 
-            // Preload images to avoid loading them each time when changing rooms
-            this.roomTextures = {};
-            for (var room in this.aptData.rooms) {
-                var panorama = this.aptData.rooms[room].panorama;
-                if (panorama.type === constants.PAN_TYPE.SPHERE)
-                    this.roomTextures[room] = new THREE.TextureLoader().load(panorama.imageURL);
-                else if (panorama.type === constants.PAN_TYPE.CUBE)
-                    this.roomTextures[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
-            }
-
             this.changeRoom(roomID || this.aptData.entry);
-            await util.delay(150);
+            await util.delay(500);
             this.onResize();
             this.animate();
         },
 
-        reset: async function () {
+        reset: function () {
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
             this.lon = 180, this.lonLast = 0, this.lonStart = 0,
@@ -98,10 +89,22 @@
             this.decRotationRate = 0;
         },
 
-        init: async function () {
-            while (!this.disposed) await util.delay(50);
+        init: async function (aptID) {
+            while (!this.disposed && !this.softDisposed) await util.delay(50);
 
             var self = this;
+
+            if ($.isEmptyObject(this.roomTextures)) {
+                this.aptData = window.apartments[aptID];
+                // Preload images to avoid loading them each time when changing rooms
+                for (var room in this.aptData.rooms) {
+                    var panorama = this.aptData.rooms[room].panorama;
+                    if (panorama.type === constants.PAN_TYPE.SPHERE)
+                        this.roomTextures[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                    else if (panorama.type === constants.PAN_TYPE.CUBE)
+                        this.roomTextures[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+                }
+            }
 
             var aspect = 100 / (100*this.options.canvas.height_difference);
             this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
@@ -191,6 +194,7 @@
             document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
             window.addEventListener('resize', this.listeners.resize, false);
 
+            this.softDisposed = false;
             this.disposed = false;
         },
 
@@ -921,24 +925,14 @@
             //this.renderer.render(this.sceneHUD, this.cameraHUD);
         },
 
-        dispose: function () {
+        softDispose: function () {
             if (!this.animating) return;
             cancelAnimationFrame(this.animating);
 
-            $('#'+ constants.CONTAINER)[0].removeChild(this.canvas);
+            $('#' + constants.CONTAINER)[0].removeChild(this.canvas);
             this.renderer.dispose();
             this.skybox.geometry.dispose();
             this.skybox.material.dispose();
-            for (var roomID in this.roomTextures) {
-                if (Array.isArray(this.roomTextures[roomID])) {
-                    for (var atlasTexture of this.roomTextures[roomID]) {
-                        atlasTexture.dispose();
-                    }
-                } else {
-                    this.roomTextures[roomID].dispose();
-                }
-            }
-            this.roomTextures = {};
 
             this.disposeHotspots();
             //this.disposeHUD();
@@ -966,6 +960,24 @@
                 $('body').css({ 'overflow': '' });
                 this.isFullscreen = false;
             }
+
+            this.softDisposed = true;
+        },
+
+        dispose: function () {
+            if (!this.animating) return;
+            this.softDispose();
+
+            for (var roomID in this.roomTextures) {
+                if (Array.isArray(this.roomTextures[roomID])) {
+                    for (var atlasTexture of this.roomTextures[roomID]) {
+                        atlasTexture.dispose();
+                    }
+                } else {
+                    this.roomTextures[roomID].dispose();
+                }
+            }
+            this.roomTextures = {};
             this.disposed = true;
         },
 
