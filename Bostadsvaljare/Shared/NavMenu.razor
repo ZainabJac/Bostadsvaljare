@@ -20,22 +20,16 @@
 
 
     <span style="float: right;margin-top: 10px; margin-right:30px;">
-        <SfButton CssClass="e-flat" IconCss="e-icons e-search" OnClick="@ToggleFullscreen"></SfButton>
+        <SfButton ID="bv-fullscreen-btn" CssClass="e-flat" IconCss="e-icons e-search"></SfButton>
     </span>
 </div>
 
 
 @code {
-    private bool Fullscreen { get; set; } = false;
-
-    public async Task ToggleFullscreen()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Fullscreen = !Fullscreen;
-
-        if (Fullscreen)
-            await JSRuntime.InvokeVoidAsync("util.openFullscreen");
-        else
-            await JSRuntime.InvokeVoidAsync("util.closeFullscreen");
+        if (firstRender)
+            await JSRuntime.InvokeVoidAsync("bv.initialize");
     }
 
     private async void MenuOnClick(MouseEventArgs ev)
