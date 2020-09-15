@@ -230,17 +230,14 @@
     {
         if (isChecked == false)
         {
-            MoveIcon = "position: absolute; left:98%; top: 15px;";
+            MoveIcon = "position: absolute; left: 98%; top: 15px;";
             minimaphide = "display:none;";
-          
-
         }
         else
         {
             MoveIcon = "position: absolute; left: 78%; top: 15px;";
             minimaphide = "display:initial;";
         }
-
     }
 
     private void OnLoadImg(ProgressEventArgs ev)
@@ -282,13 +279,13 @@
 
     private void OnClickHotspot(int roomID)
     {
-        ChangeImage(roomID);
+        ChangeRoom(roomID);
     }
 
     private async void OnClickGalleryImg(MouseEventArgs ev)
     {
         int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-        ChangeImage(ind);
+        ChangeRoom(ind);
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
@@ -303,20 +300,20 @@
         base.StateHasChanged();
     }
 
-    private async void ChangeImage(int ind)
+    private async void ChangeRoom(int ind)
     {
         Data.ImageType prevType = SelectedType;
         SelectedImage = HouseData.Images[ind];
         SelectedType = SelectedImage.Type;
 
-        if (prevType == Bostadsvaljare.Data.ImageType.Panorama
-        && SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
+        if (prevType == Bostadsvaljare.Data.ImageType.Panorama &&
+            SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
             await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
 
         if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
         else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link); //TODO: start in a specific room
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link, SelectedImage.Room);
 
         base.StateHasChanged();
     }

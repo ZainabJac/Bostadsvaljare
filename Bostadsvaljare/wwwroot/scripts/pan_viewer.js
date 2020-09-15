@@ -62,7 +62,7 @@
         latestPointerProjection: null,
         listeners: {},
 
-        start: async function (aptID, coverWindow) {
+        start: async function (aptID, roomID, coverWindow) {
             this.aptData = window.apartments[aptID];
             if (coverWindow === undefined)
                 coverWindow = false;
@@ -80,7 +80,7 @@
                     this.roomTextures[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
             }
 
-            this.changeRoom(this.aptData.entry);
+            this.changeRoom(roomID || this.aptData.entry);
             await util.delay(150);
             this.onResize();
             this.animate();
