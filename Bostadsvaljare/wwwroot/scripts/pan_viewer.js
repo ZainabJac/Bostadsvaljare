@@ -50,7 +50,7 @@
         isFullscreen: false,
         isShowingMeasurements: false,
         canvasWidth: 0, canvasHeight: 0,
-        startingWidth: 0, startingHeight: 0,
+        /*startingWidth: 0, startingHeight: 0,*/
         sizeAlt: 1,
         /*mapSprite: null,*/ currentRoom: null,
         raycaster: new THREE.Raycaster(),
@@ -62,14 +62,13 @@
         latestPointerProjection: null,
         listeners: {},
 
-        start: function (aptID, coverWindow) {
+        start: async function (aptID, coverWindow) {
             this.aptData = window.apartments[aptID];
             if (coverWindow === undefined)
-                coverWindow = true;
+                coverWindow = false;
             this.options.canvas.cover_window = coverWindow;
             this.init();
             this.reset();
-            this.onResize();
 
             // Preload images to avoid loading them each time when changing rooms
             this.roomTextures = {};
@@ -82,6 +81,8 @@
             }
 
             this.changeRoom(this.aptData.entry);
+            await util.delay(100);
+            this.onResize();
             this.animate();
         },
 
@@ -121,8 +122,8 @@
             container.appendChild(this.canvas);
 
             var containerDims = this.getContainerDimensions();
-            this.startingWidth = this.canvasWidth = containerDims.width;
-            this.startingHeight = this.canvasHeight = containerDims.height;
+            /*this.startingWidth = */this.canvasWidth = containerDims.width;
+            /*this.startingHeight = */this.canvasHeight = containerDims.height;
             this.sizeAlt = this.getSizeAlt();
 
             this.initUI();
@@ -174,7 +175,7 @@
             this.listeners.touchstart = function (e) { self.onTouchStart(e); };
             this.listeners.touchend = function (e) { self.onTouchEnd(e); };
             this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
-            this.listeners.resize = function (e) { self.onResize(e); };
+            this.listeners.resize = function () { self.onResize(); };
 
             // Adding event listeners
             document.addEventListener('mouseover', this.listeners.mouseover, false);
@@ -492,8 +493,8 @@
 
         getContainerDimensions: function () {
             return {
-                width: $('#'+constants.CONTAINER).width(),
-                height: $('#'+constants.CONTAINER).width() * this.options.canvas.height_difference,
+                width: $('#'+ constants.CONTAINER).width(),
+                height: $('#'+ constants.CONTAINER).width() * this.options.canvas.height_difference,
             }
         },
 
@@ -505,9 +506,9 @@
         },
 
         getMargin: function () {
-            var l = $('#'+constants.CONTAINER).offset().left,
-                r = $(window).width() - $('#'+constants.CONTAINER).width() - l,
-                t = $('#'+constants.CONTAINER).offset().top,
+            var l = $('#'+ constants.CONTAINER).offset().left,
+                r = $(window).width() - $('#'+ constants.CONTAINER).width() - l,
+                t = $('#'+ constants.CONTAINER).offset().top,
                 b = 0; //TODO: get correct margin-bottom
             return {left: l, right: r, top: t, bottom: b, width: l+r, height: t+b};
         },
@@ -590,14 +591,15 @@
             this.scale.set(imgWidth, imgHeight, 1);
         },*/
 
-        onResize: async function (event) {
+        onResize: /*async */function (newWidth, newHeight) {
             // Wait some time to make sure that fullscreenchange event has taken its time,
             // should it also have triggered at the same time.
-            await util.delay(100);
-            if (this.isFullscreen) return;
+            /*await util.delay(100);
+            if (this.isFullscreen) return;*/
 
             var dims = this.getContainerDimensions();
-            var newWidth = dims.width, newHeight = dims.height;
+            if (!newWidth) newWidth = dims.width
+            if (!newHeight) newHeight = dims.height;
 
             if (this.options.canvas.cover_window) {
                 var margin = this.getMargin(),
@@ -624,14 +626,18 @@
 
         onFullscreenChange: function (event) {
             // Ignore if this event triggered outside of here
-            if (!this.pressedFullscreenButton)
+            if (!this.pressedFullscreenButton) {
+                this.onResize();
                 return;
+            }
+            var newWidth, newHeight;
 
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
                 //this.resetHUD($(window).width(), $(window).height());
-                this.resetUI($(window).width(), $(window).height());
-                this.resetCamera($(window).width(), $(window).height());
+                //this.resetUI($(window).width(), $(window).height());
+                //this.resetCamera($(window).width(), $(window).height());
+                newWidth = $(window).width(), newHeight = $(window).height();
 
                 // TODO: Change color and background when changing image too
                 //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -645,8 +651,9 @@
                 $('body').css({ 'overflow': 'hidden' });
             } else {
                 //this.resetHUD(this.canvasWidth, this.canvasHeight);
-                this.resetUI(this.canvasWidth, this.canvasHeight);
-                this.resetCamera(this.canvasWidth, this.canvasHeight);
+                //this.resetUI(this.canvasWidth, this.canvasHeight);
+                //this.resetCamera(this.canvasWidth, this.canvasHeight);
+                //newWidth = this.canvasWidth, newHeight = this.canvasHeight;
 
                 //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
@@ -657,6 +664,7 @@
                 $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': '' });
             }
+            this.onResize(newWidth, newHeight);
             this.pressedFullscreenButton = false;
         },
 
