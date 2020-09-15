@@ -72,7 +72,7 @@
             this.reset();
 
             this.changeRoom(roomID || this.aptData.entry);
-            await util.delay(500);
+            await util.delay(5000);
             this.onResize();
             this.animate();
         },
