@@ -16,7 +16,7 @@
         }
     },
     canvas: {
-        cover_window: true,
+        cover_window: false,
         height_difference: 0.75
     },
     hud: {

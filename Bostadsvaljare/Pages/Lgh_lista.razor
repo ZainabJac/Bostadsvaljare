@@ -5,6 +5,7 @@
 @using BlazorPro.Spinkit
 
 @implements IDisposable
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 
@@ -18,7 +19,7 @@
     </LoadingTemplate>
     <ContentTemplate>
 
-        <div class="line-5">
+        <div class="line-6">
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
@@ -67,23 +68,19 @@
                                 <div>
                                     @if (house.Status == "sold")
                                     {
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20090215162203%21Location_dot_dark_red.svg"
-                                             height="25"
-                                             width="25" />
+                                        <img src="/IMG/icons/circlered.png"/>
                                         <span>Såld</span>
                                     }
                                     @if (house.Status == "booked")
                                     {
-                                        <img src=" https://upload.wikimedia.org/wikipedia/commons/9/91/Location_dot_orange.svg"
-                                             height="25"
-                                             width="25" />
+                                        <img src="/IMG/icons/circleOrange.png"
+                                            />
                                         <span>Reserverad</span>
                                     }
                                     @if (house.Status == "available")
                                     {
-                                        <img src=" https://upload.wikimedia.org/wikipedia/commons/0/0e/Ski_trail_rating_symbol-green_circle.svg"
-                                             height="25"
-                                             width="25" />
+                                        <img src="/IMG/icons/CircleGreen.png"
+                                             />
                                         <span>Ledig</span>
                                     }
                                 </div>
@@ -383,11 +380,16 @@
         }
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
         if (!firstRenderDone)
             return;
 
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("grid_responsive.dispose");
     }

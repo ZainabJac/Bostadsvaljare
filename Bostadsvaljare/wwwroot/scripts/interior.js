@@ -1,20 +1,32 @@
 ﻿(function () {
     window.interior = {
-        onResize: function (event) {
+        listeners: {},
+
+        addResizeListener: function () {
+            var self = this;
+
+            this.listeners.resize = function (e) { self._onResize(e); };
+            window.addEventListener('resize', this.listeners.resize, false);
+        },
+
+        dispose: function () {
+            window.removeEventListener('resize', this.listeners.resize, false);
+        },
+
+        resize: function () {
+            this._onResize();
+        },
+
+        _onResize: function (event) {
             if ($(window).width() <= 927) {
-                var height = parseInt($('.line-4-planritning').height());
+                var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
             } else {
                 $('#gallery').height('100%');
             }
-        },
 
-        addResizeListener: function () {
-            window.addEventListener('resize', this.onResize, false);
-        },
-
-        dispose: function () {
-            window.removeEventListener('resize', this.onResize, false);
+            var height = Math.max($('.fs-border').height() + 97, $(window).height());
+            $('.fs-bg').height(height);
         },
     };
 })();

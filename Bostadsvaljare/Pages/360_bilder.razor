@@ -1,6 +1,7 @@
 ﻿@page "/360_bilder"
 
-@implements IDisposable
+@implements IDisposable 
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
 
@@ -8,14 +9,26 @@
 
 
 @code {
-    protected override async void OnInitialized() {
-        base.OnInitialized();
-        await JSRuntime.InvokeVoidAsync("pan_viewer.init");
-        await Task.Delay(100);
-        await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
+    private bool firstRenderDone = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", "apt_data");
+            firstRenderDone = true;
+        }
     }
 
-    public async void Dispose() {
+    public void Dispose()
+    {
+        if (!firstRenderDone)
+            return;
+
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync() {
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
 }

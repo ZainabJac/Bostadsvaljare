@@ -1,5 +1,10 @@
 ﻿const constants = {
     CONTAINER: 'pan_container',
+    UI: {
+        MAIN: 'pan_ui',
+        FULLSCREEN: 'pan_fullscreen-btn',
+    },
+    PAN_ELEMENT: 'pan_el',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
     MAP_ICON: 'map_icon',
@@ -23,78 +28,57 @@
 (function () {
     window.pan_viewer = {
         options: { ...panOptions }, aptData: {},
-        roomImages: {},
+        roomTextures: {},
         renderer: null, skybox: null,
-        camera: null, scene: null, canvas: null,
-        cameraHUD: null, sceneHUD: null, canvasHUD: null,
+        camera: null, scene: null, canvas: null, ui: null,
+        /*cameraHUD: null, sceneHUD: null, canvasHUD: null,*/
         clock: new THREE.Clock(),
-        initiated: null, animating: null,
+        pressedFullscreenButton: false,
+        disposed: true, softDisposed: true, animating: null,
         isUserInteracting: false,
         clientXStart: 0, clientYStart: 0,
         lon: 180, lonLast: 0, lonStart: 0,
         lat: 0, LatLast: 0, latStart: 0,
         phi: 0, theta: 0,
+        velCam: new THREE.Vector2(),
         autoRotate: true,
         autoRotateTimeout: null,
         lonAcc: new Accumulator(20, true),
         latAcc: new Accumulator(20, true),
-        velCam: new THREE.Vector2(),
         decRotationRate: 0,
         isMouseover: false,
         isFullscreen: false,
         isShowingMeasurements: false,
         canvasWidth: 0, canvasHeight: 0,
-        startingWidth: 0, startingHeight: 0,
-        sizeAlt: 1,
-        mapSprite: null, currentRoom: null,
+        /*startingWidth: 0, startingHeight: 0,*/
+        lastWidth: 0, lastHeight: 0,
+        /*sizeAlt: 1,*/
+        /*mapSprite: null,*/ currentRoom: null,
         raycaster: new THREE.Raycaster(),
         pointerVector: new THREE.Vector2(),
         hotspotGroup: new THREE.Group(),
-        HUDGroup: new THREE.Group(),
-        holdingHUDEl: null, holdingHotspot: null,
+        /*HUDGroup: new THREE.Group(),
+        holdingHUDEl: null,*/ holdingUI: null, holdingHotspot: null,
         hoveringObj: null,
         latestPointerProjection: null,
-        tooltipDisplayTimeout: null,
         listeners: {},
 
-        start: function (aptID, coverWindow) {
-            this.aptData = window.apartments[aptID];
+        start: /*async */function (aptID, roomID, coverWindow) {
+            //this.aptData = window.apartments[aptID];
             if (coverWindow === undefined)
-                coverWindow = true;
+                coverWindow = false;
             this.options.canvas.cover_window = coverWindow;
+            if (this.softDisposed)
+                this.init(aptID);
             this.reset();
+
+            this.changeRoom(roomID || this.aptData.entry);
+            //await util.delay(100);
             this.onResize();
-
-            // Preload images to avoid loading them each time when changing rooms
-            if (this.initiated !== aptID) {
-                this.roomImages = {};
-                for (var room in this.aptData.rooms) {
-                    var panorama = this.aptData.rooms[room].panorama;
-                    if (panorama.type === constants.PAN_TYPE.SPHERE)
-                        this.roomImages[room] = new THREE.TextureLoader().load(panorama.imageURL);
-                    else if (panorama.type === constants.PAN_TYPE.CUBE)
-                        this.roomImages[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
-                }
-
-                this.changeRoom(this.aptData.entry);
-                this.initiated = aptID;
-            }
-
             this.animate();
         },
 
-        reset: async function () {
-            var self = this;
-
-            var container = $('#' + constants.CONTAINER)[0];
-            container.oncontextmenu = function () { return false; };
-            container.appendChild(this.canvas);
-
-            var containerDims = this.getContainerDimensions();
-            this.startingWidth = this.canvasWidth = containerDims.width;
-            this.startingHeight = this.canvasHeight = containerDims.height;
-            this.sizeAlt = this.getSizeAlt();
-
+        reset: function () {
             // Reset some camera values
             this.clientXStart = 0, this.clientYStart = 0,
             this.lon = 180, this.lonLast = 0, this.lonStart = 0,
@@ -103,43 +87,25 @@
             this.velCam = new THREE.Vector2();
             this.autoRotate = true;
             this.autoRotateTimeout = undefined;
-
-            this.initHUD();
-
-            // Map setup
-            var transform = this.getTransform(this.options.map.transform);
-            transform.pos.z = -10;
-            this.mapSprite = this.createHUDElement(this.aptData.map,
-                constants.MAP,
-                transform,
-                { onloadCB: function() { self.initMap(); },
-                  onresizeCB: self.hudMapResize });
-
-            while (!this.mapSprite.material.map.image)
-                await util.delay(20);
-
-            // Hide map, which is always shown (for some reason)
-            this.hideMap();
-
-            // Adding event listeners
-            document.addEventListener('mouseover', this.listeners.mouseover, false);
-            document.addEventListener('mouseout', this.listeners.mouseout, false);
-            document.addEventListener('mousemove', this.listeners.mousemove, false);
-            document.addEventListener('mousedown', this.listeners.mousedown, false);
-            document.addEventListener('mouseup', this.listeners.mouseup, false);
-
-            document.addEventListener('touchmove', this.listeners.touchmove, false);
-            document.addEventListener('touchstart', this.listeners.touchstart, false);
-            document.addEventListener('touchend', this.listeners.touchend, false);
-
-            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
-            window.addEventListener('resize', this.listeners.resize, false);
+            this.decRotationRate = 0;
         },
 
-        init: function () {
-            if (this.initiated) return;
+        init: async function (aptID) {
+            while (!this.disposed && !this.softDisposed) await util.delay(50);
 
             var self = this;
+
+            if ($.isEmptyObject(this.roomTextures)) {
+                this.aptData = window.apartments[aptID];
+                // Preload images to avoid loading them each time when changing rooms
+                for (var room in this.aptData.rooms) {
+                    var panorama = this.aptData.rooms[room].panorama;
+                    if (panorama.type === constants.PAN_TYPE.SPHERE)
+                        this.roomTextures[room] = new THREE.TextureLoader().load(panorama.imageURL);
+                    else if (panorama.type === constants.PAN_TYPE.CUBE)
+                        this.roomTextures[room] = this.getTexturesFromAtlasFile(panorama.imageURL, 6);
+                }
+            }
 
             var aspect = 100 / (100*this.options.canvas.height_difference);
             this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
@@ -150,12 +116,62 @@
             this.scene.add(this.skybox);
 
             this.canvas = document.createElement("canvas");
+            this.ui = $('#'+ constants.UI.MAIN)[0];
             this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
             this.renderer.autoClear = false;
             this.renderer.setPixelRatio(window.devicePixelRatio);
 
+            var container = $('#'+ constants.CONTAINER)[0];
+            container.oncontextmenu = function () { return false; };
+            container.appendChild(this.canvas);
+
+            var containerDims = this.getContainerDimensions();
+            /*this.startingWidth = */this.lastWidth = this.canvasWidth = containerDims.width;
+            /*this.startingHeight = */this.lastHeight = this.canvasHeight = containerDims.height;
+            /*this.sizeAlt = this.getSizeAlt();*/
+
+            this.initUI();
+            //this.initHUD();
+
+            // Map setup
+            //var transform = this.getTransform(this.options.map.transform);
+            //transform.pos.z = -10;
+            //this.mapSprite = this.createHUDElement(this.aptData.map,
+            //    constants.MAP,
+            //    transform,
+            //    { onloadCB: function() { self.initMap(); },
+            //      onresizeCB: self.hudMapResize });
+
+            //// Map button setup
+            //// TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
+            ////       Need to make sure the background is clickable as well (to bring up the map)
+            //var mapData = this.options.map_icon;
+            //var transform = this.getTransform(mapData.transform);
+            //this.createHUDElement(mapData,
+            //    constants.MAP_ICON,
+            //    transform,
+            //    { onclickCB: function() { self.showMap(); } });
+
+            //// Fullscreen button setup
+            //var fullscreenData = this.options.fullscreen_icon;
+            //var transform = this.getTransform(fullscreenData.transform);
+            //this.createHUDElement(fullscreenData,
+            //    constants.FULLSCREEN_ICON,
+            //    transform,
+            //    { onclickCB: function() { self.toggleFullscreen(); } });
+
+            // Measurements button setup
+            // TODO: Be able to show apartment measurements on walls, etc.
+            // TODO: Make a different icon
+            /*var measurementsData = this.options.measurements_icon;
+            var transform = this.getTransform(measurementsData.transform);
+            this.createHUDElement(measurementsData,
+                constants.MEASUREMENTS_ICON,
+                transform,
+                { onclickCB: function() { self.toggleMeasurements(); } });*/
+
             this.listeners.mouseover = function (e) { self.onMouseover(e); };
-            this.listeners.mouseout = function (e) { self.onMouseout(e); };
+            //this.listeners.mouseout = function (e) { self.onMouseout(e); };
             this.listeners.mousemove = function (e) { self.onMouseMove(e); };
             this.listeners.mousedown = function (e) { self.onMouseDown(e); };
             this.listeners.mouseup = function (e) { self.onMouseUp(e); };
@@ -163,20 +179,39 @@
             this.listeners.touchstart = function (e) { self.onTouchStart(e); };
             this.listeners.touchend = function (e) { self.onTouchEnd(e); };
             this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
-            this.listeners.resize = function (e) { self.onResize(e); };
+            //this.listeners.resize = function () { self.onResize(); };
 
-            this.initiated = true;
+            // Adding event listeners
+            document.addEventListener('mouseover', this.listeners.mouseover, false);
+            //document.addEventListener('mouseout', this.listeners.mouseout, false);
+            document.addEventListener('mousemove', this.listeners.mousemove, false);
+            document.addEventListener('mousedown', this.listeners.mousedown, false);
+            document.addEventListener('mouseup', this.listeners.mouseup, false);
+
+            document.addEventListener('touchmove', this.listeners.touchmove, false);
+            document.addEventListener('touchstart', this.listeners.touchstart, false);
+            document.addEventListener('touchend', this.listeners.touchend, false);
+
+            document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
+            //window.addEventListener('resize', this.listeners.resize, false);
+
+            this.softDisposed = false;
+            this.disposed = false;
         },
 
-        initHUD: function () {
+        initUI: function () {
             var self = this;
+            $('#'+ constants.UI.FULLSCREEN).on('click', function(e) { self.toggleFullscreen(); });
+        },
+
+        /*initHUD: function () {
             var halfWidth = this.canvasWidth * 0.5,
                 halfHeight = this.canvasHeight * 0.5;
 
             // We will use 2D canvas element to render our HUD
             this.canvasHUD = document.createElement("canvas");
 
-            // Again, set dimensions to fit the screen
+            // Again, set dimensions to fit
             this.canvasHUD.width = this.canvasWidth;
             this.canvasHUD.height = this.canvasHeight;
 
@@ -199,34 +234,6 @@
             var plane = new THREE.Mesh(planeGeometry, materialHUD);
             this.sceneHUD.add(plane);
             this.sceneHUD.add(this.HUDGroup);
-
-            // Map button setup
-            // TODO: Make background its own 9-grid image and scale it up to fit map image when clicked
-            //       Need to make sure the background is clickable as well (to bring up the map)
-            var mapData = this.options.map_icon;
-            var transform = this.getTransform(mapData.transform);
-            this.createHUDElement(mapData,
-                constants.MAP_ICON,
-                transform,
-                { onclickCB: function() { self.showMap(); } });
-
-            // Fullscreen button setup
-            var fullscreenData = this.options.fullscreen_icon;
-            var transform = this.getTransform(fullscreenData.transform);
-            this.createHUDElement(fullscreenData,
-                constants.FULLSCREEN_ICON,
-                transform,
-                { onclickCB: function() { self.toggleFullscreen(); } });
-
-            // Measurements button setup
-            // TODO: Be able to show apartment measurements on walls, etc.
-            // TODO: Make a different icon
-            /*var measurementsData = this.options.measurements_icon;
-            var transform = this.getTransform(measurementsData.transform);
-            this.createHUDElement(measurementsData,
-                constants.MEASUREMENTS_ICON,
-                transform,
-                { onclickCB: function() { self.toggleMeasurements(); } });*/
         },
 
         initMap: function () {
@@ -346,11 +353,15 @@
             sprite.position.set(0, 0, -1);
 
             return sprite;
-        },
+        },*/
 
         addHotspots: function () {
+            var connectingRooms = this.aptData.rooms[this.currentRoom].connections;
+            if (!connectingRooms)
+                return;
+
             var self = this;
-            this.aptData.rooms[this.currentRoom].connections.forEach(function (connectingRoom) {
+            connectingRooms.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
                     self.options.hotspot.transform.size.width,
@@ -392,14 +403,14 @@
                     geometry.scale(-1, 1, 1);
 
                     material = new THREE.MeshBasicMaterial({
-                        map: this.roomImages[roomId]
+                        map: this.roomTextures[roomId]
                     });
                     break;
                 case constants.PAN_TYPE.CUBE:
                     geometry = new THREE.BoxBufferGeometry(1, 1, 1);
                     geometry.scale(1, 1, -1);
 
-                    var textures = this.roomImages[roomId];
+                    var textures = this.roomTextures[roomId];
                     material = [];
                     for (var i=0; i < 6; i+=1) {
                         material.push(new THREE.MeshBasicMaterial({ map: textures[i] }));
@@ -491,22 +502,22 @@
 
         getContainerDimensions: function () {
             return {
-                width: $('#'+constants.CONTAINER).width(),
-                height: $('#'+constants.CONTAINER).width() * this.options.canvas.height_difference,
+                width: $('#'+ constants.CONTAINER).width(),
+                height: $('#'+ constants.CONTAINER).width() * this.options.canvas.height_difference,
             }
         },
 
-        getSizeAlt: function () {
+        /*getSizeAlt: function () {
             var sizeAlt = 1;
             if ($(window).width() <= this.options.hud.mobile.width_at_most)
                 sizeAlt = this.options.hud.mobile.size_alt;
             return sizeAlt;
-        },
+        },*/
 
         getMargin: function () {
-            var l = $('#'+constants.CONTAINER).offset().left,
-                r = $(window).width() - $('#'+constants.CONTAINER).width() - l,
-                t = $('#'+constants.CONTAINER).offset().top,
+            var l = $('#'+ constants.CONTAINER).offset().left,
+                r = $(window).width() - $('#'+ constants.CONTAINER).width() - l,
+                t = $('#'+ constants.CONTAINER).offset().top,
                 b = 0; //TODO: get correct margin-bottom
             return {left: l, right: r, top: t, bottom: b, width: l+r, height: t+b};
         },
@@ -533,12 +544,19 @@
         resetCamera: function (width, height) {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
-            this.cameraHUD.aspect = width / height;
-            this.cameraHUD.updateProjectionMatrix();
+            //this.cameraHUD.aspect = width / height;
+            //this.cameraHUD.updateProjectionMatrix();
             this.renderer.setSize(width, height);
         },
 
-        resetHUD: function (width, height) {
+        resetUI: function (width, height) {
+            $('#'+ constants.UI.MAIN).css({
+                width: width,
+                height: height,
+            });
+        },
+
+        /*resetHUD: function (width, height) {
             for (var hudEl of this.HUDGroup.children) {
                 hudEl.resize(width, height);
             }
@@ -557,7 +575,10 @@
             this.scale.y = size.y * diffHeight * pan.sizeAlt;
         },
 
-        hudMapResize: function (width, height) {
+        hudMapResize: async function (width, height) {
+            while (!this.mapSprite.material.map.image)
+                await util.delay(20);
+
             var pan = window.pan_viewer,
                 aspect = height / width,
                 diffHeight = pan.startingHeight / height,
@@ -577,16 +598,17 @@
                 imgWidth = mapImg.width * (imgHeight / mapImg.height) * diffAspect;
 
             this.scale.set(imgWidth, imgHeight, 1);
-        },
+        },*/
 
-        onResize: async function (event) {
+        onResize: /*async */function (newWidth, newHeight) {
             // Wait some time to make sure that fullscreenchange event has taken its time,
             // should it also have triggered at the same time.
-            await util.delay(100);
-            if (this.isFullscreen) return;
+            /*await util.delay(100);
+            if (this.isFullscreen) return;*/
 
             var dims = this.getContainerDimensions();
-            var newWidth = dims.width, newHeight = dims.height;
+            if (!newWidth) newWidth = dims.width;
+            if (!newHeight) newHeight = dims.height;
 
             if (this.options.canvas.cover_window) {
                 var margin = this.getMargin(),
@@ -601,8 +623,9 @@
                 }
             }
 
-            $("#"+ constants.CONTAINER +" canvas").outerHeight(newHeight);
-            this.resetHUD(newWidth, newHeight);
+            $('#'+ constants.CONTAINER +' canvas').height(newHeight);
+            //this.resetHUD(newWidth, newHeight);
+            this.resetUI(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
             this.canvas.style.width = "";
@@ -611,43 +634,58 @@
         },
 
         onFullscreenChange: function (event) {
+            // Ignore if this event triggered outside of here
+            if (!this.pressedFullscreenButton) {
+                this.onResize();
+                return;
+            }
+            var newWidth, newHeight;
+
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                this.resetHUD($(window).width(), $(window).height());
-                this.resetCamera($(window).width(), $(window).height());
+                newWidth = $(window).width(),
+                newHeight = $(window).height();
 
                 // TODO: Change color and background when changing image too
-                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.off_icon.image);
-                fsMat.color.set(this.options.fullscreen_icon.off_icon.color
-                             || this.options.fullscreen_icon.color);
-                fsMat.needsUpdate = true;
+                //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.off_icon.image);
+                //fsMat.color.set(this.options.fullscreen_icon.off_icon.color
+                //             || this.options.fullscreen_icon.color);
+                //fsMat.needsUpdate = true;
 
-                $('#'+constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('#'+ constants.CONTAINER).addClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).addClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': 'hidden' });
             } else {
-                this.resetHUD(this.canvasWidth, this.canvasHeight);
-                this.resetCamera(this.canvasWidth, this.canvasHeight);
+                //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
+                //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
+                //fsMat.color.set(this.options.fullscreen_icon.color);
+                //fsMat.needsUpdate = true;
 
-                var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
-                fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
-                fsMat.color.set(this.options.fullscreen_icon.color);
-                fsMat.needsUpdate = true;
-
-                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('#'+ constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': '' });
             }
+            this.onResize(newWidth, newHeight);
+            this.pressedFullscreenButton = false;
         },
 
         onMouseover: function (event) {
-            if (event.target === this.canvas) {
+            if (event.target.id.startsWith('pan_')) {
                 this.isMouseover = true;
+                if (event.target.parentElement === this.ui)
+                    this.holdingUI = event.target;
+                else
+                    this.holdingUI = null;
+            } else {
+                this.isMouseover = false;
             }
         },
 
-        onMouseout: function (event) {
-            this.isMouseover = false;
-        },
+        /*onMouseout: function (event) {
+            if (!event.target.id.startsWith('pan_'))
+                this.isMouseover = false;
+        },*/
 
         onMouseMove: function (event) {
             if (this.isUserInteracting) {
@@ -663,9 +701,9 @@
 
             // Raycast the hotspots for the tooltip system
             this.hoveringObj = null;
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
-            if (!objHUD) {
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            if (!this.holdingUI) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
                 if (intersects.length > 0) {
@@ -679,7 +717,7 @@
                 this.hideTooltip();
 
             // Change mouse cursor to 'pointer' when hovering over a clickable element
-            if (this.hoveringObj || (objHUD && objHUD.onclick))
+            if (this.hoveringObj/* || (objHUD && objHUD.onclick)*/)
                 $('html,body').css('cursor', 'pointer');
             else
                 $('html,body').css('cursor', 'default');
@@ -689,14 +727,14 @@
             if (!this.isMouseover) return;
 
             // Raycast the HUD elements
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
             this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.holdingHUDEl) {
+            if (!this.holdingUI) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -709,13 +747,14 @@
         },
 
         onMouseUp: function (event) {
-            if (this.holdingHUDEl) {
+            /*if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
                 if (obj && obj === this.holdingHUDEl && obj.onclick) {
                     obj.onclick();
                 }
-            } else if (this.holdingHotspot) {
+            }
+            else*/ if (this.holdingHotspot && !this.holdingUI) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
                 if (obj && obj === this.holdingHotspot) {
@@ -759,14 +798,14 @@
             this.pointerVector.y = -(touchPos.y / this.canvas.offsetHeight) * 2 + 1;
 
             // Raycast the HUD elements
-            this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
-            this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
+            //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
+            //this.holdingHUDEl = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
 
             // Raycast the hotspot objects
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
             this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.holdingHUDEl) {
+            if (!this.holdingUI) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -779,13 +818,15 @@
         },
 
         onTouchEnd: function (event) {
-            if (this.holdingHUDEl) {
+            /*if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
                 if (obj && obj === this.holdingHUDEl && obj.onclick)
                     obj.onclick();
+            if (this.holdingUI) {
+                this.holdingUI.onclick();
             }
-            else if (this.holdingHotspot) {
+            else*/ if (this.holdingHotspot && !this.holdingUI) {
                 if (this.holdingHotspot === this.hoveringObj) {
                     this.changeRoom(this.holdingHotspot.name);
                     this.hoveringObj = undefined;
@@ -826,6 +867,13 @@
             var self = this;
             var delta = this.clock.getDelta();
             var autoRotateOpts = this.options.camera.auto_rotate;
+
+            var dims = this.getContainerDimensions();
+            if (!this.isFullscreen && (dims.width !== this.lastWidth || dims.height !== this.lastHeight)) {
+                this.onResize(dims.width, dims.height);
+                this.lastWidth = dims.width;
+                this.lastHeight = dims.height;
+            }
 
             if (this.isUserInteracting) {
                 this.lonAcc.add(this.lon - this.lonLast);
@@ -882,17 +930,28 @@
             this.camera.lookAt(this.camera.target);
 
             this.renderer.render(this.scene, this.camera);
-            this.renderer.render(this.sceneHUD, this.cameraHUD);
+            //this.renderer.render(this.sceneHUD, this.cameraHUD);
         },
 
-        dispose: function () {
+        softDispose: function () {
             if (!this.animating) return;
-
             cancelAnimationFrame(this.animating);
-            this.HUDGroup.children.length = 0;
+
+            $('#' + constants.CONTAINER)[0].removeChild(this.canvas);
+            this.renderer.dispose();
+            this.skybox.geometry.dispose();
+            this.skybox.material.dispose();
+
+            this.disposeHotspots();
+            //this.disposeHUD();
+            this.disposeUI();
+
+            this.renderer = this.scene = this.skybox =
+            this.camera = this.canvas = undefined;
+            this.currentRoom = null;
 
             document.removeEventListener('mouseover', this.listeners.mouseover, false);
-            document.removeEventListener('mouseout', this.listeners.mouseout, false);
+            //document.removeEventListener('mouseout', this.listeners.mouseout, false);
             document.removeEventListener('mousemove', this.listeners.mousemove, false);
             document.removeEventListener('mousedown', this.listeners.mousedown, false);
             document.removeEventListener('mouseup', this.listeners.mouseup, false);
@@ -900,7 +959,56 @@
             document.removeEventListener('touchstart', this.listeners.touchstart, false);
             document.removeEventListener('touchend', this.listeners.touchend, false);
             document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
-            window.removeEventListener('resize', this.listeners.resize, false);
+            //window.removeEventListener('resize', this.listeners.resize, false);
+
+            if (this.isFullscreen) {
+                util.closeFullscreen();
+                $('#'+ constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
+                $('body').css({ 'overflow': '' });
+                this.isFullscreen = false;
+            }
+
+            this.softDisposed = true;
+        },
+
+        dispose: function () {
+            if (!this.animating) return;
+            this.softDispose();
+
+            for (var roomID in this.roomTextures) {
+                if (Array.isArray(this.roomTextures[roomID])) {
+                    for (var atlasTexture of this.roomTextures[roomID]) {
+                        atlasTexture.dispose();
+                    }
+                } else {
+                    this.roomTextures[roomID].dispose();
+                }
+            }
+            this.roomTextures = {};
+            this.disposed = true;
+        },
+
+        /*disposeHUD: function () {
+            for (var hudEl of this.HUDGroup.children) {
+                hudEl.material.map.dispose();
+                hudEl.material.dispose();
+            }
+            this.HUDGroup = new THREE.Group();
+            this.canvasHUD = this.cameraHUD =
+            this.sceneHUD = this.mapSprite = undefined;
+        },*/
+
+        disposeUI: function () {
+            $('#'+ constants.UI.FULLSCREEN).off('click');
+        },
+
+        disposeHotspots: function () {
+            for (var hotspot of this.hotspotGroup.children) {
+                hotspot.material.map.dispose();
+                hotspot.material.dispose();
+            }
+            this.hotspotGroup = new THREE.Group();
         },
 
         showTooltip: function () {
@@ -931,7 +1039,7 @@
             $('#'+ constants.TOOLTIP).hide();
         },
 
-        showMap: function () {
+        /*showMap: function () {
             // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
             var mapIconSprite = this.sceneHUD.getObjectByName(constants.MAP_ICON);
             this.changeOpacity(mapIconSprite, 0);
@@ -949,22 +1057,21 @@
             sprite.children.forEach(function (childSprite) {
                 childSprite.material.opacity = opacity;
             });
-        },
+        },*/
 
         changeRoom: function (roomId) {
-            if (roomId === this.currentRoom) {
+            if (roomId === this.currentRoom)
                 return;
-            }
 
             // Update map hotspot images to show which is the current room
-            if (this.HUDGroup.getObjectByName(this.currentRoom)) {
+            /*if (this.HUDGroup.getObjectByName(this.currentRoom)) {
                 var prevRoomMat = this.HUDGroup.getObjectByName(this.currentRoom).material;
                 var newRoomMat = this.HUDGroup.getObjectByName(roomId).material;
                 prevRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.image);
                 newRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.current.image);
                 prevRoomMat.needsUpdate = true;
                 newRoomMat.needsUpdate = true;
-            }
+            }*/
 
             // Change panorama image
             // TODO: Some sort of transition, fade in and out of black?
@@ -975,7 +1082,7 @@
 
             // Change the hotspots
             this.scene.remove(this.hotspotGroup);
-            this.hotspotGroup = new THREE.Group();
+            this.disposeHotspots();
             this.addHotspots();
 
             this.hideTooltip();
@@ -1009,7 +1116,7 @@
         showMeasurements: function () {
             //TODO: show measurements of walls, windows, doors, etc.
             var material = new THREE.MeshBasicMaterial({
-                map: this.roomImages[this.currentRoom]
+                map: this.roomTextures[this.currentRoom]
             });
             var mesh = new THREE.Mesh(geometry, material);
             this.scene.add(mesh);
@@ -1024,7 +1131,10 @@
         },
 
         toggleFullscreen: function () {
-            if (this.isFullscreen)
+            this.pressedFullscreenButton = true;
+            if (bv.isFullscreen)
+                this.onFullscreenChange();
+            else if (this.isFullscreen)
                 util.closeFullscreen();
             else
                 util.openFullscreen();

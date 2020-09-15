@@ -2,6 +2,7 @@
 @page "/interior/{HouseID}"
 
 @implements IDisposable
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
 @using Syncfusion.Blazor.Grids
@@ -10,7 +11,7 @@
 @using BlazorPro.Spinkit
 
 
-<SpinLoader IsLoading="@(SelectedImage == null)">
+<SpinLoader IsLoading="SelectedImage == null">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -20,27 +21,39 @@
     <ContentTemplate>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <div id="fullscreen-image" class="@(FullscreenImage != null ? "" : "hidden")">
+            <div class="fs-bg" @onclick="OnClickClose">
+                <div class="fs-border" @onclick:stopPropagation="true">
+                    <span class="fs-close" @onclick="OnClickClose"></span>
+                    <img src="@FullscreenImage" style="width: 100%;" @onload="OnLoadFSImg" />
+                </div>
+            </div>
+        </div>
+
         <div class="line-8">
+            <div style="100%"> 
             <!-- Stillbilder -->
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
                 <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
-                        @for (int i = 0; i < Data.Images.Count; i++)
+                        @for (int i = 0; i < HouseData.Images.Count; i++)
                         {
-                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
+                            if (HouseData.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
                             <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                         }
                     </ol>
                     <div class="carousel-inner">
-                        @for (int i = 0; i <Data.Images.Count; i++)
+                        @for (int i = 0; i < HouseData.Images.Count; i++)
                         {
-                            if (Data.Images[i].Type != Bostadsvaljare.Data.ImageType.Image)
+                            var _i = i;
+                            if (HouseData.Images[_i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
-                            <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@Data.Images[i].Source">
+                            <div class="carousel-item @(_i == 0 ? "active" : "")">
+                                <img class="d-block w-100" src="@HouseData.Images[_i].Source" @onload="OnLoadImg" @onclick="(e) => OnClickCarousel(e, HouseData.Images[_i].Source)">
                             </div>
                         }
                     </div>
@@ -54,41 +67,59 @@
                     </a>
                 </div>
             </div>
+            </div>
+
 
             <!-- 360-bilder -->
-            <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")"></div>
+            <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")">
+                <div id="pan_ui" style="position: absolute;">
+                    <span id="pan_fullscreen-btn"></span>
+                </div>
+            </div>
+            <!-- roundme -->
+            <iframe id="roundme-embedded" class="@(SelectedType == Bostadsvaljare.Data.ImageType.Roundme ? "" : "hidden")" width='100%' height='100%' src='@SelectedImage.Link' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen @onload="OnLoadRoundme"></iframe>
 
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
-
-        <div class="line-4-planritning">
-            @*<div id="housing_info" class="@(ShowInfo ? "" : "hidden")"></div>
-        <BSImage src="IMG/Imagemapbild.jpg" alt="Housing image" Class="planritning" />*@
-            
-            <div id="floorplan-main">
-
-
-
-                <img id="floorplan-img" style="width: @ImgWidth;" src="@Data.Floorplans[Floor]" class="center" usemap="#floorplan-im" @onload="OnLoadIM">
-                <map id="floorplan-im" name="floorplan-im">
-                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(1))" coords="994,850,662,848,657,553,939,557,943,596,992,595,993,760,992,810" shape="poly">
-                    <area id="interior2" status="" href="#" @onclick="@(() =>OnClickImgagemap(2))" coords="931,386,470,387,473,175,934,172" shape="poly">
-                    <area id="interior" status="" href="#" @onclick="@(() =>OnClickImgagemap(0))" coords="1369,619,999,610,999,400,1366,394" shape="poly">
-                </map>
-            </div>
-            <div class="btn-group">
-                <button  class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(1))">Plan 1</button>
-                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(0))">Plan 2</button>
-                <button class="BtnInbtngrp" @onclick="@(() =>OnClickImgagemap(2))">Plan 3</button>
-            </div>
+        <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
+        <div class="planritning line-4 pan_el">
+            <SfCard>
+                <CardStacked>
+                    <div class="btn-group">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                        }
+                    </div>
+                    <div id="floorplan-main">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <div id="floorplan-@_i" style="position: relative; @(!FloorsInit[_i] || Floor == _i ? "" : "display: none;") @(FloorsInit[_i] ? "" : "visibility: hidden;")">
+                                <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">
+                                <map id="hotspots-@_i" name="hotspots-@_i">
+                                    @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                                    {
+                                        var _j = j;
+                                        var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
+                                        <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
+                                              coords="@coords.X,@coords.Y,@Radius" shape="circle">
+                                    }
+                                </map>
+                            </div>
+                        }
+                    </div>
+                </CardStacked>
+            </SfCard>
         </div>
 
         <div id="gallery" class="line-4">
-            @for (int i = 0; i < Data.Images.Count; i++)
+            @for (int i = 0; i < HouseData.Images.Count; i++)
             {
                 <span class="line-3">
-                    <BSImage index="@i" src="@Data.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    <BSImage index="@i" src="@HouseData.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg" @onload="OnLoadImg"></BSImage>
                 </span>
             }
         </div>
@@ -100,18 +131,18 @@
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Pris </text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@House.Price</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Boarea</text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@House.Sqm</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
 
                         <div>
                             <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
-                            <text class="card-info-header-right" style="margin-right:6px;">@House.HouseNumber</text>
+                            <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
                         <div>
@@ -128,75 +159,48 @@
                 </SfCard>
             </div>
 
-            <div class="arkitekt">
+            @*<div class="arkitekt">
 
                 <SfCard ID="ArkitektenHarOrdet">
                     <CardStacked>
                         <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-                        <text class="italicfont" style="margin-left:6px;">"@Data.Comment" </text>
+                        <text class="italicfont" style="margin-left:6px;">"@HouseData.Comment" </text>
                     </CardStacked>
                 </SfCard>
 
-            </div>
-        </div>
-
-
-        @*<div class="line-2knapp">
-                <div>
-                    <div> <SfButton> Bofaktablad </SfButton> </div>
-                </div>
-            </div>
-            <div class="line-2knapp">
-                <div>
-                    <SfButton IsPrimary="true"> Anmäl intresse </SfButton>
-                </div>
             </div>*@
+        </div>
 
 
         @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
         @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
 
-
-        @*<SfGrid DataSource="@Orders" AllowFiltering="true" AllowPaging="true">
-                <GridColumns>
-                    <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                    <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150"></GridColumn>
-                    <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
-                </GridColumns>
-            </SfGrid>*@
-
     </ContentTemplate>
 </SpinLoader>
 
 @code {
-
-    public class Order
-    {
-        public int? OrderID { get; set; }
-        public string CustomerID { get; set; }
-        public DateTime? OrderDate { get; set; }
-        public double? Freight { get; set; }
-    }
-
+    public string MoveIcon2 = " position: absolute; left: 52%; top: 12px;";
+    public string MoveIcon = " position: absolute; left: 78%; top: 17px;";
+    public string minimaphide = "Display:initial;";
+    private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
     [Parameter]
     public string HouseID { get; set; }
-    [Parameter]
     public Data.House House { get; set; }
-    [Parameter]
-    public List<Order> Orders { get; set; }
-    [Parameter]
-    public bool ShowInfo { get; set; } = true;
-    [Parameter]
     public Data.HouseType.Image SelectedImage { get; set; }
-    [Parameter]
     public Data.ImageType SelectedType { get; set; }
+    public bool ShowInfo { get; set; } = true;
 
-    private Data.HouseType Data { get; set; }
+    private Data.HouseType HouseData { get; set; }
+    private string FullscreenImage { get; set; } = null;
+    private bool[] FloorsInit { get; set; }
     private int Floor { get; set; } = 0;
-    private string ImgWidth { get; set; } = "100%";
+    private string ImgWidth { get; set; } = "99.99%";
+    private int Radius { get; set; } = 15;
+    private int LoadingImages { get; set; } = 0;
+    private bool InitVR { get; set; } = false;
+    private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
 
 
@@ -204,91 +208,146 @@
     {
         base.OnInitialized();
 
-        House = Bostadsvaljare.Data.House.Get(int.Parse(HouseID));
+        House = Data.House.Get(int.Parse(HouseID));
         string houseType = House.Housetype;
-        Data = Bostadsvaljare.Data.HouseType.GetData(houseType);
-        SelectedImage = Data.Images[0];
+        HouseData = Data.HouseType.GetData(houseType);
 
-        Orders = Enumerable.Range(1, 75).Select(x => new Order()
-        {
-            OrderID = 1000 + x,
-            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
-            Freight = 2.1 * x,
-            OrderDate = (new DateTime[] { new DateTime(2010, 5, 1), new DateTime(2010, 5, 2), new DateTime(2010, 5, 3), })[new Random().Next(3)],
-        }).ToList();
+        LoadingImages += HouseData.Images.Count;
+        LoadingImages += HouseData.Floorplans.Count;
+        foreach (Data.HouseType.Image img in HouseData.Images) {
+            if (img.Type == Data.ImageType.Image)
+                LoadingImages += 1;
+        }
+
+        FloorsInit = new bool[HouseData.Floorplans.Count];
+
+        SelectedImage = HouseData.Images[0];
+        base.StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
-            await JSRuntime.InvokeVoidAsync("pan_viewer.init");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            await JSRuntime.InvokeVoidAsync("interior.onResize", null);
+            await JSRuntime.InvokeVoidAsync("interior.resize");
+            await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
             firstRenderDone = true;
         }
     }
 
-    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
+    public void HideMinimap()
     {
-        while (!firstRenderDone)
-            await Task.Delay(10);
+        if (isChecked == false)
+        {
+            MoveIcon2 = " position: absolute; left: 95%; top: 12px;";
+            MoveIcon = "position: absolute; left:98%; top: 17px;";
+            minimaphide = "display:none;";
+        }
+        else
+        {
+            MoveIcon2 = "position: absolute; left: 52%; top: 12px;";
+            MoveIcon = "position: absolute; left: 78%; top: 17px;";
+            minimaphide = "display:initial;";
+        }
+    }
 
-        await JSRuntime.InvokeVoidAsync(
-            "mapster_responsive.setValues", 0, "floorplan-main", ImgWidth
-        );
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.addMapHighlights", "floorplan-main", "floorplan-img", "floorplan-im", "", 0.5, 0.65
-        );
-
-
+    private void OnLoadImg(ProgressEventArgs ev)
+    {
+        LoadingImages -= 1;
         base.StateHasChanged();
     }
 
-    private async void OnClickImgagemap(int roomid)
+    private async void OnLoadFSImg(ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", roomid);
-    }
-
-    //private async void RoomClicked(int houseID)
-    //{
-    //    var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
-    //    if (mobile && MobileSelection != houseID)
-    //    {
-    //        MobileSelection = houseID;
-    //    }
-    //    else
-    //    {
-    //        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-    //    }
-    //}
-
-    private async void OnClickGalleryImg(MouseEventArgs ev)
-    {
-        int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-
-        Data.ImageType prevType = SelectedType;
-        SelectedImage = Data.Images[ind];
-        SelectedType = SelectedImage.Type;
-
-        if (prevType == Bostadsvaljare.Data.ImageType.Panorama
-        && SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-
-        if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
-            await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
-        else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link);
-
-        base.StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("interior.resize");
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
     {
         // Change height on #vr_video to be its width*2/3
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
+        InitVR = true;
+    }
+
+    private async void OnLoadRoundme(ProgressEventArgs ev)
+    {
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "roundme-embedded");
+        InitRoundme = true;
+    }
+
+    private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
+    {
+        FullscreenImage = imgSrc;
+        base.StateHasChanged();
+    }
+
+    private async void OnLoadFloorplan(ProgressEventArgs ev, int floor)
+    {
+        while (!firstRenderDone)
+            await Task.Delay(20);
+
+        string parentID = "floorplan-" + floor;
+        await JSRuntime.InvokeVoidAsync(
+            "mapster_responsive.setValues", floor, parentID, ImgWidth
+        );
+        await JSRuntime.InvokeVoidAsync(
+            "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor, "", 0.6, 0.9
+        );
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("mapster.selectAll");
+
+        FloorsInit[floor] = true;
+        LoadingImages -= 1;
+        base.StateHasChanged();
+    }
+
+    private void OnClickHotspot(int roomID)
+    {
+        ChangeRoom(roomID);
+    }
+
+    private async void OnClickGalleryImg(MouseEventArgs ev)
+    {
+        int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
+        ChangeRoom(ind);
+    }
+
+    private void OnClickClose(MouseEventArgs ev)
+    {
+        FullscreenImage = null;
+        base.StateHasChanged();
+    }
+
+    private async void ChangeRoom(int ind)
+    {
+        Data.ImageType prevType = SelectedType;
+        SelectedImage = HouseData.Images[ind];
+        SelectedType = SelectedImage.Type;
+
+        if (prevType == Bostadsvaljare.Data.ImageType.Panorama &&
+            SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
+            await JSRuntime.InvokeVoidAsync("pan_viewer.softDispose");
+
+        if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
+            await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
+        else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama) {
+            if (prevType == Bostadsvaljare.Data.ImageType.Panorama)
+                await JSRuntime.InvokeVoidAsync("pan_viewer.changeRoom", SelectedImage.RoomName);
+            else
+                await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link, SelectedImage.RoomName);
+        }
+
+        base.StateHasChanged();
+    }
+
+    private async void ChangeFloor(int floor)
+    {
+        Floor = floor;
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
     }
 
     private void ToggleInfo()
@@ -296,33 +355,125 @@
         ShowInfo = !ShowInfo;
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
         if (!firstRenderDone)
             return;
 
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
     }
+
+
 }
 
 <style>
+
+    #fullscreen-image {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        z-index: 18;
+    }
+
+    .fs-bg {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        background: rgba(32, 32, 32, 0.3);
+    }
+
+    .fs-border {
+        position: relative;
+        width: 90%;
+        margin: auto;
+        top: 87px;
+        border: 5px solid #fafafa;
+        border-radius: 11px;
+        box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .fs-close {
+        position: absolute;
+        top: -17px;
+        right: -17px;
+        background: #415965;
+
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
+        box-shadow: inset 0 0 9px rgba(16, 16, 16, 0.35);
+    }
+    .fs-close:hover {
+        cursor: pointer;
+    }
+    .fs-close:before, .fs-close:after {
+        content: '';
+      height: 25px;
+     border-left: 2px solid white;
+    position: absolute;
+    left: 12px;
+
+
+    }
+    .fs-close:after {
+        transform: rotate(45deg);
+    }
+    .fs-close:before {
+        transform: rotate(-45deg);
+    }
+
+    .e-checkbox-wrapper .e-frame{
+        border:none;
+    }
+
+    .e-checkicon {
+        height: 40px;
+        width: 40px;
+        display:none;
+
+    }
+
+    .e-checkbox-wrapper .e-frame::before {
+        content: '\e78c';
+        font-size: 35px;
+        color: white;
+        background-color: #F9B256;
+        border-color: none;
+        outline: none;
+        height: 40px;
+        width: 40px;
+
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
+        content: '\e799';
+        height: 40px;
+        width: 40px;
+
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-check {
+        font-size: 35px;
+    }
+
 
     .btn-group button {
         background-color: #415965; /* Green background */
         border: 1px solid white; /* Green border */
         color: white; /* White text */
-        padding: 10px 10px; /* Some padding */
         cursor: pointer; /* Pointer/hand icon */
-        float: left; /* Float the buttons side by side */
-    }
-
-    .BtnInbtngrp:active,
-    .BtnInbtngrp:focus
-    {
-        border: 0.2em solid white; /* here configure as your needs */
-        color: white;
+        float: right; /* Float the buttons side by side */
+        width: 100%;
+        border-radius: 2px;
     }
 
     /* Clear floats (clearfix hack) */
@@ -331,7 +482,6 @@
         clear: both;
         display: table;
     }
-
 
     /* Add a background color on hover */
     .btn-group button:hover {
@@ -374,10 +524,6 @@
     }
 
     .line-4 {
-        width: 33.33%;
-    }
-
-    .line-4-planritning {
         width: 33.33%;
     }
 
@@ -426,7 +572,6 @@
         float: left;
         width: 100%;
         height: auto;
-
         transition-duration: 0.15s;
     }
 
@@ -448,7 +593,44 @@
         position: absolute;
         left: 0px;
         top: 0px;
-        z-index: 1000000;
+        z-index: 100000;
+    }
+
+    #pan_fullscreen-btn {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+
+    }
+    #pan_fullscreen-btn:hover {
+        cursor: pointer;
+    }
+    #pan_fullscreen-btn::before {
+        content: '';
+        background-image: url(IMG/icons/pan/fullscreen_on_icon.png);
+        width: 48px;
+        height: 48px;
+        background-size: 48px 48px;
+        display: inline-block;
+        filter: brightness(45%) sepia(1) saturate(10000%) hue-rotate(183deg);
+    }
+
+    .pan_el.fullscreen {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        z-index: 110000;
+        width: 20%;
+    }
+
+    .planritning.pan_el.fullscreen {
+        @minimaphide
+    }
+
+    .e-checkicon.pan_el.fullscreen {
+        @MoveIcon
+        z-index: 110000;
+        display:initial;
     }
 
     #housing_info {
@@ -478,6 +660,7 @@
     #gallery span {
         display: contents;
     }
+
 
     #hide_info {
         position: fixed;
@@ -541,10 +724,6 @@
         width: 32px;
     }
 
-    .planritning {
-        width: 100%;
-    }
-
     @@media (max-width: 1467px) {
         .arkitekt {
             width: 100%;
@@ -555,7 +734,6 @@
 
         #gallery {
             width: 25%;
-            /*height: height(line-4-planritning) + 6px*/
             overflow-y: auto;
             overflow-x: hidden;
         }
@@ -600,11 +778,6 @@
             width: 100%;
         }
 
-        .line-2knapp {
-            width: 50%;
-            margin: auto;
-        }
-
         .line-3 {
             width: 100%;
         }
@@ -618,7 +791,7 @@
             padding-top: 6px;
         }
 
-        .line-4-planritning {
+        .planritning {
             width: 75%;
         }
 
@@ -664,5 +837,67 @@
             height: 0px;
             width: 4px;
         }
+
+        #pan_container.fullscreen {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 100000;
+        }
+
+        .pan_el.fullscreen {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            z-index: 110000;
+            width: 40%;
+            font-size: 8px;
+
+        }
+
+        .btn-group button {
+            background-color: #415965; /* Green background */
+            border: 1px solid white; /* Green border */
+            color: white; /* White text */
+            cursor: pointer; /* Pointer/hand icon */
+            float: right; /* Float the buttons side by side */
+            width: 100%;
+            border-radius: 2px;
+            font-size: 9px;
+            padding:0px;
+        }
+
+        .e-checkicon {
+            height: 20px;
+            width: 20px;
+            display: none;
+        }
+
+        .e-checkbox-wrapper .e-frame::before {
+            content: '\e78c';
+            font-size: 20px;
+            color: white;
+            background-color: #F9B256;
+            border-color: none;
+            outline: none;
+            height: 20px;
+            width: 20px;
+        }
+
+        .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
+            content: '\e799';
+            height: 20px;
+            width: 20px;
+        }
+
+        .e-checkicon.e-checkbox-wrapper .e-check {
+            font-size: 17px;
+        }
+        .e-checkicon.pan_el.fullscreen {
+        @MoveIcon2
+        z-index: 110000;
+        display:initial;
+    }
+
     }
 </style>

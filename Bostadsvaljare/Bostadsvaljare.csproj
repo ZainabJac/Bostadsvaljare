@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\IMG\apts\" />
     <Folder Include="wwwroot\material-202006041330139071-99945271\compatibility\" />
   </ItemGroup>
 

@@ -5,8 +5,7 @@
                 available: '5bcb24',
                 booked: 'dfd431',
                 sold: 'd32626',
-                interior: 'd3F8E1',
-                interior2: 'd3F8E1'
+                interior: '415965'
             };
 
             var options = {
@@ -23,13 +22,15 @@
             var initialOptions = { ...options };
             initialOptions.onConfigured = function (success) {
                 if (success) {
-                    var statuses = { available: 0, booked: 0, sold: 0 };
+                    var statuses = {};
                     options.areas = [];
 
                     var mapAreas = $('#'+ mapID)[0].areas
                     for (var i = 0; i < mapAreas.length; i++) {
                         var area = mapAreas[i];
                         var status = area.attributes.id.value;
+                        if (!statuses[status])
+                            statuses[status] = 0;
                         area.attributes.status.value = status + statuses[status];
                         var areaOpt = {
                             key: status + statuses[status],
