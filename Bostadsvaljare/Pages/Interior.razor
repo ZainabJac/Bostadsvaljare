@@ -75,7 +75,7 @@
                 </div>
             </div>
             <!-- roundme -->
-            <iframe id="roundme-embed" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.Roundme ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
+            <iframe id="roundme-embedded" class="@(SelectedType == Bostadsvaljare.Data.ImageType.Roundme ? "" : "hidden")" width='100%' height='100%' src='@SelectedImage.Link' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen @onload="OnLoadRoundme"></iframe>
 
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
@@ -198,6 +198,7 @@
     private int Radius { get; set; } = 15;
     private int LoadingImages { get; set; } = 0;
     private bool InitVR { get; set; } = false;
+    private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
 
 
@@ -266,6 +267,12 @@
         // Change height on #vr_video to be its width*2/3
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
         InitVR = true;
+    }
+
+    private async void OnLoadRoundme(ProgressEventArgs ev)
+    {
+        await JSRuntime.InvokeVoidAsync("util.matchHeigthToWidth", "roundme-embedded");
+        InitRoundme = true;
     }
 
     private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
