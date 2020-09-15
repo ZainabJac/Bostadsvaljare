@@ -80,32 +80,35 @@
         </div>
         <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
         <div class="planritning line-4 pan_el">
-
-            <div class="btn-group">
-                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                {
-                    var _i = i;
-                    <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
-                }
-            </div>
-            <div id="floorplan-main">
-                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                {
-                    var _i = i;
-                    <div id="floorplan-@_i" style="position: relative; @(!FloorsInit[_i] || Floor == _i ? "" : "display: none;") @(FloorsInit[_i] ? "" : "visibility: hidden;")">
-                        <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">
-                        <map id="hotspots-@_i" name="hotspots-@_i">
-                            @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
-                            {
-                                var _j = j;
-                                var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
-                                <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
-                                      coords="@coords.X,@coords.Y,@Radius" shape="circle">
-                            }
-                        </map>
+            <SfCard>
+                <CardStacked>
+                    <div class="btn-group">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                        }
                     </div>
-                }
-            </div>
+                    <div id="floorplan-main">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <div id="floorplan-@_i" style="position: relative; @(!FloorsInit[_i] || Floor == _i ? "" : "display: none;") @(FloorsInit[_i] ? "" : "visibility: hidden;")">
+                                <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">
+                                <map id="hotspots-@_i" name="hotspots-@_i">
+                                    @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                                    {
+                                        var _j = j;
+                                        var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
+                                        <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
+                                              coords="@coords.X,@coords.Y,@Radius" shape="circle">
+                                    }
+                                </map>
+                            </div>
+                        }
+                    </div>
+                </CardStacked>
+            </SfCard>
         </div>
 
         <div id="gallery" class="line-4">
@@ -152,7 +155,7 @@
                 </SfCard>
             </div>
 
-            <div class="arkitekt">
+            @*<div class="arkitekt">
 
                 <SfCard ID="ArkitektenHarOrdet">
                     <CardStacked>
@@ -161,7 +164,7 @@
                     </CardStacked>
                 </SfCard>
 
-            </div>
+            </div>*@
         </div>
 
 
@@ -172,7 +175,8 @@
 </SpinLoader>
 
 @code {
-    public string MoveIcon = " position: absolute; left: 78%; top: 15px;";
+    public string MoveIcon2 = " position: absolute; left: 52%; top: 12px;";
+    public string MoveIcon = " position: absolute; left: 78%; top: 17px;";
     public string minimaphide = "Display:initial;";
     private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
@@ -230,12 +234,14 @@
     {
         if (isChecked == false)
         {
-            MoveIcon = "position: absolute; left: 98%; top: 15px;";
+            MoveIcon2 = " position: absolute; left: 95%; top: 12px;";
+            MoveIcon = "position: absolute; left:98%; top: 17px;";
             minimaphide = "display:none;";
         }
         else
         {
-            MoveIcon = "position: absolute; left: 78%; top: 15px;";
+            MoveIcon2 = "position: absolute; left: 52%; top: 12px;";
+            MoveIcon = "position: absolute; left: 78%; top: 17px;";
             minimaphide = "display:initial;";
         }
     }
@@ -382,7 +388,7 @@
         top: -17px;
         right: -17px;
         background: #415965;
-       
+
         width: 25px;
         height: 25px;
         border-radius: 5px;
@@ -397,8 +403,8 @@
      border-left: 2px solid white;
     position: absolute;
     left: 12px;
-      
-        
+
+
     }
     .fs-close:after {
         transform: rotate(45deg);
@@ -406,7 +412,7 @@
     .fs-close:before {
         transform: rotate(-45deg);
     }
-   
+
     .e-checkbox-wrapper .e-frame{
         border:none;
     }
@@ -427,51 +433,20 @@
         outline: none;
         height: 40px;
         width: 40px;
-      
+
     }
 
     .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
         content: '\e799';
         height: 40px;
         width: 40px;
-      
+
     }
 
     .e-checkicon.e-checkbox-wrapper .e-check {
         font-size: 35px;
     }
 
-/*
-    .hide {
-        display: none;
-    }
-
-    .buttonwdith.pan_el.fullscreen {
-        width: initial;
-        display: initial;
-        z-index: 110000;
-        left: 500px;
-        bottom: 500px;
-        position: absolute;
-    }
-
-    .btn-group button {
-        background-color: #415965;
-        border: 1px solid white;
-        color: white;
-        padding: 10px 10px;
-        cursor: pointer;
-        float: left;
-    }
-
-    .Buttons.pan_el.full {
-        padding: 4px 4px;
-    }
-
-    .buttonsinbtngrp.pan_el.full {
-        width: 100px;
-    }
-*/
 
     .btn-group button {
         background-color: #415965; /* Green background */
@@ -607,7 +582,7 @@
         position: absolute;
         right: 5px;
         bottom: 5px;
-        
+
     }
     #pan_fullscreen-btn:hover {
         cursor: pointer;
@@ -858,11 +833,53 @@
             top: 0px;
             z-index: 110000;
             width: 40%;
-            font-size: 11px;
-    
+            font-size: 8px;
+
         }
 
+        .btn-group button {
+            background-color: #415965; /* Green background */
+            border: 1px solid white; /* Green border */
+            color: white; /* White text */
+            cursor: pointer; /* Pointer/hand icon */
+            float: right; /* Float the buttons side by side */
+            width: 100%;
+            border-radius: 2px;
+            font-size: 9px;
+            padding:0px;
+        }
 
+        .e-checkicon {
+            height: 20px;
+            width: 20px;
+            display: none;
+        }
+
+        .e-checkbox-wrapper .e-frame::before {
+            content: '\e78c';
+            font-size: 20px;
+            color: white;
+            background-color: #F9B256;
+            border-color: none;
+            outline: none;
+            height: 20px;
+            width: 20px;
+        }
+
+        .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
+            content: '\e799';
+            height: 20px;
+            width: 20px;
+        }
+
+        .e-checkicon.e-checkbox-wrapper .e-check {
+            font-size: 17px;
+        }
+        .e-checkicon.pan_el.fullscreen {
+        @MoveIcon2
+        z-index: 110000;
+        display:initial;
+    }
 
     }
 </style>
