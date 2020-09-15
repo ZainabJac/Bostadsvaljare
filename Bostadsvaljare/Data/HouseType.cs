@@ -33,6 +33,7 @@ namespace Bostadsvaljare.Data
             public List<Room> Rooms { get; set; }
         }
 
+
         public List<Floorplan> Floorplans { get; set; }
         public List<Image> Images { get; set; }
         public string Comment { get; set; }
@@ -43,20 +44,18 @@ namespace Bostadsvaljare.Data
                 data = new Dictionary<string, HouseType> {
                     { "G3K", new HouseType {
                         Floorplans = new List<Floorplan> {
-                            new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
+                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
                                 new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 700, Y = 120 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 540, Y = 300 } },
                             }},
-                            new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            new Floorplan { Source = "IMG/plan2.png", Rooms = new List<Floorplan.Room> {
+                                
                             }},
-                            new Floorplan { Source = "IMG/Planritning-3D-exempelhus-enplan-141-kvm.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            new Floorplan { Source = "IMG/plan3.png", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 180, Y = 220 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 500, Y = 220 } },
+                               
                             }},
                         },
                         Images = new List<Image> {

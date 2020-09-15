@@ -190,7 +190,7 @@
     private bool[] FloorsInit { get; set; }
     private int Floor { get; set; } = 0;
     private string ImgWidth { get; set; } = "99.99%";
-    private int Radius { get; set; } = 25;
+    private int Radius { get; set; } = 15;
     private int LoadingImages { get; set; } = 0;
     private bool firstRenderDone = false;
 
@@ -382,13 +382,13 @@
 
     .fs-close {
         position: absolute;
-        top: -25px;
-        right: -25px;
-        background: #fafafa;
-        width: 46px;
-        height: 46px;
-        border: 3px solid #fafafa;
-        border-radius: 50%;
+        top: -17px;
+        right: -17px;
+        background: #415965;
+       
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
         box-shadow: inset 0 0 9px rgba(16, 16, 16, 0.35);
     }
     .fs-close:hover {
@@ -396,11 +396,12 @@
     }
     .fs-close:before, .fs-close:after {
         content: '';
-        height: 30px;
-        border-left: 4px solid #4f4f4f;
-        position: absolute;
-        left: 19px;
-        top: 5px;
+      height: 25px;
+     border-left: 2px solid white;
+    position: absolute;
+    left: 12px;
+      
+        
     }
     .fs-close:after {
         transform: rotate(45deg);
