@@ -51,6 +51,7 @@
         isShowingMeasurements: false,
         canvasWidth: 0, canvasHeight: 0,
         /*startingWidth: 0, startingHeight: 0,*/
+        lastWidth: 0, lastHeight: 0,
         /*sizeAlt: 1,*/
         /*mapSprite: null,*/ currentRoom: null,
         raycaster: new THREE.Raycaster(),
@@ -125,11 +126,11 @@
             container.appendChild(this.canvas);
 
             var containerDims = this.getContainerDimensions();
-            /*this.startingWidth = */this.canvasWidth = containerDims.width;
-            /*this.startingHeight = */this.canvasHeight = containerDims.height;
+            /*this.startingWidth = */this.lastWidth = this.canvasWidth = containerDims.width;
+            /*this.startingHeight = */this.lastHeight = this.canvasHeight = containerDims.height;
             /*this.sizeAlt = this.getSizeAlt();*/
 
-            //this.initUI();
+            this.initUI();
             //this.initHUD();
 
             // Map setup
@@ -178,7 +179,7 @@
             this.listeners.touchstart = function (e) { self.onTouchStart(e); };
             this.listeners.touchend = function (e) { self.onTouchEnd(e); };
             this.listeners.fullscreenchange = function (e) { self.onFullscreenChange(e); };
-            this.listeners.resize = function () { self.onResize(); };
+            //this.listeners.resize = function () { self.onResize(); };
 
             // Adding event listeners
             document.addEventListener('mouseover', this.listeners.mouseover, false);
@@ -192,7 +193,7 @@
             document.addEventListener('touchend', this.listeners.touchend, false);
 
             document.addEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
-            window.addEventListener('resize', this.listeners.resize, false);
+            //window.addEventListener('resize', this.listeners.resize, false);
 
             this.softDisposed = false;
             this.disposed = false;
@@ -624,7 +625,7 @@
 
             $('#'+ constants.CONTAINER +' canvas').height(newHeight);
             //this.resetHUD(newWidth, newHeight);
-            //this.resetUI(newWidth, newHeight);
+            this.resetUI(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
             this.canvas.style.width = "";
@@ -867,6 +868,13 @@
             var delta = this.clock.getDelta();
             var autoRotateOpts = this.options.camera.auto_rotate;
 
+            var dims = this.getContainerDimensions();
+            if (!this.isFullscreen && (dims.width !== this.lastWidth || dims.height !== this.lastHeight)) {
+                this.onResize(dims.width, dims.height);
+                this.lastWidth = dims.width;
+                this.lastHeight = dims.height;
+            }
+
             if (this.isUserInteracting) {
                 this.lonAcc.add(this.lon - this.lonLast);
                 this.latAcc.add(this.lat - this.LatLast);
@@ -936,7 +944,7 @@
 
             this.disposeHotspots();
             //this.disposeHUD();
-            //this.disposeUI();
+            this.disposeUI();
 
             this.renderer = this.scene = this.skybox =
             this.camera = this.canvas = undefined;
@@ -951,7 +959,7 @@
             document.removeEventListener('touchstart', this.listeners.touchstart, false);
             document.removeEventListener('touchend', this.listeners.touchend, false);
             document.removeEventListener('fullscreenchange', this.listeners.fullscreenchange, false);
-            window.removeEventListener('resize', this.listeners.resize, false);
+            //window.removeEventListener('resize', this.listeners.resize, false);
 
             if (this.isFullscreen) {
                 util.closeFullscreen();
