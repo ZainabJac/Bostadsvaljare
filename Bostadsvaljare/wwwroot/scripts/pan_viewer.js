@@ -1,5 +1,9 @@
 ﻿const constants = {
     CONTAINER: 'pan_container',
+    UI: {
+        MAIN: 'pan_ui',
+        FULLSCREEN: 'pan_fullscreen-btn',
+    },
     PAN_ELEMENT: 'pan_el',
     TOOLTIP: 'tipmsg',
     MAP: 'map',
@@ -26,8 +30,8 @@
         options: { ...panOptions }, aptData: {},
         roomTextures: {},
         renderer: null, skybox: null,
-        camera: null, scene: null, canvas: null,
-        cameraHUD: null, sceneHUD: null, canvasHUD: null,
+        camera: null, scene: null, canvas: null, ui: null,
+        /*cameraHUD: null, sceneHUD: null, canvasHUD: null,*/
         clock: new THREE.Clock(),
         pressedFullscreenButton: false,
         disposed: true, animating: null,
@@ -48,12 +52,12 @@
         canvasWidth: 0, canvasHeight: 0,
         startingWidth: 0, startingHeight: 0,
         sizeAlt: 1,
-        mapSprite: null, currentRoom: null,
+        /*mapSprite: null,*/ currentRoom: null,
         raycaster: new THREE.Raycaster(),
         pointerVector: new THREE.Vector2(),
         hotspotGroup: new THREE.Group(),
-        HUDGroup: new THREE.Group(),
-        holdingHUDEl: null, holdingHotspot: null,
+        /*HUDGroup: new THREE.Group(),
+        holdingHUDEl: null,*/ holdingUI: null, holdingHotspot: null,
         hoveringObj: null,
         latestPointerProjection: null,
         listeners: {},
@@ -107,6 +111,7 @@
             this.scene.add(this.skybox);
 
             this.canvas = document.createElement("canvas");
+            this.ui = $('#'+ constants.UI.MAIN)[0];
             this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
             this.renderer.autoClear = false;
             this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -120,6 +125,7 @@
             this.startingHeight = this.canvasHeight = containerDims.height;
             this.sizeAlt = this.getSizeAlt();
 
+            this.initUI();
             //this.initHUD();
 
             // Map setup
@@ -160,7 +166,7 @@
                 { onclickCB: function() { self.toggleMeasurements(); } });*/
 
             this.listeners.mouseover = function (e) { self.onMouseover(e); };
-            this.listeners.mouseout = function (e) { self.onMouseout(e); };
+            //this.listeners.mouseout = function (e) { self.onMouseout(e); };
             this.listeners.mousemove = function (e) { self.onMouseMove(e); };
             this.listeners.mousedown = function (e) { self.onMouseDown(e); };
             this.listeners.mouseup = function (e) { self.onMouseUp(e); };
@@ -172,7 +178,7 @@
 
             // Adding event listeners
             document.addEventListener('mouseover', this.listeners.mouseover, false);
-            document.addEventListener('mouseout', this.listeners.mouseout, false);
+            //document.addEventListener('mouseout', this.listeners.mouseout, false);
             document.addEventListener('mousemove', this.listeners.mousemove, false);
             document.addEventListener('mousedown', this.listeners.mousedown, false);
             document.addEventListener('mouseup', this.listeners.mouseup, false);
@@ -187,7 +193,12 @@
             this.disposed = false;
         },
 
-        initHUD: function () {
+        initUI: function () {
+            var self = this;
+            $('#'+ constants.UI.FULLSCREEN).on('click', function(e) { self.toggleFullscreen(); });
+        },
+
+        /*initHUD: function () {
             var halfWidth = this.canvasWidth * 0.5,
                 halfHeight = this.canvasHeight * 0.5;
 
@@ -336,7 +347,7 @@
             sprite.position.set(0, 0, -1);
 
             return sprite;
-        },
+        },*/
 
         addHotspots: function () {
             var self = this;
@@ -528,7 +539,14 @@
             this.renderer.setSize(width, height);
         },
 
-        resetHUD: function (width, height) {
+        resetUI: function (width, height) {
+            $('#'+ constants.UI.MAIN).css({
+                width: width,
+                height: height,
+            });
+        },
+
+        /*resetHUD: function (width, height) {
             for (var hudEl of this.HUDGroup.children) {
                 hudEl.resize(width, height);
             }
@@ -570,7 +588,7 @@
                 imgWidth = mapImg.width * (imgHeight / mapImg.height) * diffAspect;
 
             this.scale.set(imgWidth, imgHeight, 1);
-        },
+        },*/
 
         onResize: async function (event) {
             // Wait some time to make sure that fullscreenchange event has taken its time,
@@ -596,6 +614,7 @@
 
             $("#"+ constants.CONTAINER +" canvas").outerHeight(newHeight);
             //this.resetHUD(newWidth, newHeight);
+            this.resetUI(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
             this.canvas.style.width = "";
@@ -611,6 +630,7 @@
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
                 //this.resetHUD($(window).width(), $(window).height());
+                this.resetUI($(window).width(), $(window).height());
                 this.resetCamera($(window).width(), $(window).height());
 
                 // TODO: Change color and background when changing image too
@@ -625,6 +645,7 @@
                 $('body').css({ 'overflow': 'hidden' });
             } else {
                 //this.resetHUD(this.canvasWidth, this.canvasHeight);
+                this.resetUI(this.canvasWidth, this.canvasHeight);
                 this.resetCamera(this.canvasWidth, this.canvasHeight);
 
                 //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -640,14 +661,21 @@
         },
 
         onMouseover: function (event) {
-            if (event.target === this.canvas) {
+            if (event.target.id.startsWith('pan_')) {
                 this.isMouseover = true;
+                if (event.target.parentElement === this.ui)
+                    this.holdingUI = event.target;
+                else
+                    this.holdingUI = null;
+            } else {
+                this.isMouseover = false;
             }
         },
 
-        onMouseout: function (event) {
-            this.isMouseover = false;
-        },
+        /*onMouseout: function (event) {
+            if (!event.target.id.startsWith('pan_'))
+                this.isMouseover = false;
+        },*/
 
         onMouseMove: function (event) {
             if (this.isUserInteracting) {
@@ -665,8 +693,7 @@
             this.hoveringObj = null;
             //this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
             //var objHUD = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
-            var objHUD = undefined;
-            if (!objHUD) {
+            if (!this.holdingUI) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var intersects = this.raycaster.intersectObject(this.hotspotGroup, true);
                 if (intersects.length > 0) {
@@ -680,7 +707,7 @@
                 this.hideTooltip();
 
             // Change mouse cursor to 'pointer' when hovering over a clickable element
-            if (this.hoveringObj || (objHUD && objHUD.onclick))
+            if (this.hoveringObj/* || (objHUD && objHUD.onclick)*/)
                 $('html,body').css('cursor', 'pointer');
             else
                 $('html,body').css('cursor', 'default');
@@ -697,7 +724,7 @@
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
             this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.holdingHUDEl) {
+            if (!this.holdingUI) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -710,13 +737,14 @@
         },
 
         onMouseUp: function (event) {
-            if (this.holdingHUDEl) {
+            /*if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
                 if (obj && obj === this.holdingHUDEl && obj.onclick) {
                     obj.onclick();
                 }
-            } else if (this.holdingHotspot) {
+            }
+            else*/ if (this.holdingHotspot && !this.holdingUI) {
                 this.raycaster.setFromCamera(this.pointerVector, this.camera);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
                 if (obj && obj === this.holdingHotspot) {
@@ -767,7 +795,7 @@
             this.raycaster.setFromCamera(this.pointerVector, this.camera);
             this.holdingHotspot = this.getFirstValidRCObj(this.raycaster.intersectObject(this.hotspotGroup, true));
 
-            if (!this.holdingHUDEl) {
+            if (!this.holdingUI) {
                 this.autoRotate = false;
                 this.decRotationRate = 0.9;
                 this.isUserInteracting = true;
@@ -780,13 +808,15 @@
         },
 
         onTouchEnd: function (event) {
-            if (this.holdingHUDEl) {
+            /*if (this.holdingHUDEl) {
                 this.raycaster.setFromCamera(this.pointerVector, this.cameraHUD);
                 var obj = this.getFirstValidRCObj(this.raycaster.intersectObject(this.HUDGroup, true));
                 if (obj && obj === this.holdingHUDEl && obj.onclick)
                     obj.onclick();
+            if (this.holdingUI) {
+                this.holdingUI.onclick();
             }
-            else if (this.holdingHotspot) {
+            else*/ if (this.holdingHotspot && !this.holdingUI) {
                 if (this.holdingHotspot === this.hoveringObj) {
                     this.changeRoom(this.holdingHotspot.name);
                     this.hoveringObj = undefined;
@@ -907,13 +937,14 @@
 
             this.disposeHotspots();
             //this.disposeHUD();
+            this.disposeUI();
 
             this.renderer = this.scene = this.skybox =
             this.camera = this.canvas = undefined;
             this.currentRoom = null;
 
             document.removeEventListener('mouseover', this.listeners.mouseover, false);
-            document.removeEventListener('mouseout', this.listeners.mouseout, false);
+            //document.removeEventListener('mouseout', this.listeners.mouseout, false);
             document.removeEventListener('mousemove', this.listeners.mousemove, false);
             document.removeEventListener('mousedown', this.listeners.mousedown, false);
             document.removeEventListener('mouseup', this.listeners.mouseup, false);
@@ -925,15 +956,15 @@
 
             if (this.isFullscreen) {
                 util.closeFullscreen();
-                $('#' + constants.CONTAINER).removeClass(constants.FULLSCREEN);
-                $('.' + constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
+                $('#'+ constants.CONTAINER).removeClass(constants.FULLSCREEN);
+                $('.'+ constants.PAN_ELEMENT).removeClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': '' });
                 this.isFullscreen = false;
             }
             this.disposed = true;
         },
 
-        disposeHUD: function () {
+        /*disposeHUD: function () {
             for (var hudEl of this.HUDGroup.children) {
                 hudEl.material.map.dispose();
                 hudEl.material.dispose();
@@ -941,6 +972,10 @@
             this.HUDGroup = new THREE.Group();
             this.canvasHUD = this.cameraHUD =
             this.sceneHUD = this.mapSprite = undefined;
+        },*/
+
+        disposeUI: function () {
+            $('#'+ constants.UI.FULLSCREEN).off('click');
         },
 
         disposeHotspots: function () {
@@ -1004,14 +1039,14 @@
                 return;
 
             // Update map hotspot images to show which is the current room
-            if (this.HUDGroup.getObjectByName(this.currentRoom)) {
+            /*if (this.HUDGroup.getObjectByName(this.currentRoom)) {
                 var prevRoomMat = this.HUDGroup.getObjectByName(this.currentRoom).material;
                 var newRoomMat = this.HUDGroup.getObjectByName(roomId).material;
                 prevRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.image);
                 newRoomMat.map = new THREE.TextureLoader().load(this.options.map_hotspot.current.image);
                 prevRoomMat.needsUpdate = true;
                 newRoomMat.needsUpdate = true;
-            }
+            }*/
 
             // Change panorama image
             // TODO: Some sort of transition, fade in and out of black?

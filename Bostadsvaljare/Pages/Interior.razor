@@ -69,7 +69,11 @@
             
 
             <!-- 360-bilder -->
-            <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")"></div>
+            <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")">
+                <div id="pan_ui" style="position: absolute;">
+                    <span id="pan_fullscreen-btn"></span>
+                </div>
+            </div>
 
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
@@ -405,7 +409,6 @@
     .fs-close:before {
         transform: rotate(-45deg);
     }
-
    
     .e-checkbox-wrapper .e-frame{
         border:none;
@@ -441,10 +444,8 @@
         font-size: 35px;
     }
 
-
-
-
-    /*  .hide {
+/*
+    .hide {
         display: none;
     }
 
@@ -474,6 +475,7 @@
         width: 100px;
     }
 */
+
     .btn-group button {
         background-color: #415965; /* Green background */
         border: 1px solid white; /* Green border */
@@ -580,7 +582,6 @@
         float: left;
         width: 100%;
         height: auto;
-
         transition-duration: 0.15s;
     }
 
@@ -596,7 +597,6 @@
 
     #pan_container {
         width: 100%;
-
     }
 
     #pan_container.fullscreen {
@@ -606,25 +606,40 @@
         z-index: 100000;
     }
 
+    #pan_fullscreen-btn {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+    }
+    #pan_fullscreen-btn:hover {
+        cursor: pointer;
+    }
+    #pan_fullscreen-btn::before {
+        content: '';
+        background-image: url(IMG/icons/pan/fullscreen_on_icon.png);
+        width: 48px;
+        height: 48px;
+        background-size: 48px 48px;
+        display: inline-block;
+        filter: brightness(45%) sepia(1) saturate(10000%) hue-rotate(183deg);
+    }
+
     .pan_el.fullscreen {
         position: absolute;
         right: 0px;
         top: 0px;
         z-index: 110000;
         width: 20%;
-
     }
 
     .planritning.pan_el.fullscreen {
-      
         @minimaphide
     }
 
     .e-checkicon.pan_el.fullscreen {
-      @MoveIcon
-       z-index: 110000;
-       display:initial;
-
+        @MoveIcon
+        z-index: 110000;
+        display:initial;
     }
 
     #housing_info {
