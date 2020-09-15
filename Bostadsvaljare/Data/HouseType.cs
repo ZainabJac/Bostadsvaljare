@@ -66,10 +66,13 @@ namespace Bostadsvaljare.Data
                              new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3KT-LIVINGROOMPANO.jpg", Type=ImageType.Roundme, Link="https://roundme.com/tour/622855/view/1975510/", RoomName="vardagsrum" },
                             new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Panorama, Link="apt_data", RoomName="kok" },
-                            new Image { Source="IMG/G3KT-VIND.jpg", Type=ImageType.Panorama, Link="apt_data", RoomName="vind" },
+                            new Image { Source="IMG/G3KT-VIND.jpg", Type=ImageType.VR, Link="https://roundme.com/embed/TTuVyPKylDHk6qbASw97", RoomName="vind" },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
+
+                  
+
                     { "V2", new HouseType {
                         Floorplans = new List<Floorplan> {
                             new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
