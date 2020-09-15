@@ -76,9 +76,11 @@
                     <span id="pan_fullscreen-btn"></span>
                 </div>
             </div>
+            <!-- roundme -->
+            <iframe id="roundme-embed" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.Roundme ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
 
             <!-- VR-video -->
-            <iframe id="vr_video" src="@SelectedImage.Link" class="@(!InitVR || SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%; @(InitVR ? "" : "visibility: hidden;")" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
+            <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
         <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
         <div class="planritning line-4 pan_el">

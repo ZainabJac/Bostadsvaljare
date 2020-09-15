@@ -7,7 +7,8 @@ namespace Bostadsvaljare.Data
     {
         Image,
         Panorama,
-        VR
+        VR,
+        Roundme
     }
 
     public class HouseType
@@ -63,7 +64,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/G3kt-Vardagsrum.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Image },
                              new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/G3KT-LIVINGROOMPANO.jpg", Type=ImageType.Panorama, Link="apt_data", RoomName="vardagsrum" },
+                            new Image { Source="IMG/G3KT-LIVINGROOMPANO.jpg", Type=ImageType.Roundme, Link="https://roundme.com/tour/622855/view/1975510/", RoomName="vardagsrum" },
                             new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Panorama, Link="apt_data", RoomName="kok" },
                             new Image { Source="IMG/G3KT-VIND.jpg", Type=ImageType.VR, Link="https://roundme.com/embed/TTuVyPKylDHk6qbASw97", RoomName="vind" },
                         },
