@@ -319,7 +319,7 @@
         if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
             await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
         else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link, SelectedImage.Room);
+            await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link, SelectedImage.RoomName);
 
         base.StateHasChanged();
     }
