@@ -51,7 +51,7 @@
         isShowingMeasurements: false,
         canvasWidth: 0, canvasHeight: 0,
         /*startingWidth: 0, startingHeight: 0,*/
-        sizeAlt: 1,
+        /*sizeAlt: 1,*/
         /*mapSprite: null,*/ currentRoom: null,
         raycaster: new THREE.Raycaster(),
         pointerVector: new THREE.Vector2(),
@@ -81,7 +81,7 @@
             }
 
             this.changeRoom(this.aptData.entry);
-            await util.delay(100);
+            await util.delay(150);
             this.onResize();
             this.animate();
         },
@@ -124,7 +124,7 @@
             var containerDims = this.getContainerDimensions();
             /*this.startingWidth = */this.canvasWidth = containerDims.width;
             /*this.startingHeight = */this.canvasHeight = containerDims.height;
-            this.sizeAlt = this.getSizeAlt();
+            /*this.sizeAlt = this.getSizeAlt();*/
 
             this.initUI();
             //this.initHUD();
@@ -498,12 +498,12 @@
             }
         },
 
-        getSizeAlt: function () {
+        /*getSizeAlt: function () {
             var sizeAlt = 1;
             if ($(window).width() <= this.options.hud.mobile.width_at_most)
                 sizeAlt = this.options.hud.mobile.size_alt;
             return sizeAlt;
-        },
+        },*/
 
         getMargin: function () {
             var l = $('#'+ constants.CONTAINER).offset().left,
@@ -598,7 +598,7 @@
             if (this.isFullscreen) return;*/
 
             var dims = this.getContainerDimensions();
-            if (!newWidth) newWidth = dims.width
+            if (!newWidth) newWidth = dims.width;
             if (!newHeight) newHeight = dims.height;
 
             if (this.options.canvas.cover_window) {
@@ -614,7 +614,7 @@
                 }
             }
 
-            $("#"+ constants.CONTAINER +" canvas").outerHeight(newHeight);
+            $('#'+ constants.CONTAINER +' canvas').height(newHeight);
             //this.resetHUD(newWidth, newHeight);
             this.resetUI(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
@@ -634,10 +634,8 @@
 
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen) {
-                //this.resetHUD($(window).width(), $(window).height());
-                //this.resetUI($(window).width(), $(window).height());
-                //this.resetCamera($(window).width(), $(window).height());
-                newWidth = $(window).width(), newHeight = $(window).height();
+                newWidth = $(window).width(),
+                newHeight = $(window).height();
 
                 // TODO: Change color and background when changing image too
                 //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
@@ -650,11 +648,6 @@
                 $('.'+ constants.PAN_ELEMENT).addClass(constants.FULLSCREEN);
                 $('body').css({ 'overflow': 'hidden' });
             } else {
-                //this.resetHUD(this.canvasWidth, this.canvasHeight);
-                //this.resetUI(this.canvasWidth, this.canvasHeight);
-                //this.resetCamera(this.canvasWidth, this.canvasHeight);
-                //newWidth = this.canvasWidth, newHeight = this.canvasHeight;
-
                 //var fsMat = this.sceneHUD.getObjectByName(constants.FULLSCREEN_ICON).material;
                 //fsMat.map = new THREE.TextureLoader().load(this.options.fullscreen_icon.image);
                 //fsMat.color.set(this.options.fullscreen_icon.color);
@@ -1022,7 +1015,7 @@
             $('#'+ constants.TOOLTIP).hide();
         },
 
-        showMap: function () {
+        /*showMap: function () {
             // TODO: scale the background to encapsulate the map (by using 9-grid from prev. TODO)
             var mapIconSprite = this.sceneHUD.getObjectByName(constants.MAP_ICON);
             this.changeOpacity(mapIconSprite, 0);
@@ -1040,7 +1033,7 @@
             sprite.children.forEach(function (childSprite) {
                 childSprite.material.opacity = opacity;
             });
-        },
+        },*/
 
         changeRoom: function (roomId) {
             if (roomId === this.currentRoom)
