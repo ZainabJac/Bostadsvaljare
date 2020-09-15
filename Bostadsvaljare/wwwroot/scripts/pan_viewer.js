@@ -351,8 +351,12 @@
         },*/
 
         addHotspots: function () {
+            var connectingRooms = this.aptData.rooms[this.currentRoom].connections;
+            if (!connectingRooms)
+                return;
+
             var self = this;
-            this.aptData.rooms[this.currentRoom].connections.forEach(function (connectingRoom) {
+            connectingRooms.forEach(function (connectingRoom) {
                 // Create the hotspot object
                 var planeGeometry = new THREE.PlaneBufferGeometry(
                     self.options.hotspot.transform.size.width,
