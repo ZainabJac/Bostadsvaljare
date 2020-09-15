@@ -55,15 +55,14 @@ namespace Bostadsvaljare.Data
                             new Floorplan { Source = "IMG/plan3.png", Rooms = new List<Floorplan.Room> {
                                 new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 180, Y = 220 } },
                                 new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 500, Y = 220 } },
-                               
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/G3K(t) - Översikt.png", Type=ImageType.Image },
-                            new Image { Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
-                            new Image { Source="IMG/G3K(t)Vind Vardagsrum.png", Type=ImageType.Image },
-                            new Image { Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
-                            new Image { Source="IMG/G3K(t) - Vind 1.png", Type=ImageType.Panorama, Link="apt_data" },
+                            new Image { Source="IMG/G3kt-Vardagsrum.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Image },
+                            new Image { Source="img/G3KT-LIVINGROOMPANO.jpg", Type=ImageType.Panorama, Link="apt_data" },
+                            new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Panorama, Link="apt_data" },
+                            new Image { Source="IMG/G3KT-VIND.jpg", Type=ImageType.Panorama, Link="apt_data" },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
