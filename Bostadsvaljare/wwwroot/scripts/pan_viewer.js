@@ -62,7 +62,7 @@
         latestPointerProjection: null,
         listeners: {},
 
-        start: async function (aptID, roomID, coverWindow) {
+        start: /*async */function (aptID, roomID, coverWindow) {
             //this.aptData = window.apartments[aptID];
             if (coverWindow === undefined)
                 coverWindow = false;
@@ -72,7 +72,7 @@
             this.reset();
 
             this.changeRoom(roomID || this.aptData.entry);
-            await util.delay(5000);
+            //await util.delay(100);
             this.onResize();
             this.animate();
         },
@@ -129,7 +129,7 @@
             /*this.startingHeight = */this.canvasHeight = containerDims.height;
             /*this.sizeAlt = this.getSizeAlt();*/
 
-            this.initUI();
+            //this.initUI();
             //this.initHUD();
 
             // Map setup
@@ -624,7 +624,7 @@
 
             $('#'+ constants.CONTAINER +' canvas').height(newHeight);
             //this.resetHUD(newWidth, newHeight);
-            this.resetUI(newWidth, newHeight);
+            //this.resetUI(newWidth, newHeight);
             this.resetCamera(newWidth, newHeight);
 
             this.canvas.style.width = "";
@@ -936,7 +936,7 @@
 
             this.disposeHotspots();
             //this.disposeHUD();
-            this.disposeUI();
+            //this.disposeUI();
 
             this.renderer = this.scene = this.skybox =
             this.camera = this.canvas = undefined;
