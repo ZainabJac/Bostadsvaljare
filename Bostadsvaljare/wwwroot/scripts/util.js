@@ -40,6 +40,10 @@
             }
         },
 
+        cleanupElements: function () {
+            $('#remove-this').remove();
+        },
+
         /* View in fullscreen */
         openFullscreen: function () {
             var elem = document.documentElement;
