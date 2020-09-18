@@ -70,6 +70,7 @@
         },
 
         dispose: function () {
+            this.imageData.length = 0;
             window.removeEventListener('resize', this.listeners.resize, false);
         },
 
