@@ -20,15 +20,18 @@
                 img.onload = onLoadImg;
                 img.src = image.source;
                 $(img).addClass('gallery-img');
+                $(img).on('click', e => self._onClickGalleryImg(e, i));
                 self.imageData.push({
                     img: img,
-                    parentID: 'gallery-item-'+ i,
+                    parentID: 'gallery-item-' + i,
+                    type: image.type,
                 });
 
                 if (image.type === 0) { /* image.type === ImageType.Image */
                     var carouselImg = img.cloneNode();
                     $(carouselImg).removeClass();
                     $(carouselImg).addClass('d-block w-100');
+                    $(carouselImg).on('click', e => self._onClickCarousel(e));
                     self.imageData.push({
                         img: carouselImg,
                         parentID: 'carousel-item-'+ i,
@@ -45,7 +48,6 @@
                 self.imageData.push({
                     img: img,
                     parentID: 'floorplan-'+ i,
-                    floor: i,
                     usemap: '#hotspots-'+ i,
                 });
             });
@@ -57,13 +59,12 @@
         },
 
         applyImages: function () {
-            $('#remove-this').remove();
-
             for (var data of this.imageData) {
                 $('#'+ data.parentID).append(data.img);
                 if (data.usemap) {
                     var id = '#'+ data.img.id;
                     $(id).attr('usemap', data.usemap);
+                    this._loadFloorplan(data.img);
                 }
             }
         },
@@ -74,6 +75,32 @@
 
         resize: function () {
             this._onResize();
+        },
+
+        _loadFloorplan: async function (img) {
+            var floor = $(img).attr('floor'),
+                imgWidth = $(img).css('width');
+                parentID = 'floorplan-' + floor;
+
+            mapster_responsive.setValues(floor, parentID, imgWidth);
+            mapster.addMapHighlights(parentID, parentID +'-img', 'hotspots-'+ floor, '', 0.6, 0.9);
+            await util.delay(100);
+            mapster.selectAll();
+        },
+
+        _onClickCarousel: function (event) {
+            var self = this;
+            $('.fs-border img').remove();
+            var img = $(event.target).clone();
+            img.removeClass();
+            img.css({ width: '100%' });
+            img.appendTo('.fs-border');
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
+                .then(_data => { self._onResize(); });
+        },
+
+        _onClickGalleryImg: function (event, ind) {
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind);
         },
 
         _onResize: function (event) {

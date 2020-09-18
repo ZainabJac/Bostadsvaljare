@@ -22,11 +22,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <img id="remove-this" src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        <div id="fullscreen-image" class="@(FullscreenImage != null ? "" : "hidden")">
+        <div id="fullscreen-image" class="@(ShowFullscreenImage ? "" : "hidden")">
             <div class="fs-bg" @onclick="OnClickClose">
                 <div class="fs-border" @onclick:stopPropagation="true">
                     <span class="fs-close" @onclick="OnClickClose"></span>
-                    <!--<img src="@FullscreenImage" style="width: 100%;" @onload="OnLoadFSImg" />-->
                 </div>
             </div>
         </div>
@@ -52,7 +51,6 @@
                                 continue;
 
                             <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
-                                <!--<img class="d-block w-100" src="@HouseData.Images[_i].Source" @onload="OnLoadImg" @onclick="(e) => OnClickCarousel(e, HouseData.Images[_i].Source)">-->
                             </div>
                         }
                     </div>
@@ -95,7 +93,6 @@
                         {
                             var _i = i;
                             <div id="floorplan-@_i" class="@(Floor == _i ? "" : "hidden")" style="position: relative;">
-                                <!--<img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">-->
                                 <map id="hotspots-@_i" name="hotspots-@_i">
                                     @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
                                     {
@@ -116,7 +113,6 @@
             @for (int i = 0; i < HouseData.Images.Count; i++)
             {
                 <span id="gallery-item-@i" class="line-3">
-                    <!--<BSImage index="@i" src="@HouseData.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg" @onload="OnLoadImg"></BSImage>-->
                 </span>
             }
         </div>
@@ -178,7 +174,7 @@
 @code {
     public string MoveIcon2 { get; set; } = "position: absolute; left: 52%; top: 12px;";
     public string MoveIcon { get; set; } = "position: absolute; left: 78%; top: 17px;";
-    public string MinimapHide { get; set; } = "Display: initial;";
+    public string MinimapHide { get; set; } = "display: initial;";
     private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
@@ -190,15 +186,15 @@
     public bool ShowInfo { get; set; } = true;
 
     private Data.HouseType HouseData { get; set; }
-    private string FullscreenImage { get; set; } = null;
-    //private bool[] FloorsInit { get; set; }
+    private bool ShowFullscreenImage { get; set; } = false;
     private int Floor { get; set; } = 0;
-    private string ImgWidth { get; set; } = "99.99%";
     private int Radius { get; set; } = 15;
     private bool ImagesLoaded { get; set; } = false;
     private bool InitVR { get; set; } = false;
     private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
+
+    private static Interior self;
 
 
     protected override void OnInitialized()
@@ -208,15 +204,7 @@
         House = Data.House.Get(int.Parse(HouseID));
         string houseType = House.Housetype;
         HouseData = Data.HouseType.GetData(houseType);
-
-        //LoadingImages += HouseData.Images.Count;
-        //LoadingImages += HouseData.Floorplans.Count;
-        //foreach (Data.HouseType.Image img in HouseData.Images) {
-        //    if (img.Type == Data.ImageType.Image)
-        //        LoadingImages += 1;
-        //}
-
-        //FloorsInit = new bool[HouseData.Floorplans.Count];
+        self = this;
 
         SelectedImage = HouseData.Images[0];
         base.StateHasChanged();
@@ -226,10 +214,9 @@
     {
         if (firstRender)
         {
-            //await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.resize");
-            //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
@@ -238,39 +225,10 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
+        await JSRuntime.InvokeVoidAsync("util.cleanupElements");
         await JSRuntime.InvokeVoidAsync("interior.applyImages");
+        //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
     }
-
-    //private void OnLoadImg(ProgressEventArgs ev)
-    //{
-    //    LoadingImages -= 1;
-    //    base.StateHasChanged();
-    //}
-
-    //private async void OnLoadFSImg(ProgressEventArgs ev)
-    //{
-    //    await JSRuntime.InvokeVoidAsync("interior.resize");
-    //}
-
-    //private async void OnLoadFloorplan(ProgressEventArgs ev, int floor)
-    //{
-    //    while (!firstRenderDone)
-    //        await Task.Delay(20);
-
-    //    string parentID = "floorplan-" + floor;
-    //    await JSRuntime.InvokeVoidAsync(
-    //        "mapster_responsive.setValues", floor, parentID, ImgWidth
-    //    );
-    //    await JSRuntime.InvokeVoidAsync(
-    //        "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor, "", 0.6, 0.9
-    //    );
-    //    await Task.Delay(100);
-    //    await JSRuntime.InvokeVoidAsync("mapster.selectAll");
-
-    //    FloorsInit[floor] = true;
-    //    //LoadingImages -= 1;
-    //    base.StateHasChanged();
-    //}
 
     private async void OnLoadVR(ProgressEventArgs ev)
     {
@@ -304,27 +262,28 @@
         base.StateHasChanged();
     }
 
-    //private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
-    //{
-    //    FullscreenImage = imgSrc;
-    //    base.StateHasChanged();
-    //}
-
     private void OnClickHotspot(int roomID)
     {
         ChangeRoom(roomID);
     }
 
-    //private async void OnClickGalleryImg(MouseEventArgs ev)
-    //{
-    //    int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-    //    ChangeRoom(ind);
-    //}
-
     private void OnClickClose(MouseEventArgs ev)
     {
-        FullscreenImage = null;
+        ShowFullscreenImage = false;
         base.StateHasChanged();
+    }
+
+    [JSInvokable]
+    public static void ShowImage()
+    {
+        self.ShowFullscreenImage = true;
+        self.StateHasChanged();
+    }
+
+    [JSInvokable("ChangeRoom")]
+    public static void StaticChangeRoom(int ind)
+    {
+        self.ChangeRoom(ind);
     }
 
     private async void ChangeRoom(int ind)
@@ -422,12 +381,10 @@
     }
     .fs-close:before, .fs-close:after {
         content: '';
-      height: 25px;
-     border-left: 2px solid white;
-    position: absolute;
-    left: 12px;
-
-
+        height: 25px;
+        border-left: 2px solid white;
+        position: absolute;
+        left: 12px;
     }
     .fs-close:after {
         transform: rotate(45deg);
