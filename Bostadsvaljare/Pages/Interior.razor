@@ -225,7 +225,6 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("util.cleanupElements");
         await JSRuntime.InvokeVoidAsync("interior.applyImages");
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
     }
@@ -250,7 +249,7 @@
         if (isChecked == false)
         {
             MoveIcon2 = "position: absolute; left: 95%; top: 12px;";
-            MoveIcon = "position: absolute; left:98%; top: 17px;";
+            MoveIcon = "position: absolute; left: 98%; top: 17px;";
             MinimapHide = "display:none;";
         }
         else
