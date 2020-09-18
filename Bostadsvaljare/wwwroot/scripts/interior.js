@@ -1,5 +1,6 @@
 ﻿(function () {
     window.interior = {
+        imageData: [],
         listeners: {},
 
         addResizeListener: function () {
@@ -7,6 +8,66 @@
 
             this.listeners.resize = function (e) { self._onResize(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+        },
+
+        loadImages: async function (data) {
+            var self = this,
+                imagesLoaded = data.images.length + data.floorplans.length,
+                onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
+
+            data.images.forEach((image, i) => {
+                var img = new Image();
+                img.onload = onLoadImg;
+                img.src = image.source;
+                $(img).addClass('gallery-img');
+                self.imageData.push({
+                    img: img,
+                    parentID: 'gallery-item-'+ i,
+                });
+
+                if (image.type === 0) { /* image.type === ImageType.Image */
+                    var carouselImg = img.cloneNode();
+                    $(carouselImg).removeClass();
+                    $(carouselImg).addClass('d-block w-100');
+                    self.imageData.push({
+                        img: carouselImg,
+                        parentID: 'carousel-item-'+ i,
+                    });
+                }
+            });
+            data.floorplans.forEach((floorplan, i) => {
+                var img = new Image();
+                img.onload = onLoadImg;
+                img.id = 'floorplan-'+ i +'-img';
+                img.src = floorplan.source;
+                img.usemap = '#hotspots-'+ i;
+                $(img).css({ width: '99.99%' });
+                $(img).attr('floor', i);
+                self.imageData.push({
+                    img: img,
+                    parentID: 'floorplan-'+ i,
+                    floor: i,
+                });
+            });
+
+            while (imagesLoaded > 0) {
+                await util.delay(100);
+            }
+            return true;
+        },
+
+        applyImages: function () {
+            $('#remove-this').remove();
+            var applyImage = async (img, id) => {
+                while ($(id).length === 0) {
+                    await util.delay(10);
+                }
+                $(id).append(img);
+            };
+
+            for (var data of this.imageData) {
+                applyImage(data.img, '#'+ data.parentID);
+            }
         },
 
         dispose: function () {

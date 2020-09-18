@@ -5,13 +5,12 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
-@using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
 @using BlazorPro.Spinkit
 
 
-<SpinLoader IsLoading="SelectedImage == null">
+<SpinLoader IsLoading="SelectedImage == null || !ImagesLoaded">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -21,18 +20,18 @@
     <ContentTemplate>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <img id="remove-this" src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
         <div id="fullscreen-image" class="@(FullscreenImage != null ? "" : "hidden")">
             <div class="fs-bg" @onclick="OnClickClose">
                 <div class="fs-border" @onclick:stopPropagation="true">
                     <span class="fs-close" @onclick="OnClickClose"></span>
-                    <img src="@FullscreenImage" style="width: 100%;" @onload="OnLoadFSImg" />
+                    <!--<img src="@FullscreenImage" style="width: 100%;" @onload="OnLoadFSImg" />-->
                 </div>
             </div>
         </div>
 
         <div class="line-8">
-            <div style="100%"> 
             <!-- Stillbilder -->
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
                 <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
@@ -52,8 +51,8 @@
                             if (HouseData.Images[_i].Type != Bostadsvaljare.Data.ImageType.Image)
                                 continue;
 
-                            <div class="carousel-item @(_i == 0 ? "active" : "")">
-                                <img class="d-block w-100" src="@HouseData.Images[_i].Source" @onload="OnLoadImg" @onclick="(e) => OnClickCarousel(e, HouseData.Images[_i].Source)">
+                            <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
+                                <!--<img class="d-block w-100" src="@HouseData.Images[_i].Source" @onload="OnLoadImg" @onclick="(e) => OnClickCarousel(e, HouseData.Images[_i].Source)">-->
                             </div>
                         }
                     </div>
@@ -67,8 +66,6 @@
                     </a>
                 </div>
             </div>
-            </div>
-
 
             <!-- 360-bilder -->
             <div id="pan_container" class="select-none @(SelectedType == Bostadsvaljare.Data.ImageType.Panorama ? "" : "hidden")">
@@ -97,8 +94,8 @@
                         @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                         {
                             var _i = i;
-                            <div id="floorplan-@_i" style="position: relative; @(!FloorsInit[_i] || Floor == _i ? "" : "display: none;") @(FloorsInit[_i] ? "" : "visibility: hidden;")">
-                                <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">
+                            <div id="floorplan-@_i" class="@(Floor == _i ? "" : "hidden")" style="position: relative;">
+                                <!--<img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" style="width: @ImgWidth;" usemap="#hotspots-@_i" @onload="(e) => OnLoadFloorplan(e, _i)">-->
                                 <map id="hotspots-@_i" name="hotspots-@_i">
                                     @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
                                     {
@@ -118,8 +115,8 @@
         <div id="gallery" class="line-4">
             @for (int i = 0; i < HouseData.Images.Count; i++)
             {
-                <span class="line-3">
-                    <BSImage index="@i" src="@HouseData.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg" @onload="OnLoadImg"></BSImage>
+                <span id="gallery-item-@i" class="line-3">
+                    <!--<BSImage index="@i" src="@HouseData.Images[i].Source" Class="gallery-img" @onclick="OnClickGalleryImg" @onload="OnLoadImg"></BSImage>-->
                 </span>
             }
         </div>
@@ -179,9 +176,9 @@
 </SpinLoader>
 
 @code {
-    public string MoveIcon2 = " position: absolute; left: 52%; top: 12px;";
-    public string MoveIcon = " position: absolute; left: 78%; top: 17px;";
-    public string minimaphide = "Display:initial;";
+    public string MoveIcon2 { get; set; } = "position: absolute; left: 52%; top: 12px;";
+    public string MoveIcon { get; set; } = "position: absolute; left: 78%; top: 17px;";
+    public string MinimapHide { get; set; } = "Display: initial;";
     private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
@@ -194,11 +191,11 @@
 
     private Data.HouseType HouseData { get; set; }
     private string FullscreenImage { get; set; } = null;
-    private bool[] FloorsInit { get; set; }
+    //private bool[] FloorsInit { get; set; }
     private int Floor { get; set; } = 0;
     private string ImgWidth { get; set; } = "99.99%";
     private int Radius { get; set; } = 15;
-    private int LoadingImages { get; set; } = 0;
+    private bool ImagesLoaded { get; set; } = false;
     private bool InitVR { get; set; } = false;
     private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
@@ -212,14 +209,14 @@
         string houseType = House.Housetype;
         HouseData = Data.HouseType.GetData(houseType);
 
-        LoadingImages += HouseData.Images.Count;
-        LoadingImages += HouseData.Floorplans.Count;
-        foreach (Data.HouseType.Image img in HouseData.Images) {
-            if (img.Type == Data.ImageType.Image)
-                LoadingImages += 1;
-        }
+        //LoadingImages += HouseData.Images.Count;
+        //LoadingImages += HouseData.Floorplans.Count;
+        //foreach (Data.HouseType.Image img in HouseData.Images) {
+        //    if (img.Type == Data.ImageType.Image)
+        //        LoadingImages += 1;
+        //}
 
-        FloorsInit = new bool[HouseData.Floorplans.Count];
+        //FloorsInit = new bool[HouseData.Floorplans.Count];
 
         SelectedImage = HouseData.Images[0];
         base.StateHasChanged();
@@ -229,90 +226,100 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
+            //await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.resize");
-            await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
+            //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
             firstRenderDone = true;
+            base.StateHasChanged();
         }
     }
 
-    public void HideMinimap()
+    private async void OnAfterLoader(ProgressEventArgs ev)
     {
-        if (isChecked == false)
-        {
-            MoveIcon2 = " position: absolute; left: 95%; top: 12px;";
-            MoveIcon = "position: absolute; left:98%; top: 17px;";
-            minimaphide = "display:none;";
-        }
-        else
-        {
-            MoveIcon2 = "position: absolute; left: 52%; top: 12px;";
-            MoveIcon = "position: absolute; left: 78%; top: 17px;";
-            minimaphide = "display:initial;";
-        }
+        await JSRuntime.InvokeVoidAsync("interior.applyImages");
     }
 
-    private void OnLoadImg(ProgressEventArgs ev)
-    {
-        LoadingImages -= 1;
-        base.StateHasChanged();
-    }
+    //private void OnLoadImg(ProgressEventArgs ev)
+    //{
+    //    LoadingImages -= 1;
+    //    base.StateHasChanged();
+    //}
 
-    private async void OnLoadFSImg(ProgressEventArgs ev)
-    {
-        await JSRuntime.InvokeVoidAsync("interior.resize");
-    }
+    //private async void OnLoadFSImg(ProgressEventArgs ev)
+    //{
+    //    await JSRuntime.InvokeVoidAsync("interior.resize");
+    //}
+
+    //private async void OnLoadFloorplan(ProgressEventArgs ev, int floor)
+    //{
+    //    while (!firstRenderDone)
+    //        await Task.Delay(20);
+
+    //    string parentID = "floorplan-" + floor;
+    //    await JSRuntime.InvokeVoidAsync(
+    //        "mapster_responsive.setValues", floor, parentID, ImgWidth
+    //    );
+    //    await JSRuntime.InvokeVoidAsync(
+    //        "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor, "", 0.6, 0.9
+    //    );
+    //    await Task.Delay(100);
+    //    await JSRuntime.InvokeVoidAsync("mapster.selectAll");
+
+    //    FloorsInit[floor] = true;
+    //    //LoadingImages -= 1;
+    //    base.StateHasChanged();
+    //}
 
     private async void OnLoadVR(ProgressEventArgs ev)
     {
         // Change height on #vr_video to be its width*2/3
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
         InitVR = true;
+        base.StateHasChanged();
     }
 
     private async void OnLoadRoundme(ProgressEventArgs ev)
     {
         await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "roundme-embedded");
         InitRoundme = true;
-    }
-
-    private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
-    {
-        FullscreenImage = imgSrc;
         base.StateHasChanged();
     }
 
-    private async void OnLoadFloorplan(ProgressEventArgs ev, int floor)
+    public void HideMinimap()
     {
-        while (!firstRenderDone)
-            await Task.Delay(20);
-
-        string parentID = "floorplan-" + floor;
-        await JSRuntime.InvokeVoidAsync(
-            "mapster_responsive.setValues", floor, parentID, ImgWidth
-        );
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.addMapHighlights", parentID, parentID +"-img", "hotspots-"+ floor, "", 0.6, 0.9
-        );
-        await Task.Delay(100);
-        await JSRuntime.InvokeVoidAsync("mapster.selectAll");
-
-        FloorsInit[floor] = true;
-        LoadingImages -= 1;
+        if (isChecked == false)
+        {
+            MoveIcon2 = "position: absolute; left: 95%; top: 12px;";
+            MoveIcon = "position: absolute; left:98%; top: 17px;";
+            MinimapHide = "display:none;";
+        }
+        else
+        {
+            MoveIcon2 = "position: absolute; left: 52%; top: 12px;";
+            MoveIcon = "position: absolute; left: 78%; top: 17px;";
+            MinimapHide = "display:initial;";
+        }
         base.StateHasChanged();
     }
+
+    //private void OnClickCarousel(MouseEventArgs ev, string imgSrc)
+    //{
+    //    FullscreenImage = imgSrc;
+    //    base.StateHasChanged();
+    //}
 
     private void OnClickHotspot(int roomID)
     {
         ChangeRoom(roomID);
     }
 
-    private async void OnClickGalleryImg(MouseEventArgs ev)
-    {
-        int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-        ChangeRoom(ind);
-    }
+    //private async void OnClickGalleryImg(MouseEventArgs ev)
+    //{
+    //    int ind = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
+    //    ChangeRoom(ind);
+    //}
 
     private void OnClickClose(MouseEventArgs ev)
     {
@@ -369,8 +376,6 @@
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
-
-
 }
 
 <style>
@@ -624,7 +629,7 @@
     }
 
     .planritning.pan_el.fullscreen {
-        @minimaphide
+        @MinimapHide
     }
 
     .e-checkicon.pan_el.fullscreen {
