@@ -40,13 +40,13 @@
                 img.onload = onLoadImg;
                 img.id = 'floorplan-'+ i +'-img';
                 img.src = floorplan.source;
-                img.usemap = '#hotspots-'+ i;
                 $(img).css({ width: '99.99%' });
                 $(img).attr('floor', i);
                 self.imageData.push({
                     img: img,
                     parentID: 'floorplan-'+ i,
                     floor: i,
+                    usemap: '#hotspots-'+ i,
                 });
             });
 
@@ -58,15 +58,13 @@
 
         applyImages: function () {
             $('#remove-this').remove();
-            var applyImage = async (img, id) => {
-                while ($(id).length === 0) {
-                    await util.delay(10);
-                }
-                $(id).append(img);
-            };
 
             for (var data of this.imageData) {
-                applyImage(data.img, '#'+ data.parentID);
+                $('#'+ data.parentID).append(data.img);
+                if (data.usemap) {
+                    var id = '#'+ data.img.id;
+                    $(id).attr('usemap', data.usemap);
+                }
             }
         },
 
