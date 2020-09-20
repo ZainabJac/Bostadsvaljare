@@ -10,7 +10,7 @@
 @inject NavigationManager navManager
 
 
-<SpinLoader IsLoading="@(MapData  == null || HouseData == null)">
+<SpinLoader IsLoading="@(MapData  == null || HouseData == null || !ImagesLoaded)">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -18,17 +18,18 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
+        
+        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
         <div class="line-6">
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
-                <div id="@Views[i].ID" style="@(!Views[_i].Initialized || CurrentView == _i ? "" : "display: none;") @(Views[_i].Initialized ? "" : "visibility: hidden;")">
-                    <img id="@(Views[i].ID +"-img")" src="@Views[i].ImgSource" style="width: @ImgSize;" usemap="@("#"+ Views[i].ImageMapName)" @onload="e => OnLoadImage(e, _i)">
-                    <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
+                <div id="house-main-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                    <map id="house-map-@_i" name="house-map-@_i">
                         @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                         {
-                            if (view.Key == Data.HouseMap.ImageNameToView(Views[i].ImgSource))
+                            if (view.Key == Data.HouseMap.ImageNameToView(Views[i].Source))
                             {
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
@@ -45,8 +46,7 @@
             <div id="gallery">
                 @for (int i = 0; i < Views.Count; i++)
                 {
-                    <span class="line-3">
-                        <BSImage index="@i" src="@Views[i].ImgSource" Class="gallery-img" @onclick="OnClickGalleryImg"></BSImage>
+                    <span id="gallery-item-@i" class="line-3">
                     </span>
                 }
             </div>
@@ -99,10 +99,12 @@
     public class ViewData
     {
         public string ID { get; set; }
-        public string ImgSource { get; set; }
+        public string Source { get; set; }
         public string ImageMapName { get; set; }
         public bool Initialized { get; set; } = false;
     }
+
+    private static Lgh_lista self;
 
     private SfGrid<Data.House> HouseList;
     private Dictionary<string, string> HouseToStatus;
@@ -110,7 +112,8 @@
     private int HighlightedRow { get; set; }
     private int MobileSelection { get; set; } = -1;
     private int CurrentView { get; set; } = 0;
-    private string ImgSize { get; set; } = "100%";
+    private bool ImagesLoaded { get; set; } = false;
+    private bool ViewsInited { get; set; } = false;
 
     public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -121,22 +124,22 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = "house-main-1",
-            ImgSource = "IMG/G3K(t) - svart- röd.jpg",
+            Source = "IMG/G3K(t) - svart- röd.jpg",
             ImageMapName = "house-map-1",
         },
         new ViewData {
             ID = "house-main-2",
-            ImgSource = "IMG/G3K(t) - röd.jpg",
+            Source = "IMG/G3K(t) - röd.jpg",
             ImageMapName = "house-map-2",
         },
         new ViewData {
             ID = "house-main-3",
-            ImgSource = "IMG/G3K(t) - svart.jpg",
+            Source = "IMG/G3K(t) - svart.jpg",
             ImageMapName = "house-map-3",
         },
         new ViewData {
             ID = "house-main-4",
-            ImgSource = "Extra_G3K(t).png",
+            Source = "IMG/Extra_G3K(t).png",
             ImageMapName = "house-map-4",
         },
     };
@@ -159,6 +162,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        self = this;
         this.HouseData = Data.House.GetHouseData();
         this.MapData = Data.HouseMap.GetHouseMapData();
         this.HouseToStatus = new Dictionary<string, string>();
@@ -188,26 +192,17 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
             firstRenderDone = true;
+            base.StateHasChanged();
         }
     }
 
-    private async void OnLoadImage(ProgressEventArgs e, int ind)
+    private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-        while (!firstRenderDone)
-            await Task.Delay(10);
-
-        if (!this.Views[ind].Initialized) {
-            await JSRuntime.InvokeVoidAsync(
-                "mapster_responsive.setValues", ind, this.Views[ind].ID, this.ImgSize
-            );
-            await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", this.Views[ind].ID, this.Views[ind].ID +"-img", this.Views[ind].ImageMapName
-            );
-
-            this.Views[ind].Initialized = true;
-            base.StateHasChanged();
-        }
+        await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
+        ViewsInited = true;
+        base.StateHasChanged();
     }
 
     private void OnMouseOverIM(MouseEventArgs e, string houseNumber)
@@ -284,7 +279,7 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        string viewName = Data.HouseMap.ImageNameToView(this.Views[this.CurrentView].ImgSource);
+        string viewName = Data.HouseMap.ImageNameToView(this.Views[this.CurrentView].Source);
         string key = viewName +"_"+ houseNumber;
         if (HouseToStatus.ContainsKey(key))
         {
@@ -331,16 +326,12 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
-    private async void OnClickGalleryImg(MouseEventArgs ev)
+    [JSInvokable]
+    public static void ChangeLghView(int ind)
     {
-        this.CurrentView = await JSRuntime.InvokeAsync<int>("util.getGalleryIndex");
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImage", this.Views[this.CurrentView].ID, this.Views[this.CurrentView].ImgSource
-        );
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
-        this.MobileSelection = -1;
-
-        base.StateHasChanged();
+        self.CurrentView = ind;
+        self.MobileSelection = -1;
+        self.StateHasChanged();
     }
 
     private async void HousingClickedIM(int houseID)
