@@ -11,7 +11,7 @@
 
 
 
-<SpinLoader IsLoading="@(MapData == null)">
+<SpinLoader IsLoading="@(MapData == null || !ImagesLoaded)">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -20,60 +20,68 @@
     </LoadingTemplate>
     <ContentTemplate>
 
+        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
+
         @for (int i = 0; i < Views.Count; i++)
         {
             var _i = i;
-            <div id="@Views[i].ID" style="@(!Views[_i].Initialized || CurrentView == _i ? "" : "display: none;") @(Views[_i].Initialized ? "" : "visibility: hidden;")">
-                <img id="@(Views[i].ID +"-img")" src="@ExteriorImgPaths[i]" style="width: @ImgWidth;" usemap="#@Views[i].ImageMapName" @onload="e => OnLoadIM(e, _i)">
-                <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
-                    @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
-                    {
-                        if (view.Key == Data.HouseMap.ImageNameToView(ExteriorImgPaths[i]))
-                        {
-                            @foreach (Data.HouseMap map in view.Value)
+            <div id="view-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
+                {
+                    var _j = j;
+                    var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
+                    <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
+                        <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
+                            @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
-                                <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                      @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
-                                      coords="@map.IMCoords" shape="poly">
+                                if (view.Key == Data.HouseMap.ImageNameToView(Views[_i].SunStudies["midday"]))
+                                {
+                                    @foreach (Data.HouseMap map in view.Value)
+                                    {
+                                        <area id="@Data.House.Get(map.ID).Status" status="" href="#"
+                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
+                                              coords="@map.IMCoords" shape="poly">
+                                    }
+                                }
                             }
-                        }
-                    }
-                </map>
+                        </map>
+                    </div>
+                }
             </div>
         }
 
-        <div class="buttonrow"> 
-        <div id="view_menu">
-            <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
-                <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
-                <DropDownButtonItems>
-                    @for (int i = 0; i < Views.Count; i++)
-                    {
-                        <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
-                    }
-                </DropDownButtonItems>
-            </SfDropDownButton>
-        </div>
+        <div class="buttonrow">
+            <div id="view_menu">
+                <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
+                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
+                    <DropDownButtonItems>
+                        @for (int i = 0; i < Views.Count; i++)
+                        {
+                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+                        }
+                    </DropDownButtonItems>
+                </SfDropDownButton>
+            </div>
 
-        <div id="sun_study_menu">
-            <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
-                <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
-                <DropDownButtonItems>
-                    <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
-                    <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
-                    <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
-                </DropDownButtonItems>
-            </SfDropDownButton>
-        </div>
+            <div id="sun_study_menu">
+                <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
+                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
+                    <DropDownButtonItems>
+                        <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
+                        <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
+                        <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
+                    </DropDownButtonItems>
+                </SfDropDownButton>
+            </div>
 
-        <div id="highlight_all_checker">
-            <SfChipList Selection="Selection.Single">
-                <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
-                <ChipCollection>
-                    <ChipListChip Text="Visa ledigt"></ChipListChip>
-                </ChipCollection>
-            </SfChipList>
-        </div>
+            <div id="highlight_all_checker">
+                <SfChipList Selection="Selection.Single">
+                    <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
+                    <ChipCollection>
+                        <ChipListChip Text="Visa ledigt"></ChipListChip>
+                    </ChipCollection>
+                </SfChipList>
+            </div>
         </div>
     </ContentTemplate>
 </SpinLoader>
@@ -113,10 +121,11 @@
 
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
     private int CurrentView { get; set; } = 0;
-    private string[] ExteriorImgPaths { get; set; }
-    private string ImgWidth { get; set; } = "99%";
+    private string CurrentStudy { get; set; } = "midday";
     private int MobileSelection { get; set; } = -1;
 
+    private bool ImagesLoaded { get; set; } = false;
+    private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
 
@@ -124,48 +133,26 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.ExteriorImgPaths = new string[this.Views.Count];
         this.MapData = Data.HouseMap.GetHouseMapData();
-        for (int i = 0; i < this.Views.Count; i++)
-        {
-            this.ExteriorImgPaths[i] = this.Views[i].SunStudies["midday"];
-        }
         base.StateHasChanged();
-
-
     }
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
+            base.StateHasChanged();
         }
-
-
     }
 
-    public async void OnLoadIM(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args, int view)
+    private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-        while (!firstRenderDone)
-            await Task.Delay(10);
-
-        if (!Views[view].Initialized)
-        {
-            await JSRuntime.InvokeVoidAsync(
-                "mapster_responsive.setValues", view, Views[view].ID, ImgWidth
-            );
-            await JSRuntime.InvokeVoidAsync(
-                "mapster.addMapHighlights", Views[view].ID, Views[view].ID + "-img", Views[view].ImageMapName, "center"
-            );
-        }
-
-        Views[view].Initialized = true;
+        await JSRuntime.InvokeVoidAsync("exterior.applyImages");
+        ViewsInited = true;
         base.StateHasChanged();
-
     }
 
     private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
@@ -176,24 +163,16 @@
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImage", this.Views[this.CurrentView].ID, this.ExteriorImgPaths[CurrentView]
-        );
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
-        this.MobileSelection = -1;
 
+        this.MobileSelection = -1;
         base.StateHasChanged();
     }
 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
-        for (int i = 0; i < this.Views.Count; i++)
-        {
-            this.ExteriorImgPaths[i] = this.Views[i].SunStudies[args.Element.ID];
-        }
-        await JSRuntime.InvokeVoidAsync(
-            "mapster.changeImage", this.Views[this.CurrentView].ID, this.ExteriorImgPaths[CurrentView]
-        );
+        this.CurrentStudy = args.Element.ID;
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
 
         this.MobileSelection = -1;
         base.StateHasChanged();
