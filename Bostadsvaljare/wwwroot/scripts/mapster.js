@@ -74,5 +74,9 @@
             mapster_responsive.resize();
             mapster_responsive.resize();
         },
+
+        dispose: function () {
+            $('img').mapster('unbind');
+        },
     };
 })();
