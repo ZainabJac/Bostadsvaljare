@@ -20,6 +20,40 @@
     </LoadingTemplate>
     <ContentTemplate>
 
+        <div style="width: 100%;">
+            <div id="view_menu">
+                <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
+                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
+                    <DropDownButtonItems>
+                        @for (int i = 0; i < Views.Count; i++)
+                        {
+                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+                        }
+                    </DropDownButtonItems>
+                </SfDropDownButton>
+            </div>
+
+            <div id="sun_study_menu">
+                <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
+                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
+                    <DropDownButtonItems>
+                        <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
+                        <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
+                        <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
+                    </DropDownButtonItems>
+                </SfDropDownButton>
+            </div>
+
+            <div id="highlight_all_checker">
+                <SfChipList Selection="Selection.Single">
+                    <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
+                    <ChipCollection>
+                        <ChipListChip Text="Visa ledigt"></ChipListChip>
+                    </ChipCollection>
+                </SfChipList>
+            </div>
+        </div>
+
         @for (int i = 0; i < Views.Count; i++)
         {
             var _i = i;
@@ -42,39 +76,7 @@
             </div>
         }
 
-        <div class="buttonrow"> 
-        <div id="view_menu">
-            <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
-                <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
-                <DropDownButtonItems>
-                    @for (int i = 0; i < Views.Count; i++)
-                    {
-                        <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
-                    }
-                </DropDownButtonItems>
-            </SfDropDownButton>
-        </div>
 
-        <div id="sun_study_menu">
-            <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
-                <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
-                <DropDownButtonItems>
-                    <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
-                    <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
-                    <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
-                </DropDownButtonItems>
-            </SfDropDownButton>
-        </div>
-
-        <div id="highlight_all_checker">
-            <SfChipList Selection="Selection.Single">
-                <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
-                <ChipCollection>
-                    <ChipListChip Text="Visa ledigt"></ChipListChip>
-                </ChipCollection>
-            </SfChipList>
-        </div>
-        </div>
     </ContentTemplate>
 </SpinLoader>
 
@@ -341,11 +343,14 @@
         /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
         color: white;
         font-family: acumin-pro,sans-serif;
+        display: inline-block;
     }
 
     .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
         color: #415965;
         font-family: acumin-pro,sans-serif;
+        font-size: 13px;
+        display: inline-block;
     }
 
     .e-sun-study {
@@ -353,20 +358,35 @@
         /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
         color: white;
         font-family: acumin-pro,sans-serif;
+        display: inline-block;
     }
 
     @@media (max-width: 363px) {
 
 
         .e-chip-list.e-chip, .e-chip-list .e-chip {
-          
-            padding: 2px;
+            display: inline-block;
         }
 
         .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
             color: #415965;
             font-family: acumin-pro,sans-serif;
-            padding: 2px;
+            display: inline-block;
+        }
+
+        .e-sun-study {
+            content: url(IMG/icons/icons8-day-and-night-100.png);
+            /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
+            color: white;
+            font-family: acumin-pro,sans-serif;
+            display: inline-block;
+        }
+        .e-view {
+            content: url(IMG/icons/noun_rotate_24052.png);
+            /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
+            color: white;
+            font-family: acumin-pro,sans-serif;
+            display: inline-block;
         }
 
     }
