@@ -11,9 +11,10 @@
             // TODO: fix so it's not neccessary to load every time;
             //       some bug causes only some image maps to load otherwise
             data.forEach((view, i) => {
-                for (var name in view.sunStudies) {
-                    var source = view.sunStudies[name],
-                        img = new Image();
+                var name, source, img;
+                for (name in view.sunStudies) {
+                    source = view.sunStudies[name];
+                    img = new Image();
                     img.onload = onLoadImg;
                     img.id = 'sun-study-' + i + '-' + name + '-img';
                     img.src = source;
@@ -31,8 +32,8 @@
             });
 
             var i, name, ind = 0;
-            for (i in data.view) {
-                for (name in data.view[i].sunStudies) {
+            for (i in data) {
+                for (name in data[i].sunStudies) {
                     this.mapIndex[name + i] = ind++;
                 }
             }
