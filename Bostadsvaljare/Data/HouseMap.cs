@@ -14,7 +14,7 @@ namespace Bostadsvaljare.Data
             { "IMG/G3K(t) - svart- röd.jpg", "view-1" },
             { "IMG/G3K(t) - röd.jpg", "view-1" },
             { "IMG/G3K(t) - svart.jpg", "view-1" },
-            { "Extra_G3K(t).png", "view-1" }
+            { "IMG/Extra_G3K(t).png", "view-1" }
         };
 
         public int ID { get; set; }

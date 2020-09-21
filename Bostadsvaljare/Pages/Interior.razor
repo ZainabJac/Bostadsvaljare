@@ -20,7 +20,7 @@
     <ContentTemplate>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <img id="remove-this" src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
+        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
         <div id="fullscreen-image" class="@(ShowFullscreenImage ? "" : "hidden")">
             <div class="fs-bg" @onclick="OnClickClose">
@@ -92,7 +92,7 @@
                         @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                         {
                             var _i = i;
-                            <div id="floorplan-@_i" class="@(Floor == _i ? "" : "hidden")" style="position: relative;">
+                            <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="position: relative; @(FloorplanInited ? "" : "visibility: hidden;")">
                                 <map id="hotspots-@_i" name="hotspots-@_i">
                                     @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
                                     {
@@ -123,18 +123,17 @@
                     <CardStacked>
 
                         <div>
-                            <text class="card-info-header" style="margin-left:6px;">Pris </text>
+                            <text class="card-info-header" style="margin-left: 6px;">Pris</text>
                             <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
                         <div>
-                            <text class="card-info-header" style="margin-left:6px;">Boarea</text>
+                            <text class="card-info-header" style="margin-left: 6px;">Boarea</text>
                             <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
-
                         <div>
-                            <text class="card-info-header" style="margin-left:6px;">Lgh nr.</text>
+                            <text class="card-info-header" style="margin-left: 6px;">Lgh nr.</text>
                             <text class="card-info-header-right" style="margin-right:6px;">Uppgiftsaknas</text>
                         </div>
 
@@ -188,6 +187,7 @@
     private int Floor { get; set; } = 0;
     private int Radius { get; set; } = 15;
     private bool ImagesLoaded { get; set; } = false;
+    private bool FloorplanInited { get; set; } = false;
     private bool InitVR { get; set; } = false;
     private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
@@ -215,7 +215,7 @@
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             await JSRuntime.InvokeVoidAsync("interior.resize");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -223,8 +223,10 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("interior.applyImages");
+        await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
+        FloorplanInited = true;
+        base.StateHasChanged();
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
@@ -330,7 +332,7 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("interior.dispose");
-        await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+        //await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
     }
 }
 
