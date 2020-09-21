@@ -56,15 +56,15 @@
                 $(data.parentID).append(data.img);
                 // Add image map functionality
                 $('#' + data.img.id).attr('usemap', data.usemap);
-                this._loadIM(data.img);
+                this._loadIM(data.img, data.style.width);
             }
             await util.delay(100);
         },
 
-        _loadIM: function (img) {
+        _loadIM: function (img, imgWidth) {
             var view = $(img).attr('view'),
                 sunStudy = $(img).attr('sun-study'),
-                imgWidth = $(img).css('width'),
+                imgWidth = imgWidth || $(img).css('width'),
                 parentID = 'view-' + view + ' #sun-study-' + sunStudy,
                 imgID = 'sun-study-' + view + '-' + sunStudy + '-img',
                 mapName = 'houses-' + view + '-' + sunStudy;

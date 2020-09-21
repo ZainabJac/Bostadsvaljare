@@ -89,7 +89,7 @@
                 $('#'+ data.parentID).append(data.img);
                 // Add image map functionality
                 $('#'+ data.img.id).attr('usemap', data.usemap);
-                this._loadFloorplan(data.img);
+                this._loadFloorplan(data.img, data.style.width);
             }
         },
 
@@ -103,9 +103,9 @@
             this._onResize();
         },
 
-        _loadFloorplan: async function (img) {
+        _loadFloorplan: async function (img, imgWidth) {
             var floor = $(img).attr('floor'),
-                imgWidth = $(img).css('width'),
+                imgWidth = imgWidth || $(img).css('width'),
                 parentID = 'floorplan-' + floor;
 
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
