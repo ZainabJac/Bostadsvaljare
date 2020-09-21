@@ -84,6 +84,7 @@
         dispose: function () {
             mapster.dispose();
             this.images.length = 0;
+            this.imageMaps.length = 0;
         },
     };
 })();

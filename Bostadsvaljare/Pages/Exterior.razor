@@ -258,6 +258,7 @@
     public async ValueTask DisposeAsync()
     {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        await JSRuntime.InvokeVoidAsync("exterior.dispose");
     }
 
 
