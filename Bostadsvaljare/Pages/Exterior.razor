@@ -163,7 +163,7 @@
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
+        await JSRuntime.InvokeVoidAsync("exterior.changeImage", this.CurrentView, this.CurrentStudy);
 
         this.MobileSelection = -1;
         base.StateHasChanged();
@@ -172,7 +172,7 @@
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentStudy = args.Element.ID;
-        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", this.CurrentView);
+        await JSRuntime.InvokeVoidAsync("exterior.changeImage", this.CurrentView, this.CurrentStudy);
 
         this.MobileSelection = -1;
         base.StateHasChanged();

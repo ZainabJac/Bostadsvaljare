@@ -59,6 +59,12 @@
                 this._loadIM(data.img, data.style.width);
             }
             await util.delay(100);
+            // Internally, change image to what is displayed at page start
+            this.changeImage(0, 'midday');
+        },
+
+        changeImage: function (view, sunStudy) {
+            mapster_responsive.changeImage(this.mapIndex[sunStudy + view]);
         },
 
         _loadIM: function (img, imgWidth) {

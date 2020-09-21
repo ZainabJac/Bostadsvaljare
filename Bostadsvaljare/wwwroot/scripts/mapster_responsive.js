@@ -40,7 +40,7 @@
             return { left: l, right: r, top: t, bottom: b, width: l + r, height: t + b };
         },
 
-        setValues: async function (imgInd, parentID, width) {
+        setValues: function (imgInd, parentID, width) {
             var imgEl = $('#'+ parentID +' img');
             this.images[imgInd] = {
                 parentID: parentID,
@@ -48,8 +48,7 @@
                 ratio: imgEl.width() / imgEl.height(),
             };
 
-            await util.delay(50);
-            if ($.isEmptyObject(this.margin))
+            if ($.isEmptyObject(this.margin) && imgInd == this.currentImgInd)
                 this.margin = this.getMargin();
         },
 
@@ -61,8 +60,7 @@
         resize: function () {
             if (this.images.length > 0
             && $('#'+ this.images[this.currentImgInd].parentID +' div').length > 0) {
-                this._onResize(undefined);
-                this.margin = this.getMargin();
+                this._onResize();
             }
         },
 
@@ -85,18 +83,13 @@
 
             if (this.stayInWindow
             && windowH * image.ratio < windowW * perc) {
-                if (wrapper.height() !== windowH) {
-                    newHeight = windowH;
-                    newWidth = newHeight * image.ratio;
-                    diff = newWidth / wrapper.width();
-                }
+                newHeight = windowH;
+                newWidth = newHeight * image.ratio;
+                diff = newWidth / wrapper.width();
             } else {
-                if (image.width.slice('-1') == '%')
-                    if (this.stayInWindow && perc === 1)
-                        newWidth = $(window).width() - this.margin.width;
-                    else
-                        newWidth = $('#'+ image.parentID).parent().width() * perc;
-                else
+                if (image.width.slice('-1') == '%') {
+                    newWidth = $('#'+ image.parentID).width() * perc;
+                } else
                     newWidth = parseFloat(image.width);
                 diff = newWidth / wrapper.width();
                 newHeight = wrapper.height() * diff;
