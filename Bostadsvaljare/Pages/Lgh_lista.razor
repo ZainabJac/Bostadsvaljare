@@ -57,10 +57,9 @@
                 <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
                 <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
                 <GridColumns>
-                    <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Lgh nr."></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Hus nr."></GridColumn>
                     <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
-                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
-                    <GridColumn Field="@nameof(Data.House.Rent)" Format="C2" HeaderText="Mån. avgift"></GridColumn>
+                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>  
                     <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
                         <Template>
                             @{
@@ -124,22 +123,22 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = "house-main-1",
-            Source = "IMG/G3K(t) - svart- röd.jpg",
+            Source = "IMG/Oversiktsbild1-5.jpg",
             ImageMapName = "house-map-1",
         },
         new ViewData {
             ID = "house-main-2",
-            Source = "IMG/G3K(t) - röd.jpg",
+            Source = "IMG/Gatuvy1-5.jpg",
             ImageMapName = "house-map-2",
         },
         new ViewData {
             ID = "house-main-3",
-            Source = "IMG/G3K(t) - svart.jpg",
+            Source = "IMG/GRK-röd.jpg",
             ImageMapName = "house-map-3",
         },
         new ViewData {
             ID = "house-main-4",
-            Source = "IMG/Extra_G3K(t).png",
+            Source = "IMG/G3kT-grey.jpg",
             ImageMapName = "house-map-4",
         },
     };

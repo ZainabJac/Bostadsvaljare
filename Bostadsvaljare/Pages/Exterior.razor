@@ -52,7 +52,7 @@
 
         <div class="buttonrow">
             <div id="view_menu">
-                <SfDropDownButton IconCss="e-icons e-view" Content="Byt vinkel">
+                <SfDropDownButton IconCss="e-icons e-view" Content="Byt Område">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
                     <DropDownButtonItems>
                         @for (int i = 0; i < Views.Count; i++)
@@ -78,7 +78,7 @@
                 <SfChipList Selection="Selection.Single">
                     <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
                     <ChipCollection>
-                        <ChipListChip Text="Visa ledigt"></ChipListChip>
+                        <ChipListChip Text="Visa status"></ChipListChip>
                     </ChipCollection>
                 </SfChipList>
             </div>
@@ -99,22 +99,22 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData() {
             ID = "view-1",
-            Name = "Vy 1",
+            Name = "Område 1",
             ImageMapName = "imagemap-1",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Morgon.jpg" },
-                { "midday", "IMG/Dag.jpg" },
-                { "evening", "IMG/Natt.jpg" },
+                { "morning", "IMG/Oversiktsbild1-5.jpg" },
+                { "midday", "IMG/Oversiktsbild1-5.jpg" },
+                { "evening", "IMG/Oversiktsbild1-5.jpg" },
             },
         },
         new ViewData() {
             ID = "view-2",
-            Name = "Vy 2",
+            Name = "Område 2",
             ImageMapName = "imagemap-2",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/ext. 2.jpg" },
-                { "midday", "IMG/ext. 2.jpg" },
-                { "evening", "IMG/ext. 2.jpg" },
+                { "morning", "IMG/Oversiktsbild1-5.jpg" },
+                { "midday", "IMG/Oversiktsbild1-5.jpg" },
+                { "evening", "IMG/Oversiktsbild1-5.jpg" },
             },
         },
     };
@@ -216,7 +216,7 @@
                 msg = "Reserverad";
                 break;
             default:
-                msg = "Lgh nr.\t" + houseNumber +
+                msg = "Hus nr.\t" + houseNumber +
                     "\nBoarea:\t" + house.Sqm + "m²" +
                     "\nPris:\t\t" + house.Price;
                 break;

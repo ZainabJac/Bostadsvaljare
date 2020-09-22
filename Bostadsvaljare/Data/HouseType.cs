@@ -63,10 +63,15 @@ namespace Bostadsvaljare.Data
                         Images = new List<Image> {
                             new Image { Source="IMG/G3kt-Vardagsrum.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Image },
-                             new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/G3KT-LIVINGROOMPANO.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zAgqQYLOBi16QRP3uSDb", RoomName="vardagsrum" },
-                            new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/15lzHahbXQXPl8Cpkxzw", RoomName="kok" },
-                            new Image { Source="IMG/G3KT-VIND.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JAGDHUVVJqJhnxps8puU", RoomName="vind" },
+                            new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
+                               new Image { Source="IMG/Gatuvy1-5.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/GRK-röd.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kT-grey.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zAgqQYLOBi16QRP3uSDb", RoomName="vardagsrum" },
+                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/15lzHahbXQXPl8Cpkxzw", RoomName="kok" },
+                            new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JAGDHUVVJqJhnxps8puU", RoomName="vind" },
+                           
+                           
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
