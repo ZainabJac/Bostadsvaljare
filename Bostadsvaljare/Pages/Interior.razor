@@ -77,6 +77,8 @@
             <!-- VR-video -->
             <iframe id="vr_video" src="@SelectedImage.Link" class="@(SelectedType == Bostadsvaljare.Data.ImageType.VR ? "" : "hidden")" style="width: 100%;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" align="middle" allowfullscreen @onload="OnLoadVR"></iframe>
         </div>
+
+
         <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
         <div class="planritning line-4 pan_el">
             <SfCard>
@@ -108,6 +110,7 @@
                 </CardStacked>
             </SfCard>
         </div>
+
 
         <div id="gallery" class="line-4">
             @for (int i = 0; i < HouseData.Images.Count; i++)
@@ -141,7 +144,7 @@
                         <div>
                             <div style="width:100%">
                                 <SfButton> Bofaktablad </SfButton>
-                         
+
                                 <SfButton CssClass="rightbutton" IsPrimary="true"> Anmäl intresse </SfButton>
                             </div>
                         </div>
@@ -161,6 +164,11 @@
 
             </div>*@
         </div>
+
+
+
+
+
 
 
         @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
@@ -641,7 +649,7 @@
     }
 
     .gallery-img {
-        width: 25%;
+        width: 36%;
         padding: 7px;
         filter: brightness(120%);
         transition-property: filter;
