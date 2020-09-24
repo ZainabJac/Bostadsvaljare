@@ -268,9 +268,14 @@
         base.StateHasChanged();
     }
 
-    private void OnClickHotspot(int roomID)
+    private async void OnClickHotspot(int roomID)
     {
-        ChangeRoom(roomID);
+        Data.HouseType.Image oldImage = this.SelectedImage;
+        this.SelectedImage = this.HouseData.Images[roomID];
+        this.SelectedType = this.SelectedImage.Type;
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, this.SelectedImage);
     }
 
     private void OnClickClose(MouseEventArgs ev)
@@ -287,31 +292,14 @@
     }
 
     [JSInvokable("ChangeRoom")]
-    public static void StaticChangeRoom(int ind)
+    public static Data.HouseType.Image[] StaticChangeRoom(int ind)
     {
-        self.ChangeRoom(ind);
-    }
+        Data.HouseType.Image oldImage = self.SelectedImage;
+        self.SelectedImage = self.HouseData.Images[ind];
+        self.SelectedType = self.SelectedImage.Type;
+        self.StateHasChanged();
 
-    private async void ChangeRoom(int ind)
-    {
-        Data.ImageType prevType = SelectedType;
-        SelectedImage = HouseData.Images[ind];
-        SelectedType = SelectedImage.Type;
-
-        if (prevType == Bostadsvaljare.Data.ImageType.Panorama &&
-            SelectedType != Bostadsvaljare.Data.ImageType.Panorama)
-            await JSRuntime.InvokeVoidAsync("pan_viewer.softDispose");
-
-        if (SelectedType == Bostadsvaljare.Data.ImageType.Image)
-            await JSRuntime.InvokeVoidAsync("bstrap.carousel_changeImage", ind);
-        else if (SelectedType == Bostadsvaljare.Data.ImageType.Panorama) {
-            if (prevType == Bostadsvaljare.Data.ImageType.Panorama)
-                await JSRuntime.InvokeVoidAsync("pan_viewer.changeRoom", SelectedImage.RoomName);
-            else
-                await JSRuntime.InvokeVoidAsync("pan_viewer.start", SelectedImage.Link, SelectedImage.RoomName);
-        }
-
-        base.StateHasChanged();
+        return new Data.HouseType.Image[] { oldImage, self.SelectedImage };
     }
 
     private async void ChangeFloor(int floor)

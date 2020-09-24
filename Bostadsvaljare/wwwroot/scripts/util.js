@@ -29,6 +29,15 @@
                 return -1;
         },
 
+        getImgElement: function (targetSrc, parent) {
+            var img, query = parent ? parent + ' img' : 'img';
+            for (img of $(query)) {
+                if ($(img).attr('src') === targetSrc)
+                    return img;
+            }
+            return undefined;
+        },
+
         removeObjectByName: function (object, targetName) {
             var children = object.children;
 

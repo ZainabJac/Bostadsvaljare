@@ -3,6 +3,12 @@
         images: {},
         imageMaps: [],
         listeners: {},
+        imageType: {
+            image: 0,
+            panorama: 1,
+            vr: 2,
+            roundme: 3,
+        },
 
         addResizeListener: function () {
             var self = this;
@@ -39,18 +45,23 @@
             var imageData = [];
             imagesLoaded = imagesLoaded + data.images.length;
 
+            var ind = 0;
             data.images.forEach((image, i) => {
-                var img = new Image();
+                var img = new Image(), _ind = ind;
                 img.onload = onLoadImg;
                 img.src = image.source;
                 $(img).addClass('gallery-img');
                 $(img).on('click', e => self._onClickGalleryImg(e, i));
+                if (image.type === this.imageType.image) {
+                    $(img).attr('c_ind', _ind);
+                    ind = ind + 1;
+                }
                 imageData.push({
                     img: img,
                     parentID: 'gallery-item-' + i,
                 });
 
-                if (image.type === 0) { /* image.type === ImageType.Image */
+                if (image.type === this.imageType.image) {
                     var carouselImg = img.cloneNode();
                     $(carouselImg).removeClass();
                     $(carouselImg).addClass('d-block w-100');
@@ -103,6 +114,23 @@
             this._onResize();
         },
 
+        changeRoom: function (oldImage, newImage) {
+            if (oldImage.type === this.imageType.panorama &&
+                newImage.type !== this.imageType.panorama)
+                pan_viewer.softDispose();
+
+            if (newImage.type === this.imageType.image) {
+                var img = util.getImgElement(newImage.source, '#gallery');
+                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
+            }
+            else if (newImage.type === this.imageType.panorama) {
+                if (oldImage.type === this.imageType.panorama)
+                    pan_viewer.changeRoom(newImage.roomName);
+                else
+                    pan_viewer.start(newImage.link, newImage.roomName);
+            }
+        },
+
         _loadFloorplan: async function (img, imgWidth) {
             var floor = $(img).attr('floor'),
                 imgWidth = imgWidth || $(img).css('width'),
@@ -126,7 +154,11 @@
         },
 
         _onClickGalleryImg: function (event, ind) {
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind);
+            var self = this;
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
+                .then(r => {
+                    self.changeRoom(r[0], r[1]);
+                });
         },
 
         _onResize: function (event) {
