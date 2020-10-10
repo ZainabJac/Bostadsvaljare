@@ -35,7 +35,7 @@
                         <map id="@VData.ImageMapName-@_i-@sunStudy" name="@VData.ImageMapName-@_i-@sunStudy">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
-                                if (view.Key == Data.HouseMap.ImageNameToView(VData.Views[_i].SunStudies["midday"]))
+                                if (view.Key == Data.HouseMap.ImageNameToVariant(VData.Views[_i].SunStudies["midday"]))
                                 {
                                     @foreach (Data.HouseMap map in view.Value)
                                     {
@@ -66,7 +66,10 @@
                     <DropDownButtonItems>
                         @for (int i = 0; i < VData.Views.Length; i++)
                         {
-                            <DropDownButtonItem Id="@i.ToString()" Text="@VData.Views[i].Name"></DropDownButtonItem>
+                            if (VData.Views[i].Name != "")
+                            {
+                                <DropDownButtonItem Id="@i.ToString()" Text="@VData.Views[i].Name"></DropDownButtonItem>
+                            }
                         }
                     </DropDownButtonItems>
                 </SfDropDownButton>
@@ -92,6 +95,12 @@
                 </SfChipList>
             </div>
         </div>
+
+        <span id="previous-image-btn" class="e-icons e-rect" style="@(topOverview ? "visibility: hidden;" : "")">
+            <span style="position: absolute; left: 0.5px; top: 7px;">
+                <SfButton CssClass="e-flat" IconCss="e-icons e-arrow-up" OnClick="PreviousOverview"></SfButton>
+            </span>
+        </span>
     </ContentTemplate>
 </SpinLoader>
 
@@ -116,7 +125,6 @@
         ImageMapName = "houses",
         Views = new ViewData.View[] {
             new ViewData.View() {
-                Name = "Översikt 1",
                 SunStudies = new Dictionary<string, string>() {
                     { "morning", "IMG/Imagemap.jpg" },
                     { "midday", "IMG/Imagemap.jpg" },
@@ -151,6 +159,7 @@
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
+    private bool topOverview = true;
 
 
     protected override void OnInitialized()
@@ -255,10 +264,41 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
+    private async void PreviousOverview(MouseEventArgs e)
+    {
+        string currentImageSrc = VData.Views[CurrentView].SunStudies[CurrentStudy];
+        foreach (KeyValuePair<string, List<Bostadsvaljare.Data.HouseMap>> mapDataPair in MapData) {
+
+            List<Bostadsvaljare.Data.HouseMap> maps = mapDataPair.Value;
+            if (maps.Count > 0 && maps[0].TargetMap != "N/A") {
+                foreach (Bostadsvaljare.Data.HouseMap map in maps) {
+
+                    if (map.TargetMap == currentImageSrc) {
+                        string imageSrc = Bostadsvaljare.Data.HouseMap.GetNameFromVariant(mapDataPair.Key);
+                        for (int i = 0; i < VData.Views.Length; i++) {
+
+                            ViewData.View view = VData.Views[i];
+                            if (view.SunStudies[CurrentStudy] == imageSrc) {
+                                await JSRuntime.InvokeVoidAsync("exterior.changeImage", CurrentView, CurrentStudy);
+                                CurrentView = i;
+                                if (CurrentView == 0)
+                                    topOverview = true;
+                                MobileSelection = -1;
+                                base.StateHasChanged();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private async void OverviewClicked(string targetMap)
     {
         string viewID = await JSRuntime.InvokeAsync<string>("util.getImgParentID", targetMap, VData.ParentID);
         this.CurrentView = Int32.Parse(Regex.Match(viewID, @"\d+$").Value);
+        this.topOverview = false;
         await JSRuntime.InvokeVoidAsync("exterior.changeImage", this.CurrentView, this.CurrentStudy);
 
         this.MobileSelection = -1;
@@ -293,8 +333,6 @@
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("exterior.dispose");
     }
-
-
 }
 
 
@@ -324,6 +362,28 @@
         padding-right: 6px;
         padding-bottom: 4px;
         padding-left: 6px
+    }
+
+    #previous-image-btn {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+    }
+
+    .e-icons.e-rect {
+        width: 50px;
+    }
+    .e-rect::before {
+        content: '\e670';
+        font-size: 50px;
+    }
+
+    .e-icons.e-arrow-up {
+        width: 32px;
+    }
+    .e-arrow-up::before {
+        content: '\e7d1';
+        font-size: 32px;
     }
 
 
