@@ -69,7 +69,7 @@
             this.resize();
         },
 
-        _onResize: function (event) {
+        _onResize: async function (event) {
             var image = this.images[this.currentImgInd],
                 newWidth, newHeight, diff = 1, perc = 1,
                 wrapper = $('#'+ image.parentID +' div'),
@@ -77,6 +77,11 @@
                 n, m, len = areas.length, clen, coords = [],
                 windowW = $(window).width() - this.margin.width,
                 windowH = $(window).height() - this.margin.height;
+
+            // Wait a little while until the element has a size
+            while ($('#'+ image.parentID).width() === 0) {
+                await util.delay(10);
+            }
 
             if (image.width.slice('-1') == '%')
                 perc = parseFloat(image.width) * 0.01;
@@ -91,8 +96,8 @@
                     newWidth = $('#'+ image.parentID).width() * perc;
                 } else
                     newWidth = parseFloat(image.width);
+                newHeight = newWidth / image.ratio;
                 diff = newWidth / wrapper.width();
-                newHeight = wrapper.height() * diff;
             }
 
             if (diff !== 1) {
