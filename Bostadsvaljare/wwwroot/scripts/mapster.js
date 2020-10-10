@@ -5,7 +5,8 @@
                 available: '5bcb24',
                 booked: 'dfd431',
                 sold: 'd32626',
-                interior: '415965'
+                interior: '415965',
+                overview: 'c7d6de',
             };
 
             var options = {

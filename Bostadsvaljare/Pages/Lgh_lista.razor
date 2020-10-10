@@ -35,7 +35,7 @@
                                 {
                                     <area id="@Data.House.Get(map.ID).Status" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
-                                          coords="@map.IMCoords" shape="poly">
+                                          coords="@map.Coords" shape="poly">
                                 }
                             }
                         }
@@ -177,6 +177,9 @@
         {
             foreach (Data.HouseMap map in view.Value)
             {
+                if (map.HouseNumber == "N/A")
+                    continue;
+
                 string status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
                 HouseToStatus.Add(view.Key +"_"+ map.HouseNumber,
                                   status + statuses[status]++);

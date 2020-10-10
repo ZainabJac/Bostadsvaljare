@@ -5,35 +5,34 @@
 
         loadImages: async function (data) {
             var self = this,
-                imagesLoaded = data.length * 3,
+                imagesLoaded = data.views.length * 3,
                 onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
             // Load images that use image maps every time
             // TODO: fix so it's not neccessary to load every time;
             //       some bug causes only some image maps to load otherwise
-            data.forEach((view, i) => {
-                var name, source, img;
+            data.views.forEach((view, i) => {
+                var name, img;
                 for (name in view.sunStudies) {
-                    source = view.sunStudies[name];
                     img = new Image();
                     img.onload = onLoadImg;
-                    img.id = 'sun-study-' + i + '-' + name + '-img';
-                    img.src = source;
+                    img.id = data.studyID + '-' + i + '-' + name + '-img';
+                    img.src = view.sunStudies[name];
                     $(img).attr({
                         view: i,
                         'sun-study': name,
                     });
                     self.images.push({
                         img: img,
-                        parentID: '#view-' + i + ' #sun-study-' + name,
-                        usemap: '#houses-' + i + '-' + name,
+                        parentID: '#' + data.parentID + '-' + i + ' #sun-study-' + name,
+                        usemap: '#' + data.imageMapName + '-' + i + '-' + name,
                         style: { width: '99%' },
                     });
                 }
             });
 
             var i, name, ind = 0;
-            for (i in data) {
-                for (name in data[i].sunStudies) {
+            for (i in data.views) {
+                for (name in data.views[i].sunStudies) {
                     this.mapIndex[name + i] = ind++;
                 }
             }
