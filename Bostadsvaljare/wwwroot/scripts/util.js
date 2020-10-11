@@ -29,6 +29,26 @@
                 return -1;
         },
 
+        getParent: function (targetIDStart, child) {
+            var parent = $(child).parent()[0];
+            if (parent.id.startsWith(targetIDStart))
+                return parent;
+            else
+                return this.getParent(targetIDStart, parent);
+        },
+
+        getImgParentID: function (targetSrc, parentIDStart) {
+            var img, imgs = $('img'),
+                parentIDStart = parentIDStart ? parentIDStart : '';
+            for (img of imgs) {
+                if ($(img).attr('src') === targetSrc) {
+                    var parent = this.getParent(parentIDStart, img);
+                    return parent.id;
+                }
+            }
+            return undefined;
+        },
+
         getImgElement: function (targetSrc, parent) {
             var img, query = parent ? parent + ' img' : 'img';
             for (img of $(query)) {
