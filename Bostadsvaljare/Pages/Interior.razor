@@ -304,9 +304,10 @@
 
     private async void ChangeFloor(int floor)
     {
-        Floor = floor;
+        this.Floor = floor;
         base.StateHasChanged();
 
+        await Task.Delay(10);
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
     }
 
