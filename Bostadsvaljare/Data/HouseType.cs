@@ -18,6 +18,7 @@ namespace Bostadsvaljare.Data
         public class Image
         {
             public string Source { get; set; }
+            public string PlaceHolder { get; set; }
             public ImageType Type { get; set; }
             public string Link { get; set; }
             public string RoomName { get; set; }
@@ -103,6 +104,34 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/G3K(t) - svart.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Extra_G3K(t).png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
                             new Image { Source="IMG/Extra 2_G3K(t).png", Type=ImageType.Panorama, Link="apt_data", RoomName="vardagsrum" },
+                        },
+                        Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+                    }},
+
+                     { "V2Color", new HouseType {
+                        Floorplans = new List<Floorplan> {
+                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            }},
+                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            }},
+                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            }},
+                        },
+                        Images = new List<Image> {
+                            new Image { Source="IMG/GRK-röd.jpg", PlaceHolder="IMG/Blackstrip.png", Type=ImageType.Image},
+                            new Image { Source="IMG/Greystrip.png", Type=ImageType.Roundme, },
+                            new Image { Source="IMG/Redstrip.png", Type=ImageType.Image },
+                            new Image { Source="IMG/Yellowstrip.png", Type=ImageType.Image },
+
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
