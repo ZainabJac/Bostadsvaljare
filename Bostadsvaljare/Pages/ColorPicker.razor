@@ -142,7 +142,7 @@
         base.StateHasChanged();
     }
 
-    [JSInvokable("ChangeRoom")]
+    [JSInvokable("CP_ChangeRoom")]
     public static Data.HouseType.Image[] StaticChangeRoom(int ind)
     {
         Data.HouseType.Image oldImage = self.SelectedImage;
@@ -159,7 +159,7 @@
         base.StateHasChanged();
     }
 
-    [JSInvokable]
+    [JSInvokable("CP_ShowImage")]
     public static void ShowImage()
     {
         self.ShowFullscreenImage = true;

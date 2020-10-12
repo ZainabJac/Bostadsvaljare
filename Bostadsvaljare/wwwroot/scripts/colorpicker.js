@@ -149,13 +149,13 @@
             img.removeClass();
             img.css({ width: '100%' });
             img.appendTo('.fs-border');
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'CP_ShowImage')
                 .then(_data => { self._onResize(); });
         },
 
         _onClickGalleryImg: function (event, ind) {
             var self = this;
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'CP_ChangeRoom', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
