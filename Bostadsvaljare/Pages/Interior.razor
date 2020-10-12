@@ -221,7 +221,6 @@
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            await JSRuntime.InvokeVoidAsync("interior.resize");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
@@ -234,6 +233,7 @@
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
         FloorplanInited = true;
         base.StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("interior.resize");
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
