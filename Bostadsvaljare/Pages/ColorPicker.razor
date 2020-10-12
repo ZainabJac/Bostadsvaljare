@@ -127,8 +127,7 @@
     {
         if (firstRender)
         {
-
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("colorpicker.loadImages", House.Housetype, HouseData);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("colorpicker.loadImages", HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -136,7 +135,7 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("colorpicker.applyImages", House.Housetype);
+        await JSRuntime.InvokeVoidAsync("colorpicker.applyImages");
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
 
         base.StateHasChanged();
