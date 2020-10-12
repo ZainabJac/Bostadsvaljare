@@ -29,15 +29,14 @@
                     <map id="house-map-@_i" name="house-map-@_i">
                         @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                         {
-                            if (view.Key == Data.HouseMap.ImageNameToView(Views[i].Source))
-                            {
+                           
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
                                     <area id="@Data.House.Get(map.ID).Status" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
                                           coords="@map.IMCoords" shape="poly">
                                 }
-                            }
+                            
                         }
                     </map>
                 </div>
@@ -123,22 +122,22 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = "house-main-1",
-            Source = "IMG/Oversiktsbild1-5.jpg",
+            Source = "IMG/Ext1-5area.png",
             ImageMapName = "house-map-1",
         },
         new ViewData {
             ID = "house-main-2",
-            Source = "IMG/Gatuvy1-5.jpg",
+            Source = "IMG/Ext1-5redAndgrey.png",
             ImageMapName = "house-map-2",
         },
         new ViewData {
             ID = "house-main-3",
-            Source = "IMG/GRK-röd.jpg",
+            Source = "IMG/Ext1-5red.png",
             ImageMapName = "house-map-3",
         },
         new ViewData {
             ID = "house-main-4",
-            Source = "IMG/G3kT-grey.jpg",
+            Source = "IMG/Ext1-5grey.png",
             ImageMapName = "house-map-4",
         },
     };

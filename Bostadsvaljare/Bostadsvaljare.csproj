@@ -7,6 +7,31 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Goback.js" />
+    <Content Remove="wwwroot\IMG\Adjust-KitchenG3KT.jpg" />
+    <Content Remove="wwwroot\IMG\Dag.jpg" />
+    <Content Remove="wwwroot\IMG\ext. 2.jpg" />
+    <Content Remove="wwwroot\IMG\Extra 2_G3K%28t%29.png" />
+    <Content Remove="wwwroot\IMG\Extra_G3K%28t%29.png" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - Kök.png" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - röd.jpg" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - Soffgrupp.png" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - svart- röd.jpg" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - svart.jpg" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - Vind 1.png" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29 - Översikt.png" />
+    <Content Remove="wwwroot\IMG\G3K%28t%29Vind Vardagsrum.png" />
+    <Content Remove="wwwroot\IMG\G3kT-grey.jpg" />
+    <Content Remove="wwwroot\IMG\G3KT-LIVINGROOMPANO.jpg" />
+    <Content Remove="wwwroot\IMG\G3kt-vardagsrum%28kitchen%29.jpg" />
+    <Content Remove="wwwroot\IMG\G3kt-Vardagsrum.jpg" />
+    <Content Remove="wwwroot\IMG\G3KT-VIND.jpg" />
+    <Content Remove="wwwroot\IMG\Gatuvy1-5.jpg" />
+    <Content Remove="wwwroot\IMG\GRK-röd.jpg" />
+    <Content Remove="wwwroot\IMG\Imagemap.jpg" />
+    <Content Remove="wwwroot\IMG\Morgon.jpg" />
+    <Content Remove="wwwroot\IMG\Natt.jpg" />
+    <Content Remove="wwwroot\IMG\Oversiktsbild1-5.jpg" />
+    <Content Remove="wwwroot\IMG\Vy till Phille.png" />
     <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.css" />
     <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.scss" />
     <Content Remove="wwwroot\scripts\resizescript - Copy.js" />

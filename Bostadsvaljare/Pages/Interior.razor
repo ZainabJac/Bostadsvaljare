@@ -202,6 +202,7 @@
     private static Interior self;
 
 
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -212,8 +213,11 @@
         self = this;
 
         SelectedImage = HouseData.Images[0];
+       
         base.StateHasChanged();
     }
+
+  
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -617,7 +621,7 @@
     #gallery {
         padding: 0px;
         overflow-y: hidden;
-        overflow-x: auto;
+        overflow-x: visible;
         white-space: nowrap;
     }
 
@@ -710,12 +714,13 @@
                 margin-top: 7px;
             }
 
-        
-            #gallery {
-                width: 25%;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
+
+        #gallery {
+            width: 25%;
+            overflow-y: visible;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
 
         #gallery span {
             display: initial;

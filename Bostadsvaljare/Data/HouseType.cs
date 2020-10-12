@@ -58,18 +58,24 @@ namespace Bostadsvaljare.Data
                             }},
                             new Floorplan { Source = "IMG/plan3.png", Rooms = new List<Floorplan.Room> {
                                 new Floorplan.Room { RoomID = 5, Coords = new Vector2 { X = 180, Y = 220 } },
+                                new Floorplan.Room { RoomID = 6, Coords = new Vector2 { X = 300, Y = 250 } },
+                                new Floorplan.Room { RoomID = 7, Coords = new Vector2 { X = 520, Y = 220 } },
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/G3kt-Vardagsrum.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/G3kt-vardagsrum(kitchen).jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1sofa.png", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1livingAndKitchen.png", Type=ImageType.Image },
                             new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
-                               new Image { Source="IMG/Gatuvy1-5.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/GRK-röd.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/G3kT-grey.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zAgqQYLOBi16QRP3uSDb", RoomName="vardagsrum" },
                             new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/15lzHahbXQXPl8Cpkxzw", RoomName="kok" },
+                            new Image { Source="IMG/G3kfloor3sofa.png", Type=ImageType.Image },
                             new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JAGDHUVVJqJhnxps8puU", RoomName="vind" },
+                            new Image { Source="IMG/G3kfloor3workAndplay.png", Type=ImageType.Image },                        
+                            new Image { Source="IMG/Ext1-5grey.png", Type=ImageType.Image },
+                            new Image { Source="IMG/Ext1-5red.png", Type=ImageType.Image },
+                            new Image { Source="IMG/Ext1-5redAndgrey.png", Type=ImageType.Image },
+                           
+                           
                            
                            
                         },

@@ -31,6 +31,7 @@
                     var _j = j;
                     var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
                     <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
+                        
                         <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
@@ -94,6 +95,8 @@
         public string ImageMapName { get; set; }
         public Dictionary<string, string> SunStudies { get; set; }
         public bool Initialized { get; set; } = false;
+
+
     }
 
     List<ViewData> Views = new List<ViewData> {
@@ -102,9 +105,9 @@
             Name = "Område 1",
             ImageMapName = "imagemap-1",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Oversiktsbild1-5.jpg" },
-                { "midday", "IMG/Oversiktsbild1-5.jpg" },
-                { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                { "morning", "IMG/Ext1-5area.png" },
+                { "midday", "IMG/Ext1-5area.png" },
+                { "evening", "IMG/Ext1-5area.png" },
             },
         },
         new ViewData() {
@@ -112,9 +115,9 @@
             Name = "Område 2",
             ImageMapName = "imagemap-2",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Oversiktsbild1-5.jpg" },
-                { "midday", "IMG/Oversiktsbild1-5.jpg" },
-                { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                { "morning", "IMG/Ext1-5area.png" },
+                { "midday", "IMG/Ext1-5area.png"},
+                { "evening", "IMG/Ext1-5area.png" },
             },
         },
     };
@@ -128,6 +131,7 @@
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
+    public bool HouseIsClicked { get; set; } = false;
 
 
     protected override void OnInitialized()
@@ -180,7 +184,8 @@
 
     public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+            if (HouseIsClicked == false)
+            ShowTooltip(e.ClientX, e.ClientY, houseNumber);
     }
 
     public void OnMouseOutIM(MouseEventArgs e)
@@ -234,6 +239,9 @@
 
     private async void HousingClicked(int houseID)
     {
+        HouseIsClicked = true;
+        HideTooltip();
+
         var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
         if (mobile && MobileSelection != houseID)
         {
@@ -282,8 +290,7 @@
         padding: 7px;
     }
 
-
-
+   
     .e-checkicon {
         background-color: white;
         padding: 6px 12px 4px;
