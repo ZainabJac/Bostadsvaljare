@@ -6,10 +6,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="compatibility\**" />
+    <Compile Remove="wwwroot\css\**" />
+    <Compile Remove="wwwroot\data\**" />
+    <Compile Remove="wwwroot\IMG\apts\**" />
+    <Compile Remove="wwwroot\IMG\icons\pan\**" />
+    <Compile Remove="wwwroot\material-202006041330139071-99945271\**" />
+    <Content Remove="compatibility\**" />
+    <Content Remove="wwwroot\css\**" />
+    <Content Remove="wwwroot\data\**" />
+    <Content Remove="wwwroot\IMG\apts\**" />
+    <Content Remove="wwwroot\IMG\icons\pan\**" />
+    <Content Remove="wwwroot\material-202006041330139071-99945271\**" />
+    <EmbeddedResource Remove="compatibility\**" />
+    <EmbeddedResource Remove="wwwroot\css\**" />
+    <EmbeddedResource Remove="wwwroot\data\**" />
+    <EmbeddedResource Remove="wwwroot\IMG\apts\**" />
+    <EmbeddedResource Remove="wwwroot\IMG\icons\pan\**" />
+    <EmbeddedResource Remove="wwwroot\material-202006041330139071-99945271\**" />
+    <None Remove="compatibility\**" />
+    <None Remove="wwwroot\css\**" />
+    <None Remove="wwwroot\data\**" />
+    <None Remove="wwwroot\IMG\apts\**" />
+    <None Remove="wwwroot\IMG\icons\pan\**" />
+    <None Remove="wwwroot\material-202006041330139071-99945271\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\360_bilder.razor" />
+    <Content Remove="Pages\VR-video.razor" />
+    <Content Remove="wwwroot\favicon.ico" />
     <Content Remove="wwwroot\Goback.js" />
+    <Content Remove="wwwroot\housing_data.json" />
     <Content Remove="wwwroot\IMG\Adjust-KitchenG3KT.jpg" />
     <Content Remove="wwwroot\IMG\Dag.jpg" />
     <Content Remove="wwwroot\IMG\ext. 2.jpg" />
+    <Content Remove="wwwroot\IMG\Ext1-5grey.png" />
+    <Content Remove="wwwroot\IMG\Ext1-5red.png" />
+    <Content Remove="wwwroot\IMG\Ext1-5redAndgrey.png" />
     <Content Remove="wwwroot\IMG\Extra 2_G3K%28t%29.png" />
     <Content Remove="wwwroot\IMG\Extra_G3K%28t%29.png" />
     <Content Remove="wwwroot\IMG\G3K%28t%29 - Kök.png" />
@@ -20,6 +54,10 @@
     <Content Remove="wwwroot\IMG\G3K%28t%29 - Vind 1.png" />
     <Content Remove="wwwroot\IMG\G3K%28t%29 - Översikt.png" />
     <Content Remove="wwwroot\IMG\G3K%28t%29Vind Vardagsrum.png" />
+    <Content Remove="wwwroot\IMG\G3kfloor1livingAndKitchen.png" />
+    <Content Remove="wwwroot\IMG\G3kfloor1sofa.png" />
+    <Content Remove="wwwroot\IMG\G3kfloor3sofa.png" />
+    <Content Remove="wwwroot\IMG\G3kfloor3workAndplay.png" />
     <Content Remove="wwwroot\IMG\G3kT-grey.jpg" />
     <Content Remove="wwwroot\IMG\G3KT-LIVINGROOMPANO.jpg" />
     <Content Remove="wwwroot\IMG\G3kt-vardagsrum%28kitchen%29.jpg" />
@@ -27,14 +65,22 @@
     <Content Remove="wwwroot\IMG\G3KT-VIND.jpg" />
     <Content Remove="wwwroot\IMG\Gatuvy1-5.jpg" />
     <Content Remove="wwwroot\IMG\GRK-röd.jpg" />
+    <Content Remove="wwwroot\IMG\icons\goolgemapsbild.png" />
+    <Content Remove="wwwroot\IMG\icons\info_hide.png" />
+    <Content Remove="wwwroot\IMG\icons\sundial.png" />
+    <Content Remove="wwwroot\IMG\icons\sundial_tiny.png" />
     <Content Remove="wwwroot\IMG\Imagemap.jpg" />
     <Content Remove="wwwroot\IMG\Morgon.jpg" />
     <Content Remove="wwwroot\IMG\Natt.jpg" />
     <Content Remove="wwwroot\IMG\Oversiktsbild1-5.jpg" />
     <Content Remove="wwwroot\IMG\Vy till Phille.png" />
-    <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.css" />
-    <Content Remove="wwwroot\material-202006041330139071-99945271\compatibility\Blackandblue.scss" />
+    <Content Remove="wwwroot\material-202006041330139071-99945271.zip" />
     <Content Remove="wwwroot\scripts\resizescript - Copy.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="material.css" />
+    <None Remove="material.scss" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,13 +99,7 @@
   <ItemGroup>
     <None Include="wwwroot\C4-theme\compatibility\material.scss" />
     <None Include="wwwroot\C4-theme\material.scss" />
-    <None Include="wwwroot\css\material-202008211246302489-52294959\compatibility\material.scss" />
-    <None Include="wwwroot\css\material-202008211246302489-52294959\material.scss" />
     <None Include="wwwroot\IMG\icons\info.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\material-202006041330139071-99945271\compatibility\" />
   </ItemGroup>
 
 </Project>

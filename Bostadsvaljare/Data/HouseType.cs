@@ -63,21 +63,23 @@ namespace Bostadsvaljare.Data
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/G3kfloor1sofa.png", Type=ImageType.Image },
-                            new Image { Source="IMG/G3kfloor1livingAndKitchen.png", Type=ImageType.Image },
-                            new Image { Source="IMG/Adjust-KitchenG3KT.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zAgqQYLOBi16QRP3uSDb", RoomName="vardagsrum" },
-                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/15lzHahbXQXPl8Cpkxzw", RoomName="kok" },
-                            new Image { Source="IMG/G3kfloor3sofa.png", Type=ImageType.Image },
-                            new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JAGDHUVVJqJhnxps8puU", RoomName="vind" },
-                            new Image { Source="IMG/G3kfloor3workAndplay.png", Type=ImageType.Image },                        
-                            new Image { Source="IMG/Ext1-5grey.png", Type=ImageType.Image },
-                            new Image { Source="IMG/Ext1-5red.png", Type=ImageType.Image },
-                            new Image { Source="IMG/Ext1-5redAndgrey.png", Type=ImageType.Image },
-                           
-                           
-                           
-                           
+                            new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
+                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
+                            new Image { Source="IMG/G3kfloor3sofa.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/ZoFVLMtIU0ojCILGEjYb", RoomName="vind" },
+                            new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },                        
+                            new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image },
+
+                  
+
+
+
+
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
