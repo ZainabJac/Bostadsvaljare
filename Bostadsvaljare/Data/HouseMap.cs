@@ -10,7 +10,7 @@ namespace Bostadsvaljare.Data
             { "IMG/Ext1-5area.png", "view-1" },
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
-            { "IMG/ext. 2.jpg", "view-2" },
+            { "IMG/ext1-5grey.jpg", "view-2" },
             { "IMG/Ext1-5redAndgrey.png", "view-3" },
             { "IMG/Ext1-5red.png", "view-3" },
             { "IMG/Ext1-5grey.png", "view-3" },

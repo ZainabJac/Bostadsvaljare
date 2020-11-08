@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-
+        <input value="@HouseID" id="houseinputid" style="display:none;"/>
         <div class="line-8">
             <!-- Stillbilder -->
             <div id="slideshow" class="@(ShowInfo ? "" : "full") @(SelectedType == Bostadsvaljare.Data.ImageType.Image ? "" : "hidden")">
@@ -183,6 +183,7 @@
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
     [Parameter]
+    
     public string HouseID { get; set; }
     public Data.House House { get; set; }
     public Data.HouseType.Image SelectedImage { get; set; }
@@ -212,12 +213,14 @@
         HouseData = Data.HouseType.GetData(houseType);
         self = this;
 
+      
+
         SelectedImage = HouseData.Images[0];
-       
+
         base.StateHasChanged();
     }
 
-  
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -238,6 +241,8 @@
         FloorplanInited = true;
         base.StateHasChanged();
         await JSRuntime.InvokeVoidAsync("interior.resize");
+        await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
+
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)

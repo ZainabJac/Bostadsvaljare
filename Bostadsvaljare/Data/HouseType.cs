@@ -17,6 +17,8 @@ namespace Bostadsvaljare.Data
 
         public class Image
         {
+
+            public string Thumbnail { get; set; }
             public string Source { get; set; }
             public ImageType Type { get; set; }
             public string Link { get; set; }
@@ -73,7 +75,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },                        
                             new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image }, 
 
                   
 
@@ -106,11 +108,17 @@ namespace Bostadsvaljare.Data
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/G3K(t) - Soffgrupp.png", Type=ImageType.Image },
-                            new Image { Source="IMG/G3K(t) - röd.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/G3K(t) - svart.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/Extra_G3K(t).png", Type=ImageType.VR, Link="https://player.vimeo.com/video/393178231" },
-                            new Image { Source="IMG/Extra 2_G3K(t).png", Type=ImageType.Panorama, Link="apt_data", RoomName="vardagsrum" },
+                            new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum", Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok", Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum", Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok", Thumbnail="IMG/color thumbnail.png" },
+
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},

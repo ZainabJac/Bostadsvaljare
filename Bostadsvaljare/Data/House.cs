@@ -54,7 +54,7 @@ namespace Bostadsvaljare.Data
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "21", Status = "available", Housetype="G3K" },
                      new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "22", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "23", Status = "available", Housetype="G3K" },
-                  
+                     new House { ID = 99, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "23", Status = "available", Housetype="V2" },
 
                     //new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="V2" },
                  

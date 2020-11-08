@@ -1,5 +1,5 @@
 ﻿(function () {
-    window.interior = {
+    window.colorpicker = {
         images: {},
         imageMaps: [],
         listeners: {},
@@ -11,15 +11,6 @@
         },
 
 
-        hidecolorpicker: function () {
-            if ($(houseinputid).val() == 99) {
-                $(colorpick).removeClass("colorpickermenu")
-                $(colorpick).addClass("colorpickermenu2")
-                $(colorpickslink).addClass("animate__animated animate__bounce")
-
-            }
-          
-        },
 
         addResizeListener: function () {
             var self = this;
@@ -60,8 +51,8 @@
             data.images.forEach((image, i) => {
                 var img = new Image(), _ind = ind;
                 img.onload = onLoadImg;
-                img.src = image.source;
-                $(img).addClass('gallery-img');
+                img.src = image.thumbnail;
+                $(img).addClass('gallery-img-colorpicker');
                 $(img).on('click', e => self._onClickGalleryImg(e, i));
                 if (image.type === this.imageType.image) {
                     $(img).attr('c_ind', _ind);
@@ -69,17 +60,19 @@
                 }
                 imageData.push({
                     img: img,
-                    parentID: 'gallery-item-' + i,
+                    parentID: 'gallery-item-colorpicker-' + i,
                 });
 
                 if (image.type === this.imageType.image) {
-                    var carouselImg = img.cloneNode();
+                    var carouselImg = new Image(), _ind = ind;
+                    carouselImg.onload = onLoadImg;
+                    carouselImg.src = image.source;
                     $(carouselImg).removeClass();
                     $(carouselImg).addClass('d-block w-100');
                     $(carouselImg).on('click', e => self._onClickCarousel(e));
                     imageData.push({
                         img: carouselImg,
-                        parentID: 'carousel-item-'+ i,
+                        parentID: 'carousel-item-colorpicker-' + i,
                     });
                 }
             });
@@ -108,10 +101,10 @@
                 if (data.style)
                     $(data.img).css(data.style);
                 // Add img element
-                $('#'+ data.parentID).append(data.img);
+                $('#' + data.parentID).append(data.img);
                 // Add image map functionality
-                $('#'+ data.img.id).attr('usemap', data.usemap);
-                this._loadFloorplan(data.img, data.style.width);
+                $('#' + data.img.id).attr('usemap', data.usemap);
+          
             }
         },
 
@@ -148,7 +141,7 @@
                 parentID = 'floorplan-' + floor;
 
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
-            mapster.addMapHighlights(parentID, parentID +'-img', 'hotspots-'+ floor, '', 0.6, 0.9);
+            mapster.addMapHighlights(parentID, parentID + '-img', 'hotspots-' + floor, '', 0.6, 0.9);
             await util.delay(100);
             mapster.selectAll();
         },
@@ -159,25 +152,25 @@
             var img = $(event.target).clone();
             img.removeClass();
             img.css({ width: '100%' });
-            img.appendTo('.fs-border');
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
+            img.appendTo('.fs-border-colorpicker');
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImages')
                 .then(_data => { self._onResize(); });
         },
 
         _onClickGalleryImg: function (event, ind) {
             var self = this;
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRooms', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
         },
 
         _onResize: function (event) {
-            if ($(window).width() <= 927) {
-                var height = parseInt($('.planritning').height());
+            if ($(window).width() >= 995) {
+                var height = parseInt($('#gallery-carousel').height());
                 $('#gallery').height((height + 3) + 'px');
             } else {
-                $('#gallery').height('100%');
+                $('#gallery').height('auto');
             }
 
             var height = Math.max($('.fs-border').height() + 97, $(window).height());
