@@ -34,6 +34,7 @@
             for (img of $(query)) {
                 if ($(img).attr('src') === targetSrc)
                     return img;
+                
             }
             return undefined;
         },

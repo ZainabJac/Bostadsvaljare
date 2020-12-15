@@ -21,6 +21,19 @@
           
         },
 
+     
+
+        adjustpan: function () {
+            var width1 = parseInt($('#carousel-item-0').width());
+
+            width1 = width1 * 0.75
+
+            $('.iframe-container iframe').height(width1 + 'px');
+
+          
+
+        },
+
         addResizeListener: function () {
             var self = this;
 
@@ -63,9 +76,10 @@
                 img.src = image.source;
                 $(img).addClass('gallery-img');
                 $(img).on('click', e => self._onClickGalleryImg(e, i));
-                if (image.type === this.imageType.image) {
+                if (image.type === this.imageType.image || image.type === this.imageType.roundme) {
                     $(img).attr('c_ind', _ind);
                     ind = ind + 1;
+                
                 }
                 imageData.push({
                     img: img,
@@ -79,9 +93,21 @@
                     $(carouselImg).on('click', e => self._onClickCarousel(e));
                     imageData.push({
                         img: carouselImg,
-                        parentID: 'carousel-item-'+ i,
+                        parentID: 'carousel-item-' + i,
                     });
                 }
+
+                if (image.type === this.imageType.roundme) {
+                    var carouselImg = img.cloneNode();
+                    $(carouselImg).removeClass();
+                    $(carouselImg).addClass('hideit');
+                    $(carouselImg).on('click', e => self._onClickCarousel(e));
+                    imageData.push({
+                        img: carouselImg,
+                        parentID: 'carousel-item-' + i,
+                    });
+                }
+
             });
 
             this.images[houseType] = imageData;
@@ -126,19 +152,23 @@
         },
 
         changeRoom: function (oldImage, newImage) {
+
+
+
             if (oldImage.type === this.imageType.panorama &&
-                newImage.type !== this.imageType.panorama)
-                pan_viewer.softDispose();
+                newImage.type !== this.imageType.panorama) {
+                var img = util.getImgElement(newImage.source, '#gallery');
+            bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
+            }
 
             if (newImage.type === this.imageType.image) {
                 var img = util.getImgElement(newImage.source, '#gallery');
                 bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
             }
-            else if (newImage.type === this.imageType.panorama) {
-                if (oldImage.type === this.imageType.panorama)
-                    pan_viewer.changeRoom(newImage.roomName);
-                else
-                    pan_viewer.start(newImage.link, newImage.roomName);
+
+            else {
+                var img = util.getImgElement(newImage.source, '#gallery');
+                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
             }
         },
 
@@ -151,6 +181,14 @@
             mapster.addMapHighlights(parentID, parentID +'-img', 'hotspots-'+ floor, '', 0.6, 0.9);
             await util.delay(100);
             mapster.selectAll();
+
+            var height1 = parseInt($('.planritning').height());
+            var height2 = parseInt($('#gallery').height());
+            var height3 = parseInt($('#info').height());
+
+            var height4 = height3 + height2 + height1 + 60;
+
+            $('.iframe-container iframe').height(height4 + 'px');
         },
 
         _onClickCarousel: function (event) {
@@ -162,22 +200,57 @@
             img.appendTo('.fs-border');
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
                 .then(_data => { self._onResize(); });
+
         },
 
         _onClickGalleryImg: function (event, ind) {
+
+
             var self = this;
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
+
         },
 
         _onResize: function (event) {
+
             if ($(window).width() <= 927) {
                 var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
-            } else {
-                $('#gallery').height('100%');
+                $('#info').height('auto')
+              
+
+            }
+            else if ($(window).width() <= 1380) {
+                var height1 = parseInt($('.planritning').height());
+                var height2 = parseInt($('#gallery').height());
+                var height3 = parseInt($('#slideshow').height());
+
+                var height4 = height3 - height2 - height1 - 35;
+
+            
+                $('#info').height(height4 + 'px');
+                var width1 = parseInt($('#carousel-item-0').width());
+                width1 = width1 * 0.75
+                $('.iframe-container iframe').height(width1 + 'px');
+
+            }
+
+            else {
+
+                var width1 = parseInt($('#carousel-item-0').width());
+                width1 = width1 * 0.75
+                $('.iframe-container iframe').height(width1 + 'px');
+
+                var height1 = parseInt($('.planritning').height());
+                var height2 = parseInt($('#gallery').height());
+                var height3 = parseInt($('#slideshow').height());
+                var height4 = height3 - height2 - height1 - 57;
+                $('#gallery').height('auto');
+                $('#info').height(height4 + 'px');
+
             }
 
             var height = Math.max($('.fs-border').height() + 97, $(window).height());

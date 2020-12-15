@@ -2,84 +2,75 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
 @inject IJSRuntime JSRuntime
-<div class="line-12">
-
-    <div class="line-3">
-        <div class="line-12">
 
 
-            <SfCard>
-                <CardStacked>
 
-                    @*<input id="pac-input" class="controls" type="text" placeholder=" Vart vill du åka?">*@
-
-                    <div class="container">
-
-                        <input id="searchBar" class="searchbar" type="text" placeholder="Sök destination..">
-                        <a id="btnSearch" class="btn-search"><i class="fa fa-search"></i></a>
-                    </div>
-
-                    <div id="travel-data" class="results">
-
-                        <div style="width: 100%; padding-bottom: 7px;"> <a id="travel-distance"></a></div>
-
-                        <div style="width:100%; padding-bottom:7px;">  <a id="travel-time"></a></div>
-
-                    </div>
-
-                    <SfCard>
-                        <div class="radiobuttons">
-                            <SfRadioButton Label="Bil" Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                            <br>
-
-                            <SfRadioButton Label="Cykel" Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                            <br>
-
-                            <SfRadioButton Label="Kollektivtrafik" Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-                            <br>
-
-                            <SfRadioButton Label="Gång" Name="travelMode" Value="walk" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton>
-
-                        </div>
-                    </SfCard>
+<div style="width:100%">
 
 
-                </CardStacked>
-            </SfCard>
-        </div>
-        <div class="line-12">
-            <SfCard>
-                <CardStacked>
-                    @*<input id="pac-input2" class="controls" type="text" placeholder="Vad finns i närheten?">*@
-                    <div class="container">
-                        <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i området..">
-                    </div>
-                    <div id="travel-data" class="results">
-                        <div style="padding-bottom: 7px;" display: inline-block;> <a id="travel-distance1"></a> </div>
-                        <div style=" padding-bottom:7px;">  <a id="travel-time1"></a></div>
-                    </div>
-                    <div class="cardsearch">
-                        <SfCard>
-                            <header class="naromrodeheader"> Vad är viktigt för dig? </header>
-                            <text class="naromrodetxt"> Sök efter det du värderar mest, finns det en ica eller coop butik i närheten? Eller Finns det många fotbollsplaner? Sök och utforska området här! </text>
-                        </SfCard>
-                    </div>
-                </CardStacked>
-            </SfCard>
-        </div>
-        <div class="line-12">
+    <div id="map" style="width:100%; margin:auto;"></div>
+
+    <div id="travel-data" class="firstSearchResult">
+
+        <div> <i id="route"></i> <a id="travel-distance"></a></div>
+
+        <div> <i id="clock"></i>  <a id="travel-time"></a></div>
+
+    </div>
+
+    <div class="firstSearch">
+        <div style="justify-content: center; display: flex; flex-direction: column; width:100%; float:left; ">
+            <div class="container">
+
+                <input id="searchBar" class="searchbar" type="text" placeholder="Sök destination..">
+                <a id="btnSearch" class="btn-search"></a>
+            </div>
+
+            <div class="radiobuttons">
+                <SfRadioButton Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-car radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-bicycle radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-subway radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="walk" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-walking radioicons"></i>
+
+            </div>
+
+
 
         </div>
+
+
+
+    </div>
+
+    <div class="secondSearch">
+        <div class="container">
+            <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i området..">
+            <a id="btnSearch" class="btn-search"></a>
+        </div>
+
     </div>
 
 
 
-    <div class="line-9">
-        <div id="map" style="width:100%; "></div>
+
+    <div id="travel-data">
+        <div style="padding-bottom: 7px;" display: inline-block;> <a id="travel-distance1"></a> </div>
+        <div style=" padding-bottom:7px;">  <a id="travel-time1"></a></div>
     </div>
 
-   
+
+
 </div>
+  
+
+
+
 
 
 @code {
@@ -103,9 +94,41 @@
 
 
 <style>
+
+    .firstSearch {
+        position: absolute;
+        top: 11%;
+        left: 20%;
+        width: 40%;
+    }
+
+
+    .secondSearch {
+        position: absolute;
+        top: 11%;
+        left: 52%;
+        width: 40%;
+    }
+
+    .firstSearchResult {
+        position: absolute;
+        top: 18%;
+        left: 2%;
+      
+    }
+
+    .radioicons{
+        margin-right: 10px;
+       margin-left:-5px;
+    }
+
     .radiobuttons {
-        padding: 7px;
-           
+        
+        display:flex;
+        justify-content:center;
+        flex-direction:row;
+        margin-top:12px;
+        margin-bottom:12px;
     }
 
     input:focus::-webkit-input-placeholder {
@@ -122,30 +145,38 @@
 
     .searchbar {
         float: right;
-        background-color: #415965;
-        color: white;
-        width: 50%;
+        color: #415965;
+        background-color: white;
+        width: 65%;
         border: none;
-        margin-top: 1px;
+        margin-top:0px;
         margin-right: 8px;
         font-family: acumin-pro,sans-serif;
         font-size: 1em;
         border-bottom: white solid 2px;
         transition: 0.3s;
+        border-radius: 3px;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        height:40px;
     }
 
-    .searchbar::placeholder {
-        color: white;
-        font-family: acumin-pro,sans-serif;
-        font-size: 1em;
-        text-align: center;
-        /* transition: 0.2s; */
-    }
+        .searchbar::placeholder {
+            color: #415965;
+            font-family: acumin-pro,sans-serif;
+            font-size: 12px;
+            text-align: center;
+            /* transition: 0.2s; */
+        }
 
     .searchbar:focus {
         width: 90%;
         font-family: acumin-pro,sans-serif;
-        font-size: 1em;
+        font-size: 12px;
         transition: 0.3s;
         /* Stops the input box from inheriting the styling from the inputs on the request form */
         border-bottom: white solid 2px;
@@ -160,6 +191,10 @@
         font-family: acumin-pro,sans-serif;
         font-size: 1.5em;
         text-align: center;
+        position: relative;
+        left: -6.5%;
+        top: 10px;
+        overflow: auto;
     }
 
 
@@ -179,7 +214,7 @@
     }
 
     #pac-input2 {
-        width: 90%;
+        
         font-family: acumin-pro,sans-serif;
         padding: 1px;
     }
@@ -198,24 +233,35 @@
         font-family: acumin-pro,sans-serif;
         color: white;
         display: inline-block;
-        width: 70%;
-        margin: auto;
+        width: 250px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
         font-size: 15px;
-        font-weight:500;
-    
-
-            
-
+        font-weight: 500;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        padding-top:10px;
+        height:40px;
+        border-radius:3px;
     }
 
     #map {
-        margin: auto;
-        width: 1000px;
-        height: 800px;
+        height: 700px;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
     }
 
     #pac-input {
-        width: 90%;
+     
         font-family: acumin-pro,sans-serif;
         padding: 1px;
     }
@@ -233,213 +279,106 @@
         text-size-adjust: none;
     }
 
-    .line-1 {
-        width: 8.33%;
-    }
 
-    .last {
-        margin-right: initial;
-    }
-
-    .line-2 {
-        width: 16.66%;
-    }
-
-    .line-3 {
-        width: 25%;
-    }
-
-    .line-4 {
-        width: 33.33%;
-    }
-
-    .line-4-planritning {
-        width: 33.33%;
-    }
-
-    .arkitekt {
-        padding-top: 14px;
-    }
-
-    .line-5 {
-        width: 41.66%;
-    }
-
-    .line-6 {
-        width: 50%;
-    }
-
-    .line-7 {
-        width: 58.33%;
-    }
-
-    .line-8 {
-        width: 66.66%;
-    }
-
-    .line-9 {
-        width: 75%;
-    }
-
-    .line-10 {
-        width: 83.33%;
-    }
-
-    .line-11 {
-        width: 91.66%;
-    }
-
-    .line-12 {
-        width: 100%;
-    }
-
-    [class*="line-"] {
-        float: left;
-        padding: 7px;
-    }
-
-    @@media (max-width: 3000px) {
-
-        #gallery {
-            width: 25%;
-            /*height: height(line-4-planritning) + 6px*/
-            overflow-y: auto;
-            overflow-x: hidden;
+    @@media (max-width: 1700px) {
+    
+        .btn-search{
+            left:-8%;
         }
 
-            #gallery span {
-                display: initial;
+        .firstSearchResult{
+            left:3%;
+        }
+    
+    }
+
+    @@media (max-width: 1515px) {
+
+        .btn-search {
+            left: -9%;
+        }
+
+        .firstSearchResult{
+            left:3.5%;
+        }
+    }
+
+
+
+
+    @@media (max-width: 1200px) {
+        .btn-search {
+            left: -10%;
+        }
+
+        .firstSearchResult{
+            left:4%;
+        }
+    }
+
+    @@media (max-width: 1000px) {
+        .firstSearch {
+                position: initial;
+                float: left;
+                width: 50%;
+                margin-top: 10px;
             }
 
-        .gallery-img {
-            width: 100%;
-            padding: 0px;
-        }
-
-        .card-info-header-right {
-            font-family: acumin-pro,sans-serif;
-            font-size: 14px;
-            float: right;
-            display: inline-block;
-        }
-
-
-        .card-info-header {
-            font-family: acumin-pro,sans-serif;
-            font-size: 14px;
-            display: inline-block;
-            Margin: 4px;
-        }
-
-
-        .card-info-text {
-            font-family: acumin-pro,sans-serif;
-            font-size: 10px;
-            display: inline-block;
-        }
-
-        .line-1 {
-            width: 25%;
-        }
-
-        .line-2 {
-            width: 100%;
-        }
-
-        .line-2knapp {
-            width: 50%;
-            margin: auto;
-        }
-
-        .line-3 {
-            width: 100%;
-        }
-
-        .line-4 {
-            width: 100%;
-        }
-
-        .arkitekt {
-            width: 100%;
-            padding-top: 6px;
-        }
-
-        .line-4-planritning {
-            width: 75%;
-        }
-
-        .line-5 {
-            width: 50%;
-        }
-
-        .line-6 {
-            width: 50%;
-        }
-
-        .line-7 {
-            width: 100%;
-        }
-
-        .line-8 {
-            width: 100%;
-        }
-
-        .line-9 {
-            width: 100%;
-        }
-
-        .line-10 {
-            width: 100%;
-        }
-
-        .line-11 {
-            width: 100%;
-        }
-
-        .line-12 {
-            width: 100%;
-        }
-
-        [class*="line-"] {
+        .firstSearchResult {
+            position: initial;
             float: left;
-            padding: 3px;
-        }
-
-        br {
-            display: none;
-        }
-
-        .naromrodeheader {
-            display: none;
-        }
-
-        .naromrodetxt {
-            display: none;
-        }
-
-        header {
-            display: initial;
-        }
-
-        .e-radio + label .e-label {
-            padding-left: 20px !important;
-            padding-right: 10px !important;
-        }
-
-        .radiobuttons {
-            padding: 7px;
-            margin: auto;
-        }
-
-        .cardsearch {
-            display: none;
+            width: 100%;
+            margin:10px;
         }
 
 
-        @@media (max-width: 600px) {
-            .results{
-                width:auto;
+            .secondSearch {
+                position: initial;
+                float: left;
+                width: 50%;
+                margin-top: 10px;
+            }
+
+
+            .radiobuttons {
+                padding: 7px;
+                margin: auto;
+            }
+
+            .cardsearch {
+                display: none;
+            }
+
+
+            @@media (max-width: 600px) {
+
+                #map {
+                    height: 400px;
+                }
+
+      
+
+                .firstSearchResult {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin: 10px;
+                }
+
+                .firstSearch {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+
+
+                .secondSearch {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin-top: 10px;
+                }
             }
         }
-    }
 </style>

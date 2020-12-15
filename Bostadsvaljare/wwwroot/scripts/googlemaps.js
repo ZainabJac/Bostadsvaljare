@@ -213,9 +213,18 @@
                     // Show travel data
                     var routeLeg = response.routes[0].legs[0];
                     var travelDistance = document.getElementById('travel-distance');
-                    travelDistance.innerHTML = "Distans: " + routeLeg.distance.text;
+                    travelDistance.innerHTML = routeLeg.distance.text;
                     var travelTime = document.getElementById('travel-time');
-                    travelTime.innerHTML = "Restid: " + routeLeg.duration.text ;
+                    travelTime.innerHTML =  routeLeg.duration.text;
+                    var divEle = document.getElementById('travel-data')
+                    divEle.classList.add('results')
+                    var clockid = document.getElementById('clock')
+                    clockid.classList.add('fas')
+                    clockid.classList.add('fa-clock')       
+                    var routeid = document.getElementById('route')
+                    routeid.classList.add('fas')
+                    routeid.classList.add('fa-route')
+                    
                 }
             });
         },

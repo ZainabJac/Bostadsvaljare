@@ -9,9 +9,9 @@
         <input class="menu-btn" type="checkbox" id="menu-btn" />
         <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
         <ul class="menu" style="color:white;">
-            <li><a style="color:white" @onclick="@MenuOnClick" href="">Bostadsväljare</a></li>
-            <li><a style="color:white" @onclick="@MenuOnClick" href="lgh_lista">Lägenhetslista</a></li>
-            <li><a style="color:white" @onclick="@MenuOnClick" href="närområde">Närområde</a></li>
+            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="">Bostadsväljare</a></li>
+            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="lgh_lista">Lägenhetslista</a></li>
+            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="närområde">Närområde</a></li>
          
             <li class="colorpickermenu" id="colorpick" ><a id="colorpickslink" style="color:white" @onclick="@MenuOnClick" href="Colorpicker">Färgväljare</a></li>
         
@@ -67,7 +67,12 @@
 
     ul.menu li {
         padding-left: 20px;
-        background-color: #415965;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
     }
 
     #topnav {
@@ -76,9 +81,13 @@
         height: auto;
         z-index: 10000;
         overflow: hidden;
-        background-color: #415965;
-        border-bottom: 1px solid;
-        border-bottom-color:white;
+       
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
     }
 
     .menuslash {
@@ -115,10 +124,10 @@
         display: block;
     }
 
-    .header li a:hover,
+/*    .header li a:hover,
     .header .menu-btn:hover {
-        background-color:  #576a74;
-    }
+        background-color:  #808080;
+    }*/
 
     /* menu */
 
@@ -128,7 +137,7 @@
         transition: max-height .2s ease-out;
     }
 
-    /* menu icon */
+
 
     .header .menu-icon {
         cursor: pointer;
@@ -139,25 +148,25 @@
         user-select: none;
     }
 
-    .header .menu-icon .navicon {
-        background: white;
-        display: block;
-        height: 2px;
-        position: relative;
-        transition: background .2s ease-out;
-        width: 18px;
-    }
+        .header .menu-icon .navicon {
+            background: #415965;
+            display: block;
+            height: 2px;
+            position: relative;
+            transition: background .2s ease-out;
+            width: 18px;
+        }
 
-    .header .menu-icon .navicon:before,
-    .header .menu-icon .navicon:after {
-        background: white;
-        content: '';
-        display: block;
-        height: 100%;
-        position: absolute;
-        transition: all .2s ease-out;
-        width: 100%;
-    }
+            .header .menu-icon .navicon:before,
+            .header .menu-icon .navicon:after {
+                background: #415965;
+                content: '';
+                display: block;
+                height: 100%;
+                position: absolute;
+                transition: all .2s ease-out;
+                width: 100%;
+            }
 
     .header .menu-icon .navicon:before {
         top: 5px;

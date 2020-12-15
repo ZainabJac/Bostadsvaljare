@@ -71,13 +71,14 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
                             new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
                             new Image { Source="IMG/G3kfloor3sofa.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/ZoFVLMtIU0ojCILGEjYb", RoomName="vind" },
+                            new Image { Source="IMG/360vindplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/6CquaWdm6YJXayR1DK9v", RoomName="vind" },
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },                        
                             new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image },
-                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image }, 
+                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image },
 
-                  
+
+
 
 
 
