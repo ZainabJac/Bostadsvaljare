@@ -130,7 +130,7 @@
 
                                 <div class="textitem">
 
-                                    <text class="card-info-header-fat">Uppgift saknas</text>
+                                    <text class="card-info-header-fat">@House.HouseNumber</text>
                                 </div>
 
                                 <div class="textitem2">
@@ -150,7 +150,7 @@
 
                                 <div class="textitem">
 
-                                    <text class="card-info-header-fat">148 m²</text>
+                                    <text class="card-info-header-fat">@House.Sqm m²</text>
                                 </div>
 
                                 <div class="textitem2">
@@ -515,13 +515,15 @@
 
 
     .btn-group button {
-        background-color: #415965; /* Green background */
-        border: 1px solid white; /* Green border */
-        color: white; /* White text */
-        cursor: pointer; /* Pointer/hand icon */
-        float: right; /* Float the buttons side by side */
+        background-color: white;
+        color: #415965;
+        cursor: pointer;
+        float: right;
         width: 100%;
+        border: 2px solid #415965;
         border-radius: 2px;
+        margin-left:1px;
+        
     }
 
     /* Clear floats (clearfix hack) */
@@ -533,7 +535,9 @@
 
     /* Add a background color on hover */
     .btn-group button:hover {
-        background-color: #576f7a;
+        background: #415965;
+        color:white;
+        border: 2px solid white;
     }
 
     .e-chip-list.e-chip, .e-chip-list .e-chip {

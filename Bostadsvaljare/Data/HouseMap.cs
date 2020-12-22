@@ -10,7 +10,7 @@ namespace Bostadsvaljare.Data
             { "IMG/Ext1-5area.png", "view-1" },
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
-            { "IMG/ext1-5grey.jpg", "view-2" },
+            { "IMG/Oversikt_V2Optimerad.jpg", "view-2" },
             { "IMG/Ext1-5redAndgrey.png", "view-3" },
             { "IMG/Ext1-5red.png", "view-3" },
             { "IMG/Ext1-5grey.png", "view-3" },
@@ -52,21 +52,26 @@ namespace Bostadsvaljare.Data
 
                     }},
                     { "view-2", new List<HouseMap> {
-                        new HouseMap { HouseNumber = "12", IMCoords = "167,759,158,714,187,660,279,697,322,717,329,782,302,803,303,824,289,834,227,810,148,776,140,749"  },
-                        new HouseMap { HouseNumber = "23", IMCoords = "388,743,381,678,347,660,249,625,227,677,316,715,331,777,355,787,364,766"  },
-                        new HouseMap { HouseNumber = "3", IMCoords = "446,714,439,652,405,625,316,596,293,640,382,681,389,749,413,755,426,736,425,727" },
-                        new HouseMap { HouseNumber = "4", IMCoords = "469,715,449,711,439,650,353,605,377,568,464,599,494,620,500,677,476,693,481,705" },
-                        new HouseMap { HouseNumber = "5", IMCoords = "551,647,545,587,517,567,428,540,409,578,495,620,501,674,525,678,536,671,529,660" },
-                        new HouseMap { HouseNumber = "6", IMCoords = "463,550,478,513,567,541,597,563,599,619,580,629,582,646,575,654,552,647,548,587,521,567" },
-                        new HouseMap { HouseNumber = "7", IMCoords = "621,626,600,620,596,561,512,520,531,488,613,514,644,537,647,592,631,599,631,615" },
+                        new HouseMap { HouseNumber = "24", IMCoords = "432, 840, 347, 870, 288, 807, 308, 798, 293, 784, 278, 737, 338, 715, 321, 668, 329, 610, 592, 536, 657, 655, 680, 758"  },
+                        new HouseMap { HouseNumber = "25", IMCoords = "904, 922, 637, 1035, 633, 1033, 542, 1074, 466, 992, 492, 983, 471, 963, 453, 911, 521, 884, 505, 832, 505, 832, 524, 777, 809, 678, 884, 812"  },
+                        new HouseMap { HouseNumber = "26", IMCoords = "1192, 1139, 908, 1296, 903, 1291, 811, 1346, 705, 1237, 727, 1226, 702, 1201, 687, 1146, 760, 1107, 746, 1050, 785, 998, 1093, 866, 1180, 1023" },
+                        new HouseMap { HouseNumber = "27", IMCoords = "1125, 525, 1117, 444, 1041, 391, 920, 342, 866, 436, 881, 527, 998, 575, 1126, 531" },
+                        new HouseMap { HouseNumber = "28", IMCoords = "1222, 491, 1125, 456, 1117, 373, 1158, 320, 1306, 277, 1358, 364, 1360, 405, 1388, 397, 1392, 436" },
+                        new HouseMap { HouseNumber = "29", IMCoords = "1435, 576, 1324, 535, 1320, 448, 1373, 390, 1520, 342, 1578, 435, 1575, 481, 1614, 465, 1616, 491, 1616, 501" },
+                        new HouseMap { HouseNumber = "30", IMCoords = "1694, 682, 1869, 585, 1871, 551, 1834, 570, 1835, 522, 1775, 420, 1633, 480, 1561, 543, 1560, 628" },
+                        new HouseMap { HouseNumber = "31", IMCoords = "2368, 580, 2368, 576, 2446, 471, 2668, 555, 2696, 621, 2676, 675, 2747, 698, 2735, 741, 2649, 783, 2631, 774, 2613, 788, 2550, 762, 2552, 760, 2344, 678"  },
+                        new HouseMap { HouseNumber = "32", IMCoords = "2494, 753, 2570, 785, 2557, 831, 2469, 880, 2450, 868, 2431, 883, 2368, 851, 2155, 757, 2171, 661, 2250, 546, 2482, 638, 2514, 700, 2497, 752" },
+                        new HouseMap { HouseNumber = "33", IMCoords = "1983, 874, 1998, 772, 2083, 647, 2325, 759, 2369, 824, 2355, 886, 2433, 924, 2422, 972, 2321, 1026, 2298, 1010, 2266, 1032, 2204, 1000" },
+                        new HouseMap { HouseNumber = "34", IMCoords = "2127, 1253, 2006, 1209, 1758, 1099, 1767, 989, 1837, 830, 2146, 936, 2175, 985, 2164, 1050, 2256, 1082, 2247, 1136, 2178, 1236, 2148, 1227" },
+                        new HouseMap { HouseNumber = "35", IMCoords = "1942, 1532, 1535, 1329, 1535, 1211, 1619, 1022, 1805, 1100, 1813, 1090, 1872, 1117, 1862, 1125, 1959, 1162, 2007, 1198, 1995, 1272, 2102, 1319, 2091, 1369, 1997, 1507, 1967, 1493" },
                     }},
                                         { "view-3", new List<HouseMap> {
                         new HouseMap { HouseNumber = "1", IMCoords = "167" },
               
                     }},
                 };
-
-                List<House> houseData = House.GetHouseData();
+                  
+                List <House> houseData = House.GetHouseData();
                 foreach (KeyValuePair<string, List<HouseMap>> view in data) {
                     foreach (HouseMap map in view.Value) {
                         map.ID = houseData.Find(x => x.HouseNumber == map.HouseNumber).ID;

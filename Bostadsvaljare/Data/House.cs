@@ -29,7 +29,7 @@ namespace Bostadsvaljare.Data
         public static List<House> GetHouseData()
         {
             if (houseData == null) {
-                int id = 0;
+                int id = 1;
                 houseData = new List<House> {
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "1", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "2", Status = "available", Housetype="G3K" },
@@ -54,7 +54,18 @@ namespace Bostadsvaljare.Data
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "21", Status = "available", Housetype="G3K" },
                      new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "22", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "23", Status = "available", Housetype="G3K" },
-                     new House { ID = 99, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "23", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "24", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "25", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "26", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "27", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "28", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "29", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "30", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "31", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "32", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "33", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "34", Status = "available", Housetype="V2" },
+                     new House { ID = id++, Sqm = 137, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "35", Status = "available", Housetype="V2" },
 
                     //new House { ID = id++, Sqm = 91, Price = "4 700 000 ", Rent = "3 800 ", HouseNumber = "7b", Status = "available", Housetype="V2" },
                  

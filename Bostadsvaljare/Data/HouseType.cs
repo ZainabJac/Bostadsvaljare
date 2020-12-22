@@ -77,12 +77,6 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image },
 
-
-
-
-
-
-
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
@@ -92,36 +86,26 @@ namespace Bostadsvaljare.Data
 
                     { "V2", new HouseType {
                         Floorplans = new List<Floorplan> {
-                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            new Floorplan { Source = "IMG/plan1_low.jpg", Rooms = new List<Floorplan.Room> {
+                          
                             }},
-                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
+                            new Floorplan { Source = "IMG/plan2_low.jpg", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 1150, Y = 1280 } },
+                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 800, Y = 720 } },
                             }},
-                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 1160, Y = 510 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 800, Y = 720 } },
-                            }},
+                         
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
-                            new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
-                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
-                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum", Thumbnail="IMG/color thumbnail.png" },
-                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok", Thumbnail="IMG/color thumbnail.png" },
-                            new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
-                            new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
-                            new Image { Source="IMG/Ext1-5redAndgrey.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
-                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum", Thumbnail="IMG/color thumbnail.png" },
-                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok", Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/V2Redhouse_medium_low.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/Gata_grey_medium_low.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/Gata_Greens_medium_low.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/V2_Sovrum_Master_medium_low_25.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png"},
+                            new Image { Source="IMG/V2_Badrum_medium_25_canvas.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
+                            new Image { Source="IMG/Mood_red_webttestMedium.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
+
 
                         },
-                        Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+                       
                     }},
                 };
             }
