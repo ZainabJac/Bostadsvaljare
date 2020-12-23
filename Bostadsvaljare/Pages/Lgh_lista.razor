@@ -18,7 +18,7 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
-        
+
         <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
         <div class="line-6">
@@ -59,7 +59,7 @@
                 <GridColumns>
                     <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Hus nr."></GridColumn>
                     <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
-                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>  
+                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
                     <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
                         <Template>
                             @{
@@ -67,19 +67,17 @@
                                 <div>
                                     @if (house.Status == "sold")
                                     {
-                                        <img src="/IMG/icons/circlered.png"/>
+                                        <img src="/IMG/icons/circlered.png" />
                                         <span>Såld</span>
                                     }
                                     @if (house.Status == "booked")
                                     {
-                                        <img src="/IMG/icons/circleOrange.png"
-                                            />
+                                        <img src="/IMG/icons/circleOrange.png" />
                                         <span>Reserverad</span>
                                     }
                                     @if (house.Status == "available")
                                     {
-                                        <img src="/IMG/icons/CircleGreen.png"
-                                             />
+                                        <img src="/IMG/icons/CircleGreen.png" />
                                         <span>Ledig</span>
                                     }
                                 </div>
@@ -181,7 +179,7 @@
                     continue;
 
                 string status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
-                HouseToStatus.Add(view.Key +"_"+ map.HouseNumber,
+                HouseToStatus.Add(view.Key + "_" + map.HouseNumber,
                                   status + statuses[status]++);
             }
         }
@@ -282,11 +280,11 @@
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
         string viewName = Data.HouseMap.ImageNameToVariant(this.Views[this.CurrentView].Source);
-        string key = viewName +"_"+ houseNumber;
+        string key = viewName + "_" + houseNumber;
         if (HouseToStatus.ContainsKey(key))
         {
             string statusKey = HouseToStatus[key];
-            await JSRuntime.InvokeVoidAsync("mapster.select", this.Views[this.CurrentView].ID, this.Views[this.CurrentView].ID +"-img", statusKey);
+            await JSRuntime.InvokeVoidAsync("mapster.select", this.Views[this.CurrentView].ID, this.Views[this.CurrentView].ID + "-img", statusKey);
         }
     }
 
@@ -397,9 +395,9 @@
         white-space: nowrap;
     }
 
-    #gallery span {
-        display: contents;
-    }
+        #gallery span {
+            display: contents;
+        }
 
     .gallery-img {
         width: 25%;
@@ -409,10 +407,10 @@
         transition-duration: 0.25s;
     }
 
-    .gallery-img:hover {
-        filter: brightness(100%);
-        cursor: pointer;
-    }
+        .gallery-img:hover {
+            filter: brightness(100%);
+            cursor: pointer;
+        }
 
     .e-gridcontent:hover {
         cursor: pointer;

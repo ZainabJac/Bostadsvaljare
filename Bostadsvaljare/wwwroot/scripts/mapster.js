@@ -26,7 +26,7 @@
                     var statuses = {};
                     options.areas = [];
 
-                    var mapAreas = $('#'+ mapID)[0].areas
+                    var mapAreas = $('#' + mapID)[0].areas
                     for (var i = 0; i < mapAreas.length; i++) {
                         var area = mapAreas[i];
                         var status = area.attributes.id.value;
@@ -54,15 +54,15 @@
                 }
             };
 
-            $('#'+ parentID +' #'+ imgID).mapster(initialOptions);
+            $('#' + parentID + ' #' + imgID).mapster(initialOptions);
         },
 
         changeImage: function (parentID, imagePath) {
-            $('#'+ parentID +' img.mapster_el')[0].src = imagePath;
+            $('#' + parentID + ' img.mapster_el')[0].src = imagePath;
         },
 
         select: function (parentID, imgID, statusKey) {
-            $('#'+ parentID +' #'+ imgID).mapster('highlight', statusKey);
+            $('#' + parentID + ' #' + imgID).mapster('highlight', statusKey);
         },
 
         selectAll: function () {

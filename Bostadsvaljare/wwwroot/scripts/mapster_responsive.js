@@ -33,15 +33,15 @@
 
         getMargin: function () {
             var image = this.images[this.currentImgInd],
-                l = $('#'+ image.parentID).offset().left,
-                r = $(window).width() - $('#'+ image.parentID).width() - l,
-                t = $('#'+ image.parentID).offset().top,
+                l = $('#' + image.parentID).offset().left,
+                r = $(window).width() - $('#' + image.parentID).width() - l,
+                t = $('#' + image.parentID).offset().top,
                 b = 0; //TODO: get correct margin-bottom
             return { left: l, right: r, top: t, bottom: b, width: l + r, height: t + b };
         },
 
         setValues: function (imgInd, parentID, width) {
-            var imgEl = $('#'+ parentID +' img');
+            var imgEl = $('#' + parentID + ' img');
             this.images[imgInd] = {
                 parentID: parentID,
                 width: width,
@@ -59,7 +59,7 @@
 
         resize: function () {
             if (this.images.length > 0
-            && $('#'+ this.images[this.currentImgInd].parentID +' div').length > 0) {
+                && $('#' + this.images[this.currentImgInd].parentID + ' div').length > 0) {
                 this._onResize();
             }
         },
@@ -72,14 +72,14 @@
         _onResize: async function (event) {
             var image = this.images[this.currentImgInd],
                 newWidth, newHeight, diff = 1, perc = 1,
-                wrapper = $('#'+ image.parentID +' div'),
-                areas = $('#'+ image.parentID +' area'),
+                wrapper = $('#' + image.parentID + ' div'),
+                areas = $('#' + image.parentID + ' area'),
                 n, m, len = areas.length, clen, coords = [],
                 windowW = $(window).width() - this.margin.width,
                 windowH = $(window).height() - this.margin.height;
 
             // Wait a little while until the element has a size
-            while ($('#'+ image.parentID).width() === 0) {
+            while ($('#' + image.parentID).width() === 0) {
                 await util.delay(10);
             }
 
@@ -87,13 +87,13 @@
                 perc = parseFloat(image.width) * 0.01;
 
             if (this.stayInWindow
-            && windowH * image.ratio < windowW * perc) {
+                && windowH * image.ratio < windowW * perc) {
                 newHeight = windowH;
                 newWidth = newHeight * image.ratio;
                 diff = newWidth / wrapper.width();
             } else {
                 if (image.width.slice('-1') == '%') {
-                    newWidth = $('#'+ image.parentID).width() * perc;
+                    newWidth = $('#' + image.parentID).width() * perc;
                 } else
                     newWidth = parseFloat(image.width);
                 newHeight = newWidth / image.ratio;

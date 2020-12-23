@@ -119,32 +119,33 @@
         public View[] Views { get; set; }
     }
 
-    ViewData VData = new ViewData() {
+    ViewData VData = new ViewData()
+    {
         ParentID = "view",
         StudyID = "sun-study",
         ImageMapName = "houses",
         Views = new ViewData.View[] {
             new ViewData.View() {
                 SunStudies = new Dictionary<string, string>() {
-                    { "morning", "IMG/Imagemap.jpg" },
-                    { "midday", "IMG/Imagemap.jpg" },
-                    { "evening", "IMG/Imagemap.jpg" },
+                    { "morning", "IMG/Ext1-5area.png" },
+                    { "midday", "IMG/Ext1-5area.png" },
+                    { "evening", "IMG/Ext1-5area.png" },
                 }
             },
             new ViewData.View() {
                 Name = "Område 1",
                 SunStudies = new Dictionary<string, string>() {
-                    { "morning", "IMG/Oversiktsbild1-5.jpg" },
-                    { "midday", "IMG/Oversiktsbild1-5.jpg" },
-                    { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                    { "morning", "IMG/Ext1-5area.png" },
+                    { "midday", "IMG/Ext1-5area.png" },
+                    { "evening", "IMG/Ext1-5area.png" },
                 }
             },
             new ViewData.View() {
                 Name = "Område 2",
                 SunStudies = new Dictionary<string, string>() {
-                    { "morning", "IMG/Oversiktsbild1-5.jpg" },
-                    { "midday", "IMG/Oversiktsbild1-5.jpg" },
-                    { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                    { "morning", "IMG/Oversikt_V2Optimerad.jpg" },
+                    { "midday", "IMG/Oversikt_V2Optimerad.jpg" },
+                    { "evening", "IMG/Oversikt_V2Optimerad.jpg" },
                 }
             }
         }
@@ -160,6 +161,7 @@
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
     private bool topOverview = true;
+    private bool HouseIsClicked = false;
 
 
     protected override void OnInitialized()
@@ -212,7 +214,7 @@
 
     public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-            if (HouseIsClicked == false)
+        if (HouseIsClicked == false)
             ShowTooltip(e.ClientX, e.ClientY, houseNumber);
     }
 
@@ -234,14 +236,17 @@
     {
         string msg;
         Data.House house = null;
-        foreach (Data.House h in Data.House.GetHouseData()) {
-            if (h.HouseNumber == houseNumber) {
+        foreach (Data.House h in Data.House.GetHouseData())
+        {
+            if (h.HouseNumber == houseNumber)
+            {
                 house = h;
                 break;
             }
         }
 
-        switch (house.Status) {
+        switch (house.Status)
+        {
             case "sold":
                 msg = "Såld";
                 break;
@@ -268,18 +273,24 @@
     private async void PreviousOverview(MouseEventArgs e)
     {
         string currentImageSrc = VData.Views[CurrentView].SunStudies[CurrentStudy];
-        foreach (KeyValuePair<string, List<Bostadsvaljare.Data.HouseMap>> mapDataPair in MapData) {
+        foreach (KeyValuePair<string, List<Bostadsvaljare.Data.HouseMap>> mapDataPair in MapData)
+        {
 
             List<Bostadsvaljare.Data.HouseMap> maps = mapDataPair.Value;
-            if (maps.Count > 0 && maps[0].TargetMap != "N/A") {
-                foreach (Bostadsvaljare.Data.HouseMap map in maps) {
+            if (maps.Count > 0 && maps[0].TargetMap != "N/A")
+            {
+                foreach (Bostadsvaljare.Data.HouseMap map in maps)
+                {
 
-                    if (map.TargetMap == currentImageSrc) {
+                    if (map.TargetMap == currentImageSrc)
+                    {
                         string imageSrc = Bostadsvaljare.Data.HouseMap.GetNameFromVariant(mapDataPair.Key);
-                        for (int i = 0; i < VData.Views.Length; i++) {
+                        for (int i = 0; i < VData.Views.Length; i++)
+                        {
 
                             ViewData.View view = VData.Views[i];
-                            if (view.SunStudies[CurrentStudy] == imageSrc) {
+                            if (view.SunStudies[CurrentStudy] == imageSrc)
+                            {
                                 await JSRuntime.InvokeVoidAsync("exterior.changeImage", CurrentView, CurrentStudy);
                                 CurrentView = i;
                                 if (CurrentView == 0)
@@ -357,7 +368,7 @@
         padding: 7px;
     }
 
-   
+
     .e-checkicon {
         background-color: white;
         padding: 6px 12px 4px;
@@ -376,6 +387,7 @@
     .e-icons.e-rect {
         width: 50px;
     }
+
     .e-rect::before {
         content: '\e670';
         font-size: 50px;
@@ -384,6 +396,7 @@
     .e-icons.e-arrow-up {
         width: 32px;
     }
+
     .e-arrow-up::before {
         content: '\e7d1';
         font-size: 32px;
@@ -391,21 +404,21 @@
 
 
     #view_menu {
-     /*   position: fixed;
+        /*   position: fixed;
         top: 65px;
         left: 130px;*/
         display: inline-block;
     }
 
     #sun_study_menu {
-     /*   position: fixed;
+        /*   position: fixed;
         top: 65px;
         left: 7px;*/
         display: inline-block;
     }
 
     #highlight_all_checker {
-     /*   position: fixed;
+        /*   position: fixed;
         top: 65px;
         left: 265px;*/
         display: inline-block;
@@ -455,6 +468,7 @@
             font-family: acumin-pro,sans-serif;
             display: inline-block;
         }
+
         .e-view {
             content: url(IMG/icons/noun_rotate_24052.png);
             /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
@@ -462,6 +476,5 @@
             font-family: acumin-pro,sans-serif;
             display: inline-block;
         }
-
     }
 </style>

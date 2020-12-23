@@ -9,15 +9,15 @@
             for (view of data.views) {
                 for (name in view.sunStudies) {
                     img = await image_loader.loadImage(view.sunStudies[name]);
-                    img.id = data.studyID +'-'+ i +'-'+ name +'-img';
+                    img.id = data.studyID + '-' + i + '-' + name + '-img';
                     $(img).attr({
                         view: i,
                         'sun-study': name,
                     });
                     this.images.push({
                         img: img,
-                        parentID: '#'+ data.parentID +'-'+ i +' #sun-study-'+ name,
-                        usemap: '#'+ data.imageMapName +'-'+ i +'-'+ name,
+                        parentID: '#' + data.parentID + '-' + i + ' #sun-study-' + name,
+                        usemap: '#' + data.imageMapName + '-' + i + '-' + name,
                         style: { width: '99%' },
                     });
                 }
@@ -65,7 +65,7 @@
                 imgID = 'sun-study-' + view + '-' + sunStudy + '-img',
                 mapName = 'houses-' + view + '-' + sunStudy;
 
-            mapster_responsive.setValues(this.mapIndex[sunStudy+view], parentID, imgWidth);
+            mapster_responsive.setValues(this.mapIndex[sunStudy + view], parentID, imgWidth);
             mapster.addMapHighlights(parentID, imgID, mapName, 'center');
         },
 
