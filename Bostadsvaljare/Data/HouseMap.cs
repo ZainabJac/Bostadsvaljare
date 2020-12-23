@@ -7,7 +7,7 @@ namespace Bostadsvaljare.Data
     {
         private static Dictionary<string, List<HouseMap>> data;
         private static readonly Dictionary<string, string> imageToVariant = new Dictionary<string, string> {
-            { "IMG/Oversiktsbild1-5.jpg", "view-1" },
+            { "IMG/Ext1-5area.png", "view-1" },
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
             { "IMG/Oversikt_V2Optimerad.jpg", "view-2" },
