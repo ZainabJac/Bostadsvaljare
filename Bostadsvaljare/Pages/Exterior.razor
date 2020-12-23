@@ -1,5 +1,6 @@
 ﻿@page "/"
 
+@using System.Text.RegularExpressions;
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.SplitButtons
 @using BlazorPro.Spinkit
@@ -22,26 +23,33 @@
 
         <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        @for (int i = 0; i < Views.Count; i++)
+        @for (int i = 0; i < VData.Views.Length; i++)
         {
             var _i = i;
-            <div id="view-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
-                @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
+            <div id="@VData.ParentID-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                @for (int j = 0; j < VData.Views[_i].SunStudies.Count; j++)
                 {
                     var _j = j;
                     var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
-                    <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
-                        
-                        <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
+                    <div id="@VData.StudyID-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
+                        <map id="@VData.ImageMapName-@_i-@sunStudy" name="@VData.ImageMapName-@_i-@sunStudy">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
-                                if (view.Key == Data.HouseMap.ImageNameToView(Views[_i].SunStudies["midday"]))
+                                if (view.Key == Data.HouseMap.ImageNameToVariant(VData.Views[_i].SunStudies["midday"]))
                                 {
                                     @foreach (Data.HouseMap map in view.Value)
                                     {
-                                        <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
-                                              coords="@map.IMCoords" shape="poly">
+                                        if (map.ID == -1)
+                                        {
+                                            <area id="overview" status="" href="#" @onclick="() => OverviewClicked(map.TargetMap)"
+                                                  coords="@map.Coords" shape="poly">
+                                        }
+                                        else
+                                        {
+                                            <area id="@Data.House.Get(map.ID).Status" status="" href="#"
+                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
+                                                  coords="@map.Coords" shape="poly">
+                                        }
                                     }
                                 }
                             }
@@ -56,9 +64,12 @@
                 <SfDropDownButton IconCss="e-icons e-view" Content="Byt Område">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
                     <DropDownButtonItems>
-                        @for (int i = 0; i < Views.Count; i++)
+                        @for (int i = 0; i < VData.Views.Length; i++)
                         {
-                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+                            if (VData.Views[i].Name != "")
+                            {
+                                <DropDownButtonItem Id="@i.ToString()" Text="@VData.Views[i].Name"></DropDownButtonItem>
+                            }
                         }
                     </DropDownButtonItems>
                 </SfDropDownButton>
@@ -84,42 +95,59 @@
                 </SfChipList>
             </div>
         </div>
+
+        <span id="previous-image-btn" class="e-icons e-rect" style="@(topOverview ? "visibility: hidden;" : "")">
+            <span style="position: absolute; left: 0.5px; top: 7px;">
+                <SfButton CssClass="e-flat" IconCss="e-icons e-arrow-up" OnClick="PreviousOverview"></SfButton>
+            </span>
+        </span>
     </ContentTemplate>
 </SpinLoader>
 
 @code {
     public class ViewData
     {
-        public string ID { get; set; }
-        public string Name { get; set; }
+        public class View
+        {
+            public string Name { get; set; }
+            public Dictionary<string, string> SunStudies { get; set; }
+        }
+
+        public string ParentID { get; set; }
+        public string StudyID { get; set; }
         public string ImageMapName { get; set; }
-        public Dictionary<string, string> SunStudies { get; set; }
-        public bool Initialized { get; set; } = false;
-
-
+        public View[] Views { get; set; }
     }
 
-    List<ViewData> Views = new List<ViewData> {
-        new ViewData() {
-            ID = "view-1",
-            Name = "Område 1",
-            ImageMapName = "imagemap-1",
-            SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Ext1-5area.png" },
-                { "midday", "IMG/Ext1-5area.png" },
-                { "evening", "IMG/Ext1-5area.png" },
+    ViewData VData = new ViewData() {
+        ParentID = "view",
+        StudyID = "sun-study",
+        ImageMapName = "houses",
+        Views = new ViewData.View[] {
+            new ViewData.View() {
+                SunStudies = new Dictionary<string, string>() {
+                    { "morning", "IMG/Imagemap.jpg" },
+                    { "midday", "IMG/Imagemap.jpg" },
+                    { "evening", "IMG/Imagemap.jpg" },
+                }
             },
-        },
-        new ViewData() {
-            ID = "view-2",
-            Name = "Område 2",
-            ImageMapName = "imagemap-2",
-            SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Oversikt_V2Optimerad.jpg" },
-                { "midday", "IMG/Oversikt_V2Optimerad.jpg"},
-                { "evening", "IMG/Oversikt_V2Optimerad.jpg" },
+            new ViewData.View() {
+                Name = "Område 1",
+                SunStudies = new Dictionary<string, string>() {
+                    { "morning", "IMG/Oversiktsbild1-5.jpg" },
+                    { "midday", "IMG/Oversiktsbild1-5.jpg" },
+                    { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                }
             },
-        },
+            new ViewData.View() {
+                Name = "Område 2",
+                SunStudies = new Dictionary<string, string>() {
+                    { "morning", "IMG/Oversiktsbild1-5.jpg" },
+                    { "midday", "IMG/Oversiktsbild1-5.jpg" },
+                    { "evening", "IMG/Oversiktsbild1-5.jpg" },
+                }
+            }
+        }
     };
 
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -131,7 +159,7 @@
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
-    public bool HouseIsClicked { get; set; } = false;
+    private bool topOverview = true;
 
 
     protected override void OnInitialized()
@@ -146,7 +174,7 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", VData);
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -237,6 +265,47 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
+    private async void PreviousOverview(MouseEventArgs e)
+    {
+        string currentImageSrc = VData.Views[CurrentView].SunStudies[CurrentStudy];
+        foreach (KeyValuePair<string, List<Bostadsvaljare.Data.HouseMap>> mapDataPair in MapData) {
+
+            List<Bostadsvaljare.Data.HouseMap> maps = mapDataPair.Value;
+            if (maps.Count > 0 && maps[0].TargetMap != "N/A") {
+                foreach (Bostadsvaljare.Data.HouseMap map in maps) {
+
+                    if (map.TargetMap == currentImageSrc) {
+                        string imageSrc = Bostadsvaljare.Data.HouseMap.GetNameFromVariant(mapDataPair.Key);
+                        for (int i = 0; i < VData.Views.Length; i++) {
+
+                            ViewData.View view = VData.Views[i];
+                            if (view.SunStudies[CurrentStudy] == imageSrc) {
+                                await JSRuntime.InvokeVoidAsync("exterior.changeImage", CurrentView, CurrentStudy);
+                                CurrentView = i;
+                                if (CurrentView == 0)
+                                    topOverview = true;
+                                MobileSelection = -1;
+                                base.StateHasChanged();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async void OverviewClicked(string targetMap)
+    {
+        string viewID = await JSRuntime.InvokeAsync<string>("util.getImgParentID", targetMap, VData.ParentID);
+        this.CurrentView = Int32.Parse(Regex.Match(viewID, @"\d+$").Value);
+        this.topOverview = false;
+        await JSRuntime.InvokeVoidAsync("exterior.changeImage", this.CurrentView, this.CurrentStudy);
+
+        this.MobileSelection = -1;
+        base.StateHasChanged();
+    }
+
     private async void HousingClicked(int houseID)
     {
         HouseIsClicked = true;
@@ -268,8 +337,6 @@
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("exterior.dispose");
     }
-
-
 }
 
 
@@ -298,6 +365,28 @@
         padding-right: 6px;
         padding-bottom: 4px;
         padding-left: 6px
+    }
+
+    #previous-image-btn {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+    }
+
+    .e-icons.e-rect {
+        width: 50px;
+    }
+    .e-rect::before {
+        content: '\e670';
+        font-size: 50px;
+    }
+
+    .e-icons.e-arrow-up {
+        width: 32px;
+    }
+    .e-arrow-up::before {
+        content: '\e7d1';
+        font-size: 32px;
     }
 
 

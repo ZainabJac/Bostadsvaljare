@@ -31,7 +31,7 @@ namespace Bostadsvaljare.Data
             if (houseData == null) {
                 int id = 1;
                 houseData = new List<House> {
-                    new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "1", Status = "available", Housetype="G3K" },
+                    new House { ID = 1, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "1", Status = "available", Housetype="V2Color" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "2", Status = "available", Housetype="G3K" },
                    new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "3", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "4", Status = "available", Housetype="G3K" },

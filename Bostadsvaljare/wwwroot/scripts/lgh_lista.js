@@ -1,41 +1,34 @@
 ﻿(function () {
     window.lgh_lista = {
         images: [],
-        imageMaps: [],
 
         loadImages: async function (data) {
             var self = this,
-                imagesLoaded = data.length,
-                onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
-            // Load images that use image maps every time
-            // TODO: fix so it's not neccessary to load every time;
-            //       some bug causes only some image maps to load otherwise
-            data.forEach((view, i) => {
-                var img = new Image();
-                img.onload = onLoadImg;
-                img.id = 'house-main-' + i + '-img';
-                img.src = view.source;
+                img, view, i = 0;
+
+            for (view of data) {
+                let _i = i;
+                img = await image_loader.loadImage(view.source);
+                img.id = 'house-main-'+ i +'-img';
                 $(img).attr('view', i);
-                self.imageMaps.push({
+                this.images.push({
                     img: img,
-                    parentID: 'house-main-' + i,
-                    usemap: '#house-map-' + i,
+                    parentID: 'house-main-'+ i,
+                    usemap: '#house-map-'+ i,
                     style: { width: '99.99%' },
                 });
 
-                img = img.cloneNode();
-                img.id = '';
+                img = await image_loader.loadImage(view.source);
                 $(img).addClass('gallery-img');
-                $(img).on('click', e => self._onClickGalleryImg(e, i));
-                self.images.push({
+                $(img).on('click', e => self._onClickGalleryImg(e, _i));
+                this.images.push({
                     img: img,
-                    parentID: 'gallery-item-' + i,
+                    parentID: 'gallery-item-'+ i,
                 });
-            });
 
-            while (imagesLoaded > 0) {
-                await util.delay(100);
+                i = i + 1;
             }
+
             return true;
         },
 
@@ -43,22 +36,18 @@
             var data;
 
             for (data of this.images) {
-                // Remove any style that may have been added previously
-                $(data.img).removeAttr('style');
-                // Add img element
-                $('#'+ data.parentID).append(data.img);
-            }
-
-            for (data of this.imageMaps) {
                 // Reset any style that may have been added previously,
                 // and add in our own
                 $(data.img).removeAttr('style');
-                $(data.img).css(data.style);
+                if (data.style)
+                    $(data.img).css(data.style);
                 // Add img element
                 $('#'+ data.parentID).append(data.img);
                 // Add image map functionality
-                $('#'+ data.img.id).attr('usemap', data.usemap);
-                this._loadIM(data.img, data.style.width);
+                if (data.usemap) {
+                    $('#'+ data.img.id).attr('usemap', data.usemap);
+                    this._loadIM(data.img, data.style.width);
+                }
             }
             await util.delay(100);
         },
@@ -84,7 +73,6 @@
         dispose: function () {
             mapster.dispose();
             this.images.length = 0;
-            this.imageMaps.length = 0;
         },
     };
 })();

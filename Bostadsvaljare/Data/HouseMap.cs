@@ -6,8 +6,8 @@ namespace Bostadsvaljare.Data
     public class HouseMap
     {
         private static Dictionary<string, List<HouseMap>> data;
-        private static readonly Dictionary<string, string> imageToView = new Dictionary<string, string> {
-            { "IMG/Ext1-5area.png", "view-1" },
+        private static readonly Dictionary<string, string> imageToVariant = new Dictionary<string, string> {
+            { "IMG/Oversiktsbild1-5.jpg", "view-1" },
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
             { "IMG/Oversikt_V2Optimerad.jpg", "view-2" },
@@ -17,9 +17,10 @@ namespace Bostadsvaljare.Data
             { "IMG/Extra_G3K(t).png", "view-1" }
         };
 
-        public int ID { get; set; }
-        public string HouseNumber { get; set; }
-        public string IMCoords { get; set; }
+        public int ID { get; set; } = -1;
+        public string HouseNumber { get; set; } = "N/A";
+        public string TargetMap { get; set; } = "N/A";
+        public string Coords { get; set; }
 
         public static Dictionary<string, List<HouseMap>> GetHouseMapData()
         {
@@ -65,16 +66,16 @@ namespace Bostadsvaljare.Data
                         new HouseMap { HouseNumber = "34", IMCoords = "2127, 1253, 2006, 1209, 1758, 1099, 1767, 989, 1837, 830, 2146, 936, 2175, 985, 2164, 1050, 2256, 1082, 2247, 1136, 2178, 1236, 2148, 1227" },
                         new HouseMap { HouseNumber = "35", IMCoords = "1942, 1532, 1535, 1329, 1535, 1211, 1619, 1022, 1805, 1100, 1813, 1090, 1872, 1117, 1862, 1125, 1959, 1162, 2007, 1198, 1995, 1272, 2102, 1319, 2091, 1369, 1997, 1507, 1967, 1493" },
                     }},
-                                        { "view-3", new List<HouseMap> {
-                        new HouseMap { HouseNumber = "1", IMCoords = "167" },
-              
+                    { "view-3", new List<HouseMap> {
+                        new HouseMap { HouseNumber = "1", Coords = "167,759" },
                     }},
                 };
                   
                 List <House> houseData = House.GetHouseData();
                 foreach (KeyValuePair<string, List<HouseMap>> view in data) {
                     foreach (HouseMap map in view.Value) {
-                        map.ID = houseData.Find(x => x.HouseNumber == map.HouseNumber).ID;
+                        if (map.HouseNumber != "N/A")
+                            map.ID = houseData.Find(x => x.HouseNumber == map.HouseNumber).ID;
                     }
                 }
             }
@@ -82,9 +83,18 @@ namespace Bostadsvaljare.Data
             return data;
         }
 
-        public static string ImageNameToView(string fileName)
+        public static string ImageNameToVariant(string fileName)
         {
-            return imageToView[fileName];
+            return imageToVariant[fileName];
+        }
+
+        public static string GetNameFromVariant(string variant)
+        {
+            foreach (KeyValuePair<string, string> image in imageToVariant) {
+                if (image.Value == variant)
+                    return image.Key;
+            }
+            return "";
         }
     }
 }

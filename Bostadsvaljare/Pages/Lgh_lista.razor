@@ -29,14 +29,15 @@
                     <map id="house-map-@_i" name="house-map-@_i">
                         @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                         {
-                           
+                            if (view.Key == Data.HouseMap.ImageNameToVariant(Views[i].Source))
+                            {
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
                                     <area id="@Data.House.Get(map.ID).Status" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
-                                          coords="@map.IMCoords" shape="poly">
+                                          coords="@map.Coords" shape="poly">
                                 }
-                            
+                            }
                         }
                     </map>
                 </div>
@@ -122,22 +123,22 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = "house-main-1",
-            Source = "IMG/Ext1-5area.png",
+            Source = "IMG/Oversiktsbild1-5.jpg",
             ImageMapName = "house-map-1",
         },
         new ViewData {
             ID = "house-main-2",
-            Source = "IMG/Ext1-5redAndgrey.png",
+            Source = "IMG/Gatuvy1-5.jpg",
             ImageMapName = "house-map-2",
         },
         new ViewData {
             ID = "house-main-3",
-            Source = "IMG/Ext1-5red.png",
+            Source = "IMG/GRK-röd.jpg",
             ImageMapName = "house-map-3",
         },
         new ViewData {
             ID = "house-main-4",
-            Source = "IMG/Ext1-5grey.png",
+            Source = "IMG/G3kT-grey.jpg",
             ImageMapName = "house-map-4",
         },
     };
@@ -176,6 +177,9 @@
         {
             foreach (Data.HouseMap map in view.Value)
             {
+                if (map.HouseNumber == "N/A")
+                    continue;
+
                 string status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
                 HouseToStatus.Add(view.Key +"_"+ map.HouseNumber,
                                   status + statuses[status]++);
@@ -277,7 +281,7 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        string viewName = Data.HouseMap.ImageNameToView(this.Views[this.CurrentView].Source);
+        string viewName = Data.HouseMap.ImageNameToVariant(this.Views[this.CurrentView].Source);
         string key = viewName +"_"+ houseNumber;
         if (HouseToStatus.ContainsKey(key))
         {
