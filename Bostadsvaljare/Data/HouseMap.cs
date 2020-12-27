@@ -7,14 +7,14 @@ namespace Bostadsvaljare.Data
     {
         private static Dictionary<string, List<HouseMap>> data;
         private static readonly Dictionary<string, string> imageToVariant = new Dictionary<string, string> {
-            { "IMG/Ext1-5area.png", "view-1" },
+            { "IMG/Ext1-5area.jpg", "view-1" },
             { "IMG/Morgon.jpg", "view-1" },
             { "IMG/Natt.jpg", "view-1" },
             { "IMG/Oversikt_V2Optimerad.jpg", "view-2" },
-            { "IMG/Ext1-5redAndgrey.png", "view-3" },
-            { "IMG/Ext1-5red.png", "view-3" },
-            { "IMG/Ext1-5grey.png", "view-3" },
-            { "IMG/Extra_G3K(t).png", "view-1" }
+            { "IMG/Ext1-5redAndgrey.jpg", "view-3" },
+            { "IMG/Ext1-5red.jpg", "view-3" },
+            { "IMG/Ext1-5grey.jpg", "view-3" },
+            { "IMG/Extra_G3K(t).jpg", "view-1" }
         };
 
         public int ID { get; set; }
