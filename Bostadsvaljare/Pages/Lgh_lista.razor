@@ -144,9 +144,9 @@
         },
     };
 
-   
 
-   
+
+
 
     [JSInvokable]
     public static void setheight(string height)
@@ -188,12 +188,13 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("lgh_lista.init");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();
         }
-        await JSRuntime.InvokeVoidAsync("grid_responsive.resizeComplete");
+        await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
@@ -289,8 +290,9 @@
         string key = viewName +"_"+ houseNumber;
         if (HouseToStatus.ContainsKey(key))
         {
+            string id = this.Views[this.CurrentView].ID;
             string statusKey = HouseToStatus[key];
-            await JSRuntime.InvokeVoidAsync("mapster.select", this.Views[this.CurrentView].ID, this.Views[this.CurrentView].ID +"-img", statusKey);
+            await JSRuntime.InvokeVoidAsync("mapster.select", id, id +"-img", statusKey);
         }
     }
 
@@ -388,7 +390,6 @@
     public async ValueTask DisposeAsync()
     {
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
-        await JSRuntime.InvokeVoidAsync("grid_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
     }
 }

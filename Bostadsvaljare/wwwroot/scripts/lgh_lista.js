@@ -2,9 +2,14 @@
     window.lgh_lista = {
         images: [],
         imageMaps: [],
+        listeners: {},
 
 
-
+        init: function () {
+            var self = this;
+            this.listeners.resize = function (e) { self.resizeComplete(e); };
+            window.addEventListener('resize', this.listeners.resize, false);
+        },
 
         loadImages: async function (data) {
             var self = this,
@@ -64,8 +69,6 @@
                 this._loadIM(data.img, data.style.width);
             }
 
-          
-
             await util.delay(100);
         },
 
@@ -80,6 +83,11 @@
             mapster.addMapHighlights(parentID, imgID, mapName);
         },
 
+        resizeComplete: function () {
+            var height = $('#gallerybox').height();
+            $('#GridResize').height(height + 'px');
+        },
+
         _onClickGalleryImg: function (event, ind) {
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeLghView', ind)
                 .then(_resp => {
@@ -89,6 +97,7 @@
         },
 
         dispose: function () {
+            window.removeEventListener('resize', this.listeners.resize, false);
             mapster.dispose();
             this.images.length = 0;
             this.imageMaps.length = 0;
