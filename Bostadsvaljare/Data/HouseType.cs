@@ -48,17 +48,17 @@ namespace Bostadsvaljare.Data
                 data = new Dictionary<string, HouseType> {
                     { "G3K", new HouseType {
                         Floorplans = new List<Floorplan> {
-                            new Floorplan { Source = "IMG/plan1.png", Rooms = new List<Floorplan.Room> {
+                            new Floorplan { Source = "IMG/plan1.jpg", Rooms = new List<Floorplan.Room> {
                                 new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 120 } },
                                 new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 700, Y = 300 } },
                                 new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 540, Y = 300 } },
                                 new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 600, Y = 170 } },
                                 new Floorplan.Room { RoomID = 2, Coords = new Vector2 { X = 430, Y = 300 } },
                             }},
-                            new Floorplan { Source = "IMG/plan2.png", Rooms = new List<Floorplan.Room> {
+                            new Floorplan { Source = "IMG/plan2.jpg", Rooms = new List<Floorplan.Room> {
                                 
                             }},
-                            new Floorplan { Source = "IMG/plan3.png", Rooms = new List<Floorplan.Room> {
+                            new Floorplan { Source = "IMG/plan3.jpg", Rooms = new List<Floorplan.Room> {
                                 new Floorplan.Room { RoomID = 5, Coords = new Vector2 { X = 180, Y = 220 } },
                                 new Floorplan.Room { RoomID = 6, Coords = new Vector2 { X = 300, Y = 250 } },
                                 new Floorplan.Room { RoomID = 7, Coords = new Vector2 { X = 520, Y = 220 } },

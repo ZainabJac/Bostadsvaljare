@@ -56,7 +56,7 @@
             <div style="width:100%">
                 <SfGrid Height="100%" Width="100%" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="false" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
                     <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-                    <GridEvents RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
+                    <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
                     <GridColumns>
                         <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Hus nr."></GridColumn>
                         <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
@@ -127,7 +127,7 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5area.png",
+            Source = "IMG/Ext1-5area.jpg",
             ImageMapName = _mapName + _ind++,
         },
         new ViewData {
@@ -137,24 +137,30 @@
         },
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5red.png",
+            Source = "IMG/Ext1-5red.jpg",
             ImageMapName = _mapName + _ind++,
         },
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5grey.png",
+            Source = "IMG/Ext1-5grey.jpg",
             ImageMapName = _mapName + _ind++,
         },
     };
 
 
-
-
-
-    [JSInvokable]
-    public static void setheight(string height)
+    public async void Created()
     {
-        Gridheight = height;
+        InitialRender = true;
+        await JSRuntime.InvokeVoidAsync("lgh_lista.init");
+    }
+
+    public async void DataBound()
+    {
+        if (InitialRender)
+        {     //check for initial render and call the JS method
+            InitialRender = false;
+            await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
+        }
     }
 
 
@@ -191,13 +197,13 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("lgh_lista.init");
+          
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();
         }
-        await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
+       
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
