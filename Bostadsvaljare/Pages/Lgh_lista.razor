@@ -18,10 +18,11 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
-        
+
         <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        <div class="line-6">
+
+        <div class="line-6" id="gallerybox">
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
@@ -51,45 +52,43 @@
                 }
             </div>
         </div>
-
-        <div class="line-6">
-            <SfGrid ID="GridResize" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
-                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
-                <GridEvents Created="Created" DataBound="DataBound" RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
-                <GridColumns>
-                    <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Hus nr."></GridColumn>
-                    <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
-                    <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>  
-                    <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
-                        <Template>
-                            @{
-                                Data.House house = (context as Data.House);
-                                <div>
-                                    @if (house.Status == "sold")
-                                    {
-                                        <img src="/IMG/icons/circlered.png"/>
-                                        <span>Såld</span>
-                                    }
-                                    @if (house.Status == "booked")
-                                    {
-                                        <img src="/IMG/icons/circleOrange.png"
-                                            />
-                                        <span>Reserverad</span>
-                                    }
-                                    @if (house.Status == "available")
-                                    {
-                                        <img src="/IMG/icons/CircleGreen.png"
-                                             />
-                                        <span>Ledig</span>
-                                    }
-                                </div>
-                            }
-                        </Template>
-                    </GridColumn>
-                </GridColumns>
-            </SfGrid>
+        <div class="line-6 container" id="GridResize">
+            <div style="width:100%">
+                <SfGrid Height="100%" Width="100%" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="false" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
+                    <GridEvents RowSelected="HousingClickedGrid" RowDeselected="HousingClickedTwiceGrid" TValue="Data.House"></GridEvents>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(Data.House.HouseNumber)" HeaderText="Hus nr."></GridColumn>
+                        <GridColumn Field="@nameof(Data.House.Sqm)" HeaderText="Boarea"></GridColumn>
+                        <GridColumn Field="@nameof(Data.House.Price)" Format="C2" HeaderText="Pris"></GridColumn>
+                        <GridColumn Field="@nameof(Data.House.Status)" HeaderText="Status" customAttributes=@(new { @class = "e-attr" })>
+                            <Template>
+                                @{
+                                    Data.House house = (context as Data.House);
+                                    <div>
+                                        @if (house.Status == "sold")
+                                        {
+                                            <img src="/IMG/icons/circlered.png" />
+                                            <span>Såld</span>
+                                        }
+                                        @if (house.Status == "booked")
+                                        {
+                                            <img src="/IMG/icons/circleOrange.png" />
+                                            <span>Reserverad</span>
+                                        }
+                                        @if (house.Status == "available")
+                                        {
+                                            <img src="/IMG/icons/CircleGreen.png" />
+                                            <span>Ledig</span>
+                                        }
+                                    </div>
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </div>
         </div>
-
     </ContentTemplate>
 </SpinLoader>
 
@@ -114,6 +113,7 @@
     private bool ImagesLoaded { get; set; } = false;
     private bool ViewsInited { get; set; } = false;
     private string MouseOverHouse { get; set; } = "";
+    private static string Gridheight { get; set; }
 
     public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -144,20 +144,16 @@
         },
     };
 
-    public async void Created()
+   
+
+   
+
+    [JSInvokable]
+    public static void setheight(string height)
     {
-        InitialRender = true;
-        await JSRuntime.InvokeVoidAsync("grid_responsive.init");
+        Gridheight = height;
     }
 
-    public async void DataBound()
-    {
-        if (InitialRender)
-        {     //check for initial render and call the JS method
-            InitialRender = false;
-            await JSRuntime.InvokeVoidAsync("grid_responsive.resizeComplete");
-        }
-    }
 
     protected override void OnInitialized()
     {
@@ -184,6 +180,7 @@
             }
         }
 
+
         base.StateHasChanged();
     }
 
@@ -196,6 +193,7 @@
             firstRenderDone = true;
             base.StateHasChanged();
         }
+        await JSRuntime.InvokeVoidAsync("grid_responsive.resizeComplete");
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
@@ -397,6 +395,13 @@
 
 
 <style>
+
+    .container {
+        display: flex;
+        
+      
+    }
+
     #gallery {
         overflow-y: hidden;
         overflow-x: auto;
@@ -463,6 +468,7 @@
 
     .line-6 {
         width: 50%;
+       
     }
 
     .line-7 {

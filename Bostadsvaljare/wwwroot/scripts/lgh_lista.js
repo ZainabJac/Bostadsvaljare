@@ -3,6 +3,9 @@
         images: [],
         imageMaps: [],
 
+
+
+
         loadImages: async function (data) {
             var self = this,
                 imagesLoaded = data.length,
@@ -60,6 +63,9 @@
                 $('#'+ data.img.id).attr('usemap', data.usemap);
                 this._loadIM(data.img, data.style.width);
             }
+
+          
+
             await util.delay(100);
         },
 
@@ -79,6 +85,7 @@
                 .then(_resp => {
                     mapster_responsive.changeImage(ind);
                 });
+
         },
 
         dispose: function () {
