@@ -113,6 +113,7 @@
     private int CurrentView { get; set; } = 0;
     private bool ImagesLoaded { get; set; } = false;
     private bool ViewsInited { get; set; } = false;
+    private string MouseOverHouse { get; set; } = "";
 
     public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -204,14 +205,22 @@
         base.StateHasChanged();
     }
 
-    private void OnMouseOverIM(MouseEventArgs e, string houseNumber)
+    private async void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
+        MouseOverHouse = houseNumber;
+        await Task.Delay(100);
+        if (MouseOverHouse != houseNumber)
+            return;
+
         ShowTooltip(e.ClientX, e.ClientY, houseNumber);
         HighlightInList(houseNumber);
+
+        MouseOverHouse = "";
     }
 
     private void OnMouseOutIM(MouseEventArgs e)
     {
+        MouseOverHouse = "";
         HideTooltip();
         if (IsHighlighting)
         {
