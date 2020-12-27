@@ -136,6 +136,7 @@
 
     protected override void OnInitialized()
     {
+
         base.OnInitialized();
         this.MapData = Data.HouseMap.GetHouseMapData();
         base.StateHasChanged();
@@ -145,6 +146,7 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
@@ -154,6 +156,7 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
+        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("exterior.applyImages");
         ViewsInited = true;
         base.StateHasChanged();
@@ -184,7 +187,7 @@
 
     public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-            if (HouseIsClicked == false)
+        if (HouseIsClicked == false)
             ShowTooltip(e.ClientX, e.ClientY, houseNumber);
     }
 

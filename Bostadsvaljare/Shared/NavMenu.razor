@@ -45,6 +45,15 @@
 
 <style>
 
+    .loading {
+        cursor: wait; /* busy cursor feedback */
+    }
+
+        .loading * {
+            /* disable all mouse events on subElements */
+            pointer-events: none;
+        }
+
     .colorpickermenu {
         display: none;
     }

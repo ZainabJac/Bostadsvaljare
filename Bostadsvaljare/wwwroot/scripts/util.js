@@ -4,6 +4,20 @@
             return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
         },
 
+        disableClickMenu: function () {
+            $('#topnav').addClass('loading');
+            
+        },
+
+        enableClickMenu: function () {
+            
+            $('#topnav').removeClass('loading');
+           
+        },
+
+      
+
+
         getElementFromPoint: function (target) {
             var list = document.querySelectorAll(':hover');
             for (i = list.length-1; i >= 0; i--) {

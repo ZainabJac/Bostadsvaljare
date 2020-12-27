@@ -49,19 +49,19 @@ namespace Bostadsvaljare.Data
                     { "G3K", new HouseType {
                         Floorplans = new List<Floorplan> {
                             new Floorplan { Source = "IMG/plan1.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 700, Y = 120 } },
-                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 700, Y = 300 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 540, Y = 300 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 600, Y = 170 } },
-                                new Floorplan.Room { RoomID = 2, Coords = new Vector2 { X = 430, Y = 300 } },
+                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 964, Y = 334 } },
+                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 965, Y = 511 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 700, Y = 571 } },
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 885, Y = 415 } },
+                                new Floorplan.Room { RoomID = 2, Coords = new Vector2 { X = 592, Y = 571 } },
                             }},
                             new Floorplan { Source = "IMG/plan2.jpg", Rooms = new List<Floorplan.Room> {
                                 
                             }},
                             new Floorplan { Source = "IMG/plan3.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 5, Coords = new Vector2 { X = 180, Y = 220 } },
-                                new Floorplan.Room { RoomID = 6, Coords = new Vector2 { X = 300, Y = 250 } },
-                                new Floorplan.Room { RoomID = 7, Coords = new Vector2 { X = 520, Y = 220 } },
+                                new Floorplan.Room { RoomID = 6, Coords = new Vector2 { X = 569, Y = 446 } },
+                                new Floorplan.Room { RoomID = 5, Coords = new Vector2 { X = 340, Y = 450 } },
+                                new Floorplan.Room { RoomID = 7, Coords = new Vector2 { X = 850, Y = 450 } },
                             }},
                         },
                         Images = new List<Image> {

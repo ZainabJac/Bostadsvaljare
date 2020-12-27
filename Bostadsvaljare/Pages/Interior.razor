@@ -206,7 +206,7 @@
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
     [Parameter]
-    
+
     public string HouseID { get; set; }
     public Data.House House { get; set; }
     public Data.HouseType.Image SelectedImage { get; set; }
@@ -236,7 +236,7 @@
         HouseData = Data.HouseType.GetData(houseType);
         self = this;
 
-      
+
 
         SelectedImage = HouseData.Images[0];
 
@@ -249,6 +249,7 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
@@ -259,6 +260,7 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
+        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
         FloorplanInited = true;
