@@ -26,8 +26,8 @@
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
-                <div id="house-main-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
-                    <map id="house-map-@_i" name="house-map-@_i">
+                <div id="@Views[i].ID" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                    <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
                         @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                         {
                             if (view.Key == Data.HouseMap.ImageNameToVariant(Views[i].Source))
@@ -121,26 +121,29 @@
     private bool InitialRender = false;
     private bool firstRenderDone = false;
 
+    private static string _id = "house-main-";
+    private static string _mapName = "house-map-";
+    private static int _ind = 0;
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
-            ID = "house-main-1",
+            ID = _id + _ind,
             Source = "IMG/Ext1-5area.png",
-            ImageMapName = "house-map-1",
+            ImageMapName = _mapName + _ind++,
         },
         new ViewData {
-            ID = "house-main-2",
+            ID = _id + _ind,
             Source = "IMG/Oversikt_V2Optimerad.jpg",
-            ImageMapName = "house-map-2",
+            ImageMapName = _mapName + _ind++,
         },
         new ViewData {
-            ID = "house-main-3",
+            ID = _id + _ind,
             Source = "IMG/Ext1-5red.png",
-            ImageMapName = "house-map-3",
+            ImageMapName = _mapName + _ind++,
         },
         new ViewData {
-            ID = "house-main-4",
+            ID = _id + _ind,
             Source = "IMG/Ext1-5grey.png",
-            ImageMapName = "house-map-4",
+            ImageMapName = _mapName + _ind++,
         },
     };
 
@@ -165,13 +168,13 @@
         this.IsHighlighting = false;
         this.HighlightedRow = -1;
 
-        Dictionary<string, int> statuses = new Dictionary<string, int> {
-            { "available", 0 },
-            { "booked", 0 },
-            { "sold", 0 },
-        };
         foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
         {
+            Dictionary<string, int> statuses = new Dictionary<string, int> {
+                { "available", 0 },
+                { "booked", 0 },
+                { "sold", 0 },
+            };
             foreach (Data.HouseMap map in view.Value)
             {
                 string status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
@@ -239,7 +242,8 @@
         int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
         if (rowInd >= 0 && this.HighlightedRow != rowInd)
         {
-            HighlightInImageMap((await this.HouseList.GetCurrentViewRecords())[rowInd].HouseNumber);
+            var records = await this.HouseList.GetCurrentViewRecords();
+            HighlightInImageMap(records[rowInd].HouseNumber);
             this.HighlightedRow = rowInd;
         }
     }
