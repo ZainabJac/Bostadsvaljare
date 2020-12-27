@@ -35,7 +35,7 @@
                         <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
-                                if (view.Key == Data.HouseMap.ImageNameToView(Views[_i].SunStudies["midday"]))
+                                if (view.Key == Data.HouseMap.ImageNameToVariant(Views[_i].SunStudies["midday"]))
                                 {
                                     @foreach (Data.HouseMap map in view.Value)
                                     {

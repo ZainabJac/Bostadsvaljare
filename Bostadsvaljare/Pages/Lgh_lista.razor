@@ -29,14 +29,15 @@
                     <map id="house-map-@_i" name="house-map-@_i">
                         @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                         {
-                           
+                            if (view.Key == Data.HouseMap.ImageNameToVariant(Views[i].Source))
+                            {
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
                                     <area id="@Data.House.Get(map.ID).Status" status="" href="#"
                                           @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
                                           coords="@map.IMCoords" shape="poly">
                                 }
-                            
+                            }
                         }
                     </map>
                 </div>
@@ -277,7 +278,7 @@
     {
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        string viewName = Data.HouseMap.ImageNameToView(this.Views[this.CurrentView].Source);
+        string viewName = Data.HouseMap.ImageNameToVariant(this.Views[this.CurrentView].Source);
         string key = viewName +"_"+ houseNumber;
         if (HouseToStatus.ContainsKey(key))
         {
