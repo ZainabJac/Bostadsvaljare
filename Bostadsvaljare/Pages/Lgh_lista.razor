@@ -251,7 +251,7 @@
     private async void OnMouseOverGrid(MouseEventArgs e)
     {
         MouseIn = MouseIn + 1;
-
+        await Task.Delay(200);
         if (MouseIn > Mouseout)
         {
             if (IsHighlighting)
