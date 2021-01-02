@@ -114,6 +114,8 @@
     private bool ViewsInited { get; set; } = false;
     private string MouseOverHouse { get; set; } = "";
     private static string Gridheight { get; set; }
+    private int Mouseout { get; set; } = 1;
+    private int MouseIn { get; set; } = 1;
 
     public List<Data.House> HouseData { get; set; }
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -216,19 +218,27 @@
 
     private async void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
+        MouseIn = MouseIn + 1;
+
         MouseOverHouse = houseNumber;
-        await Task.Delay(100);
-        if (MouseOverHouse != houseNumber)
-            return;
+        await Task.Delay(200);
+        if (MouseIn > Mouseout)
+        {
 
-        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
-        HighlightInList(houseNumber);
+            if (MouseOverHouse != houseNumber)
+                return;
 
-        MouseOverHouse = "";
+            ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+            HighlightInList(houseNumber);
+
+            MouseOverHouse = "";
+        }
     }
 
     private void OnMouseOutIM(MouseEventArgs e)
     {
+        Mouseout = MouseIn + 1;
+
         MouseOverHouse = "";
         HideTooltip();
         if (IsHighlighting)
