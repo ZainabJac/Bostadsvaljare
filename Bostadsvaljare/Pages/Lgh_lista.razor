@@ -250,23 +250,29 @@
 
     private async void OnMouseOverGrid(MouseEventArgs e)
     {
-        if (IsHighlighting)
+        MouseIn = MouseIn + 1;
+
+        if (MouseIn > Mouseout)
         {
-            HideTooltip();
-            RemoveListHighlight();
-            IsHighlighting = false;
-        }
-        int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
-        if (rowInd >= 0 && this.HighlightedRow != rowInd)
-        {
-            var records = await this.HouseList.GetCurrentViewRecords();
-            HighlightInImageMap(records[rowInd].HouseNumber);
-            this.HighlightedRow = rowInd;
+            if (IsHighlighting)
+            {
+                HideTooltip();
+                RemoveListHighlight();
+                IsHighlighting = false;
+            }
+            int rowInd = await JSRuntime.InvokeAsync<int>("util.getSFGridRowIndex");
+            if (rowInd >= 0 && this.HighlightedRow != rowInd)
+            {
+                var records = await this.HouseList.GetCurrentViewRecords();
+                HighlightInImageMap(records[rowInd].HouseNumber);
+                this.HighlightedRow = rowInd;
+            }
         }
     }
 
     private async void OnMouseOutGrid(MouseEventArgs e)
     {
+        Mouseout = Mouseout + 1;
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
     }
 
