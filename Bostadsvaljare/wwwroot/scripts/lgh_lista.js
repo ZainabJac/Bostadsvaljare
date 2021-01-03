@@ -9,6 +9,7 @@
             var self = this;
             this.listeners.resize = function (e) { self.resizeComplete(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+
         },
 
         loadImages: async function (data) {
@@ -78,6 +79,7 @@
                 parentID = 'house-main-' + view,
                 imgID = parentID + '-img',
                 mapName = 'house-map-' + view;
+           
 
             mapster_responsive.setValues(parseInt(view), parentID, imgWidth);
             mapster.addMapHighlights(parentID, imgID, mapName);
