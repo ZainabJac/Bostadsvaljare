@@ -17,16 +17,22 @@
             this.isFullscreen = !this.isFullscreen;
             if (this.isFullscreen)
                 util.openFullscreen();
+              
             else
                 util.closeFullscreen();
+  
         },
 
         _onFullscreenChange: function (e) {
             if (!document.fullscreenElement && !document.webkitIsFullScreen &&
                 !document.mozFullScreen && !document.msFullscreenElement) {
                 this.isFullscreen = false;
+                $('#bv-fullscreen-btn').removeClass("fa-compress-alt");
+                $('#bv-fullscreen-btn').addClass("fa-expand-alt");
             } else {
                 this.isFullscreen = true;
+                $('#bv-fullscreen-btn').removeClass("fa-expand-alt");
+                $('#bv-fullscreen-btn').addClass("fa-compress-alt");
             }
         },
     };
