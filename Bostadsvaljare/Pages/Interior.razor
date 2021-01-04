@@ -81,7 +81,7 @@
                             @for (int i = 0; i < HouseData.Floorplans.Count; i++)
                             {
                                 var _i = i;
-                                <button class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                                <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
                             }
                         </div>
                         <div id="floorplan-main">
@@ -539,6 +539,12 @@
     .btn-group button:hover {
         background: #415965;
         color:white;
+        border: 2px solid white;
+    }
+
+    .btn-group button:focus {
+        background: #415965;
+        color: white;
         border: 2px solid white;
     }
 
@@ -1021,11 +1027,9 @@
         }
 
         .btn-group button {
-            background-color: #415965; /* Green background */
-            border: 1px solid white; /* Green border */
-            color: white; /* White text */
-            cursor: pointer; /* Pointer/hand icon */
-            float: right; /* Float the buttons side by side */
+     
+            cursor: pointer; 
+            float: right; 
             width: 100%;
             border-radius: 2px;
             font-size: 9px;

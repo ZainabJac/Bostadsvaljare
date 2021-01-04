@@ -25,7 +25,7 @@
         @for (int i = 0; i < Views.Count; i++)
         {
             var _i = i;
-            <div id="view-@_i" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+            <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
                 @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
                 {
                     var _j = j;
@@ -64,7 +64,7 @@
                 </SfDropDownButton>
             </div>
 
-            <div id="sun_study_menu">
+            <div id="sun_study_menu" style="display:none">
                 <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
                     <DropDownButtonItems>
@@ -278,10 +278,12 @@
 
 <style>
 
+   
+
     .buttonrow {
         position: fixed;
         top: 60px;
-        left: 10px;
+        left: 28px;
         display: inline-block;
     }
 
@@ -349,9 +351,25 @@
         display: inline-block;
     }
 
+    @@media (max-width: 1695px){
+        .marginmobile {
+            margin-top: 17px;
+        }
+    }
+
+     @@media (max-width: 768px){
+
+         .marginmobile{
+             margin-top: 30px;
+         }
+
+       
+     }
+
     @@media (max-width: 363px) {
 
 
+      
         .e-chip-list.e-chip, .e-chip-list .e-chip {
             display: inline-block;
         }
