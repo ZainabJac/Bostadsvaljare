@@ -6,7 +6,7 @@
 
         getElementFromPoint: function (target) {
             var list = document.querySelectorAll(':hover');
-            for (i = list.length-1; i >= 0; i--) {
+            for (var i = list.length-1; i >= 0; i--) {
                 if (list[i].localName === target)
                     return list[i];
             }
