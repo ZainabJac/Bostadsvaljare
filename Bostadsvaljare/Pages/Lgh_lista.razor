@@ -153,6 +153,8 @@
 
     protected override void OnInitialized()
     {
+        _ind = 0;
+
         base.OnInitialized();
         self = this;
         this.HouseData = Data.House.GetHouseData();
@@ -186,7 +188,7 @@
     {
         await JSRuntime.InvokeVoidAsync("lgh_lista.init");
         await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
-
+        Console.WriteLine("OnAfterRenderAsync");
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
@@ -200,6 +202,7 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
+        Console.WriteLine("OnAfterLoader");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
         ViewsInited = true;
