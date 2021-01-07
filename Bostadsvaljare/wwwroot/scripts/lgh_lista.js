@@ -78,11 +78,10 @@
         },
 
         _onClickGalleryImg: function (event, ind) {
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeLghView', ind)
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeLghView', session_handler.getID(), ind)
                 .then(_resp => {
                     mapster_responsive.changeImage(ind);
                 });
-
         },
 
         dispose: function () {

@@ -102,7 +102,7 @@
         public bool Initialized { get; set; } = false;
     }
 
-    private static Lgh_lista self;
+    private static Dictionary<string, Lgh_lista> clients;
 
     private SfGrid<Data.House> HouseList;
     private Dictionary<string, string> HouseToStatus;
@@ -156,7 +156,10 @@
         _ind = 0;
 
         base.OnInitialized();
-        self = this;
+
+        if (clients == null)
+            clients = new Dictionary<string, Lgh_lista>();
+
         this.HouseData = Data.House.GetHouseData();
         this.MapData = Data.HouseMap.GetHouseMapData();
         this.HouseToStatus = new Dictionary<string, string>();
@@ -180,7 +183,6 @@
             }
         }
 
-
         base.StateHasChanged();
     }
 
@@ -194,10 +196,14 @@
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
+
+            string clientID = await JSRuntime.InvokeAsync<string>("session_handler.getID");
+            if (!clients.ContainsKey(clientID))
+                clients.Add(clientID, this);
+
             firstRenderDone = true;
             base.StateHasChanged();
         }
-
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
@@ -217,7 +223,6 @@
         await Task.Delay(200);
         if (MouseIn > Mouseout)
         {
-
             if (MouseOverHouse != houseNumber)
                 return;
 
@@ -351,11 +356,11 @@
     }
 
     [JSInvokable]
-    public static void ChangeLghView(int ind)
+    public static void ChangeLghView(string clientID, int ind)
     {
-        self.CurrentView = ind;
-        self.MobileSelection = -1;
-        self.StateHasChanged();
+        clients[clientID].CurrentView = ind;
+        clients[clientID].MobileSelection = -1;
+        clients[clientID].StateHasChanged();
     }
 
     private async void HousingClickedIM(int houseID)

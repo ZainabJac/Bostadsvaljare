@@ -196,6 +196,8 @@
 </SpinLoader>
 
 @code {
+    private static Dictionary<string, Interior> clients;
+
     public string MoveIcon2 { get; set; } = "position: absolute; left: 52%; top: 12px;";
     public string MoveIcon { get; set; } = "position: absolute; left: 78%; top: 17px;";
     public string MinimapHide { get; set; } = "display: initial;";
@@ -219,19 +221,17 @@
     private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
 
-    private static Interior self;
-
 
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        House = Data.House.Get(int.Parse(HouseID));
-        string houseType = House.Housetype;
-        HouseData = Data.HouseType.GetData(houseType);
-        self = this;
+        if (clients == null)
+            clients = new Dictionary<string, Interior>();
 
+        House = Data.House.Get(int.Parse(HouseID));
+        HouseData = Data.HouseType.GetData(House.Housetype);
         SelectedImage = HouseData.Images[0];
 
         base.StateHasChanged();
@@ -245,6 +245,11 @@
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
+
+            string clientID = await JSRuntime.InvokeAsync<string>("session_handler.getID");
+            if (!clients.ContainsKey(clientID))
+                clients.Add(clientID, this);
+
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -309,20 +314,20 @@
     }
 
     [JSInvokable]
-    public static void ShowImage()
+    public static void ShowImage(string clientID)
     {
-        self.ShowFullscreenImage = true;
-        self.StateHasChanged();
+        clients[clientID].ShowFullscreenImage = true;
+        clients[clientID].StateHasChanged();
     }
 
     [JSInvokable("ChangeRoom")]
-    public static Data.HouseType.Image StaticChangeRoom(int ind)
+    public static Data.HouseType.Image StaticChangeRoom(string clientID, int ind)
     {
-        self.SelectedImage = self.HouseData.Images[ind];
-        self.SelectedType = self.SelectedImage.Type;
-        self.StateHasChanged();
+        clients[clientID].SelectedImage = clients[clientID].HouseData.Images[ind];
+        clients[clientID].SelectedType = clients[clientID].SelectedImage.Type;
+        clients[clientID].StateHasChanged();
 
-        return self.SelectedImage;
+        return clients[clientID].SelectedImage;
     }
 
     private async void ChangeFloor(int floor)
