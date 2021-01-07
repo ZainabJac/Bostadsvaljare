@@ -106,13 +106,10 @@
             </div>
 
 
-
-            <div id="gallery"  class="gallercontain">
+            <div id="gallery" class="gallercontain">
                 @for (int i = 0; i < HouseData.Images.Count; i++)
                 {
-
-                    <span id="gallery-item-@i">
-                    </span>
+                    <span id="gallery-item-@i"></span>
                 }
             </div>
 
@@ -206,7 +203,6 @@
     public Dictionary<string, List<Data.House>> MapData { get; set; }
 
     [Parameter]
-
     public string HouseID { get; set; }
     public Data.House House { get; set; }
     public Data.HouseType.Image SelectedImage { get; set; }
@@ -236,14 +232,10 @@
         HouseData = Data.HouseType.GetData(houseType);
         self = this;
 
-
-
         SelectedImage = HouseData.Images[0];
 
         base.StateHasChanged();
     }
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -267,7 +259,6 @@
         base.StateHasChanged();
         await JSRuntime.InvokeVoidAsync("interior.resize");
         await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
-
     }
 
     private async void OnLoadVR(ProgressEventArgs ev)
@@ -304,12 +295,11 @@
 
     private async void OnClickHotspot(int roomID)
     {
-        Data.HouseType.Image oldImage = this.SelectedImage;
         this.SelectedImage = this.HouseData.Images[roomID];
         this.SelectedType = this.SelectedImage.Type;
         base.StateHasChanged();
 
-        await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, this.SelectedImage);
+        await JSRuntime.InvokeVoidAsync("interior.changeRoom", this.SelectedImage);
     }
 
     private void OnClickClose(MouseEventArgs ev)
@@ -326,14 +316,13 @@
     }
 
     [JSInvokable("ChangeRoom")]
-    public static Data.HouseType.Image[] StaticChangeRoom(int ind)
+    public static Data.HouseType.Image StaticChangeRoom(int ind)
     {
-        Data.HouseType.Image oldImage = self.SelectedImage;
         self.SelectedImage = self.HouseData.Images[ind];
         self.SelectedType = self.SelectedImage.Type;
         self.StateHasChanged();
 
-        return new Data.HouseType.Image[] { oldImage, self.SelectedImage };
+        return self.SelectedImage;
     }
 
     private async void ChangeFloor(int floor)

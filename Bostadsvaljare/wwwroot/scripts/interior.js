@@ -51,17 +51,14 @@
             }
 
             // Load gallery/carousel images
-            var image, i = 0, c_ind = 0;
+            var image, i = 0;
             for (image of data.images) {
-                let _i = i, _c_ind = c_ind;
+                let _i = i;
 
                 img = await image_loader.loadImage(image.source);
                 $(img).addClass('gallery-img');
                 $(img).on('click', e => self._onClickGalleryImg(e, _i));
-                if (image.type === this.imageType.image) {
-                    $(img).attr('c_ind', _c_ind);
-                    c_ind = c_ind + 1;
-                }
+                $(img).attr('c_ind', i);
                 this.images.push({
                     img: img,
                     parentID: 'gallery-item-'+ i,
@@ -111,7 +108,7 @@
             this._onResize();
         },
 
-        changeRoom: function (oldImage, newImage) {
+        changeRoom: function (newImage) {
             var img = util.getImgElement(newImage.source, '#gallery');
             bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
         },
@@ -150,7 +147,7 @@
             var self = this;
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
                 .then(r => {
-                    self.changeRoom(r[0], r[1]);
+                    self.changeRoom(r);
                 });
         },
 
