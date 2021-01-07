@@ -252,7 +252,7 @@
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
         }

@@ -1,7 +1,6 @@
 ﻿(function () {
     window.interior = {
-        images: {},
-        imageMaps: [],
+        images: [],
         listeners: {},
         imageType: {
             image: 0,
@@ -16,22 +15,14 @@
                 $(colorpick).removeClass("colorpickermenu")
                 $(colorpick).addClass("colorpickermenu2")
                 $(colorpickslink).addClass("animate__animated animate__bounce")
-
             }
-          
         },
 
-     
-
         adjustpan: function () {
-            var width1 = parseInt($('#carousel-item-0').width());
+            var width = parseInt($('#carousel-item-0').width());
+            width = width * 0.75;
 
-            width1 = width1 * 0.75
-
-            $('.iframe-container iframe').height(width1 + 'px');
-
-          
-
+            $('.iframe-container iframe').height(width + 'px');
         },
 
         addResizeListener: function () {
@@ -41,93 +32,60 @@
             window.addEventListener('resize', this.listeners.resize, false);
         },
 
-        loadImages: async function (houseType, data) {
-            var self = this,
-                imagesLoaded = data.floorplans.length,
-                onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
-            // Load images that use image maps every time
-            // TODO: fix so it's not neccessary to load every time;
-            //       some bug causes only some image maps to load otherwise
-            data.floorplans.forEach((floorplan, i) => {
-                var img = new Image();
-                img.onload = onLoadImg;
-                img.id = 'floorplan-' + i + '-img';
-                img.src = floorplan.source;
+        loadImages: async function (data) {
+            var self = this, img,
+                floorplan, i = 0;
+
+            // Load floorplan images
+            for (floorplan of data.floorplans) {
+                img = await image_loader.loadImage(floorplan.source);
+                img.id = 'floorplan-'+ i +'-img';
                 $(img).attr('floor', i);
-                self.imageMaps.push({
+                this.images.push({
                     img: img,
-                    parentID: 'floorplan-' + i,
-                    usemap: '#hotspots-' + i,
+                    parentID: 'floorplan-'+ i,
+                    usemap: '#hotspots-'+ i,
                     style: { width: '99.99%' },
                 });
-            });
-
-            if (this.images[houseType]) {
-                return true;
+                i = i + 1;
             }
 
-            var imageData = [];
-            imagesLoaded = imagesLoaded + data.images.length;
+            // Load gallery/carousel images
+            var image, i = 0, c_ind = 0;
+            for (image of data.images) {
+                let _i = i, _c_ind = c_ind;
 
-            var ind = 0;
-            data.images.forEach((image, i) => {
-                var img = new Image(), _ind = ind;
-                img.onload = onLoadImg;
-                img.src = image.source;
+                img = await image_loader.loadImage(image.source);
                 $(img).addClass('gallery-img');
-                $(img).on('click', e => self._onClickGalleryImg(e, i));
-                if (image.type === this.imageType.image || image.type === this.imageType.roundme) {
-                    $(img).attr('c_ind', _ind);
-                    ind = ind + 1;
-                
+                $(img).on('click', e => self._onClickGalleryImg(e, _i));
+                if (image.type === this.imageType.image) {
+                    $(img).attr('c_ind', _c_ind);
+                    c_ind = c_ind + 1;
                 }
-                imageData.push({
+                this.images.push({
                     img: img,
-                    parentID: 'gallery-item-' + i,
+                    parentID: 'gallery-item-'+ i,
                 });
 
                 if (image.type === this.imageType.image) {
-                    var carouselImg = img.cloneNode();
-                    $(carouselImg).removeClass();
-                    $(carouselImg).addClass('d-block w-100');
-                    $(carouselImg).on('click', e => self._onClickCarousel(e));
-                    imageData.push({
-                        img: carouselImg,
-                        parentID: 'carousel-item-' + i,
+                    img = await image_loader.loadImage(image.source);
+                    $(img).addClass('d-block w-100');
+                    $(img).on('click', e => self._onClickCarousel(e));
+                    this.images.push({
+                        img: img,
+                        parentID: 'carousel-item-'+ i,
                     });
                 }
-
-                if (image.type === this.imageType.roundme) {
-                    var carouselImg = img.cloneNode();
-                    $(carouselImg).removeClass();
-                    $(carouselImg).addClass('hideit');
-                    $(carouselImg).on('click', e => self._onClickCarousel(e));
-                    imageData.push({
-                        img: carouselImg,
-                        parentID: 'carousel-item-' + i,
-                    });
-                }
-
-            });
-
-            this.images[houseType] = imageData;
-            while (imagesLoaded > 0) {
-                await util.delay(100);
+                i = i + 1;
             }
+
             return true;
         },
 
         applyImages: function (houseType) {
             var data;
 
-            for (data of this.images[houseType]) {
-                // Remove any style that may have been added previously
-                $(data.img).removeAttr('style');
-                // Add img element
-                $('#' + data.parentID).append(data.img);
-            }
-
-            for (data of this.imageMaps) {
+            for (data of this.images) {
                 // Reset any style that may have been added previously,
                 // and add in our own
                 $(data.img).removeAttr('style');
@@ -136,14 +94,16 @@
                 // Add img element
                 $('#'+ data.parentID).append(data.img);
                 // Add image map functionality
-                $('#'+ data.img.id).attr('usemap', data.usemap);
-                this._loadFloorplan(data.img, data.style.width);
+                if (data.usemap) {
+                    $('#'+ data.img.id).attr('usemap', data.usemap);
+                    this._loadFloorplan(data.img, data.style.width);
+                }
             }
         },
 
         dispose: function () {
             mapster.dispose();
-            this.imageMaps.length = 0;
+            this.images.length = 0;
             window.removeEventListener('resize', this.listeners.resize, false);
         },
 
@@ -152,24 +112,8 @@
         },
 
         changeRoom: function (oldImage, newImage) {
-
-
-
-            if (oldImage.type === this.imageType.panorama &&
-                newImage.type !== this.imageType.panorama) {
-                var img = util.getImgElement(newImage.source, '#gallery');
+            var img = util.getImgElement(newImage.source, '#gallery');
             bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
-            }
-
-            if (newImage.type === this.imageType.image) {
-                var img = util.getImgElement(newImage.source, '#gallery');
-                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
-            }
-
-            else {
-                var img = util.getImgElement(newImage.source, '#gallery');
-                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
-            }
         },
 
         _loadFloorplan: async function (img, imgWidth) {
@@ -200,28 +144,21 @@
             img.appendTo('.fs-border');
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
                 .then(_data => { self._onResize(); });
-
         },
 
         _onClickGalleryImg: function (event, ind) {
-
-
             var self = this;
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
-
         },
 
         _onResize: function (event) {
-
             if ($(window).width() <= 927) {
                 var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
                 $('#info').height('auto')
-              
-
             }
             else if ($(window).width() <= 1380) {
                 var height1 = parseInt($('.planritning').height());
@@ -230,16 +167,12 @@
 
                 var height4 = height3 - height2 - height1 - 35;
 
-            
                 $('#info').height(height4 + 'px');
                 var width1 = parseInt($('#carousel-item-0').width());
                 width1 = width1 * 0.75
                 $('.iframe-container iframe').height(width1 + 'px');
-
             }
-
             else {
-
                 var width1 = parseInt($('#carousel-item-0').width());
                 width1 = width1 * 0.75
                 $('.iframe-container iframe').height(width1 + 'px');
@@ -250,7 +183,6 @@
                 var height4 = height3 - height2 - height1 - 57;
                 $('#gallery').height('auto');
                 $('#info').height(height4 + 'px');
-
             }
 
             var height = Math.max($('.fs-border').height() + 97, $(window).height());

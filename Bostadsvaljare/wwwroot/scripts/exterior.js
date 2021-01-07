@@ -4,43 +4,33 @@
         mapIndex: {},
 
         loadImages: async function (data) {
-            var self = this,
-                imagesLoaded = data.length * 3,
-                onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
-            // Load images that use image maps every time
-            // TODO: fix so it's not neccessary to load every time;
-            //       some bug causes only some image maps to load otherwise
-            data.forEach((view, i) => {
-                var name, source, img;
+            var img, name, i = 0;
+
+            for (view of data.views) {
                 for (name in view.sunStudies) {
-                    source = view.sunStudies[name];
-                    img = new Image();
-                    img.onload = onLoadImg;
-                    img.id = 'sun-study-' + i + '-' + name + '-img';
-                    img.src = source;
+                    img = await image_loader.loadImage(view.sunStudies[name]);
+                    img.id = data.studyID +'-'+ i +'-'+ name +'-img';
                     $(img).attr({
                         view: i,
                         'sun-study': name,
                     });
-                    self.images.push({
+                    this.images.push({
                         img: img,
-                        parentID: '#view-' + i + ' #sun-study-' + name,
-                        usemap: '#houses-' + i + '-' + name,
+                        parentID: '#'+ data.parentID +'-'+ i +' #sun-study-'+ name,
+                        usemap: '#'+ data.imageMapName +'-'+ i +'-'+ name,
                         style: { width: '99%' },
                     });
                 }
-            });
+                i = i + 1;
+            }
 
-            var i, name, ind = 0;
-            for (i in data) {
-                for (name in data[i].sunStudies) {
-                    this.mapIndex[name + i] = ind++;
+            var view, ind = 0;
+            for (view in data.views) {
+                for (name in data.views[view].sunStudies) {
+                    this.mapIndex[name + view] = ind++;
                 }
             }
 
-            while (imagesLoaded > 0) {
-                await util.delay(100);
-            }
             return true;
         },
 
