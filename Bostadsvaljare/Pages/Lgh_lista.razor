@@ -10,7 +10,7 @@
 @inject NavigationManager navManager
 
 
-<SpinLoader IsLoading="@(MapData  == null || HouseData == null || !ImagesLoaded)">
+<SpinLoader IsLoading="@(MapData  == null || HouseData == null)">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -47,7 +47,9 @@
             <div id="gallery">
                 @for (int i = 0; i < Views.Count; i++)
                 {
+                    var _i = i;
                     <span id="gallery-item-@i" class="line-3">
+                        <img id="@("#abc"+i)" src="@Views[i].Source" view="@i" class="gallery-img" @onclick="e=>onImgMouseClick(_i)">
                     </span>
                 }
             </div>
@@ -153,8 +155,7 @@
 
     protected override void OnInitialized()
     {
-        _ind = 0;
-
+        _ind=0;
         base.OnInitialized();
         self = this;
         this.HouseData = Data.House.GetHouseData();
@@ -188,21 +189,35 @@
     {
         await JSRuntime.InvokeVoidAsync("lgh_lista.init");
         await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
-        Console.WriteLine("OnAfterRenderAsync");
+
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();
         }
 
     }
 
+    [JSInvokable]
+    public static void ChangeLghView(int ind)
+    {
+        self.CurrentView = ind;
+        self.MobileSelection = -1;
+        self.StateHasChanged();
+    }
+
+    public void onImgMouseClick(int nId)
+    {
+        CurrentView = nId;
+        MobileSelection = -1;
+        StateHasChanged();
+    }
+
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-        Console.WriteLine("OnAfterLoader");
+        ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
         ViewsInited = true;
@@ -350,13 +365,7 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
-    [JSInvokable]
-    public static void ChangeLghView(int ind)
-    {
-        self.CurrentView = ind;
-        self.MobileSelection = -1;
-        self.StateHasChanged();
-    }
+
 
     private async void HousingClickedIM(int houseID)
     {

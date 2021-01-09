@@ -32,10 +32,10 @@
                     style: { width: '99.99%' },
                 });
 
-                img = img.cloneNode();
-                img.id = '';
-                $(img).addClass('gallery-img');
-                $(img).on('click', e => self._onClickGalleryImg(e, i));
+                //img = img.cloneNode();
+                img = $("#abc" + i);
+                //$(img).addClass('gallery-img');
+                //$(img).on('click', e => self._onClickGalleryImg(e, i));
                 self.images.push({
                     img: img,
                     parentID: 'gallery-item-' + i,
@@ -51,12 +51,12 @@
         applyImages: async function () {
             var data;
 
-            for (data of this.images) {
-                // Remove any style that may have been added previously
-                $(data.img).removeAttr('style');
-                // Add img element
-                $('#'+ data.parentID).append(data.img);
-            }
+            //for (data of this.images) {
+            //    // Remove any style that may have been added previously
+            //    $(data.img).removeAttr('style');
+            //    // Add img element
+            //    $('#'+ data.parentID).append(data.img);
+            //}
 
             for (data of this.imageMaps) {
                 // Reset any style that may have been added previously,
