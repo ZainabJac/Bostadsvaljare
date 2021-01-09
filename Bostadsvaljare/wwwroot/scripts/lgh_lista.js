@@ -1,6 +1,7 @@
 ﻿(function () {
     window.lgh_lista = {
         images: [],
+        imageMaps: [],
         listeners: {},
 
 
@@ -8,56 +9,67 @@
             var self = this;
             this.listeners.resize = function (e) { self.resizeComplete(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+
         },
 
         loadImages: async function (data) {
             var self = this,
-                img, view, i = 0;
-
-            for (view of data) {
-                let _i = i;
-                img = await image_loader.loadImage(view.source);
-                img.id = 'house-main-'+ i +'-img';
+                imagesLoaded = data.length,
+                onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
+            // Load images that use image maps every time
+            // TODO: fix so it's not neccessary to load every time;
+            //       some bug causes only some image maps to load otherwise
+            data.forEach((view, i) => {
+                var img = new Image();
+                img.onload = onLoadImg;
+                img.id = 'house-main-' + i + '-img';
+                img.src = view.source;
                 $(img).attr('view', i);
-                this.images.push({
+                self.imageMaps.push({
                     img: img,
-                    parentID: 'house-main-'+ i,
-                    usemap: '#house-map-'+ i,
+                    parentID: 'house-main-' + i,
+                    usemap: '#house-map-' + i,
                     style: { width: '99.99%' },
                 });
 
-
-                img = await image_loader.loadImage(view.source);
-                $(img).addClass('gallery-img');
-                $(img).on('click', e => self._onClickGalleryImg(e, _i));
-                this.images.push({
+                //img = img.cloneNode();
+                img = $("#abc" + i);
+                //$(img).addClass('gallery-img');
+                //$(img).on('click', e => self._onClickGalleryImg(e, i));
+                self.images.push({
                     img: img,
-                    parentID: 'gallery-item-'+ i,
+                    parentID: 'gallery-item-' + i,
                 });
+            });
 
-                i = i + 1;
+            while (imagesLoaded > 0) {
+                await util.delay(100);
             }
-
             return true;
         },
 
         applyImages: async function () {
             var data;
 
-            for (data of this.images) {
+            //for (data of this.images) {
+            //    // Remove any style that may have been added previously
+            //    $(data.img).removeAttr('style');
+            //    // Add img element
+            //    $('#'+ data.parentID).append(data.img);
+            //}
+
+            for (data of this.imageMaps) {
                 // Reset any style that may have been added previously,
                 // and add in our own
                 $(data.img).removeAttr('style');
-                if (data.style)
-                    $(data.img).css(data.style);
+                $(data.img).css(data.style);
                 // Add img element
                 $('#'+ data.parentID).append(data.img);
                 // Add image map functionality
-                if (data.usemap) {
-                    $('#'+ data.img.id).attr('usemap', data.usemap);
-                    this._loadIM(data.img, data.style.width);
-                }
+                $('#'+ data.img.id).attr('usemap', data.usemap);
+                this._loadIM(data.img, data.style.width);
             }
+
             await util.delay(100);
         },
 
@@ -79,16 +91,18 @@
         },
 
         _onClickGalleryImg: function (event, ind) {
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeLghView', session_handler.getID(), ind)
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeLghView', ind)
                 .then(_resp => {
                     mapster_responsive.changeImage(ind);
                 });
+
         },
 
         dispose: function () {
             window.removeEventListener('resize', this.listeners.resize, false);
             mapster.dispose();
             this.images.length = 0;
+            this.imageMaps.length = 0;
         },
     };
 })();

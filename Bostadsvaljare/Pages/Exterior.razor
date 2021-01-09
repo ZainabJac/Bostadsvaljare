@@ -22,20 +22,20 @@
 
         <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        @for (int i = 0; i < VData.Views.Length; i++)
+        @for (int i = 0; i < Views.Count; i++)
         {
             var _i = i;
-            <div id="@VData.ParentID-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
-                @for (int j = 0; j < VData.Views[_i].SunStudies.Count; j++)
+            <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
                 {
                     var _j = j;
                     var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
-                    <div id="@VData.StudyID-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
+                    <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
                         
-                        <map id="@VData.ImageMapName-@_i-@sunStudy" name="@VData.ImageMapName-@_i-@sunStudy">
+                        <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
-                                if (view.Key == Data.HouseMap.ImageNameToVariant(VData.Views[_i].SunStudies["midday"]))
+                                if (view.Key == Data.HouseMap.ImageNameToVariant(Views[_i].SunStudies["midday"]))
                                 {
                                     @foreach (Data.HouseMap map in view.Value)
                                     {
@@ -56,9 +56,9 @@
                 <SfDropDownButton IconCss="e-icons e-view" Content="Byt Område">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
                     <DropDownButtonItems>
-                        @for (int i = 0; i < VData.Views.Length; i++)
+                        @for (int i = 0; i < Views.Count; i++)
                         {
-                            <DropDownButtonItem Id="@i.ToString()" Text="@VData.Views[i].Name"></DropDownButtonItem>
+                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
                         }
                     </DropDownButtonItems>
                 </SfDropDownButton>
@@ -90,40 +90,36 @@
 @code {
     public class ViewData
     {
-        public class View
-        {
-            public string Name { get; set; }
-            public Dictionary<string, string> SunStudies { get; set; }
-        }
-
-        public string ParentID { get; set; }
-        public string StudyID { get; set; }
+        public string ID { get; set; }
+        public string Name { get; set; }
         public string ImageMapName { get; set; }
-        public View[] Views { get; set; }
+        public Dictionary<string, string> SunStudies { get; set; }
+        public bool Initialized { get; set; } = false;
+
+
     }
 
-    ViewData VData = new ViewData() {
-        ParentID = "view",
-        StudyID = "sun-study",
-        ImageMapName = "houses",
-        Views = new ViewData.View[] {
-            new ViewData.View() {
-                Name = "Område 1",
-                SunStudies = new Dictionary<string, string>() {
-                    { "morning", "IMG/Ext1-5area.jpg" },
-                    { "midday", "IMG/Ext1-5area.jpg" },
-                    { "evening", "IMG/Ext1-5area.jpg" },
-                }
+    List<ViewData> Views = new List<ViewData> {
+        new ViewData() {
+            ID = "view-1",
+            Name = "Område 1",
+            ImageMapName = "imagemap-1",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Ext1-5area.jpg" },
+                { "midday", "IMG/Ext1-5area.jpg" },
+                { "evening", "IMG/Ext1-5area.jpg" },
             },
-            new ViewData.View() {
-                Name = "Område 2",
-                SunStudies = new Dictionary<string, string>() {
-                    { "morning", "IMG/Oversikt_V2Optimerad.jpg" },
-                    { "midday", "IMG/Oversikt_V2Optimerad.jpg" },
-                    { "evening", "IMG/Oversikt_V2Optimerad.jpg" },
-                }
-            }
-        }
+        },
+        new ViewData() {
+            ID = "view-2",
+            Name = "Område 2",
+            ImageMapName = "imagemap-2",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Oversikt_V2Optimerad.jpg" },
+                { "midday", "IMG/Oversikt_V2Optimerad.jpg"},
+                { "evening", "IMG/Oversikt_V2Optimerad.jpg" },
+            },
+        },
     };
 
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
@@ -152,7 +148,7 @@
         {
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", VData);
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();
         }

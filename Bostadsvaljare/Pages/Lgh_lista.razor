@@ -104,7 +104,7 @@
         public bool Initialized { get; set; } = false;
     }
 
-    private static Dictionary<string, Lgh_lista> clients;
+    private static Lgh_lista self;
 
     private SfGrid<Data.House> HouseList;
     private Dictionary<string, string> HouseToStatus;
@@ -157,10 +157,7 @@
     {
         _ind=0;
         base.OnInitialized();
-
-        if (clients == null)
-            clients = new Dictionary<string, Lgh_lista>();
-
+        self = this;
         this.HouseData = Data.House.GetHouseData();
         this.MapData = Data.HouseMap.GetHouseMapData();
         this.HouseToStatus = new Dictionary<string, string>();
@@ -184,6 +181,7 @@
             }
         }
 
+
         base.StateHasChanged();
     }
 
@@ -196,14 +194,10 @@
         {
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
-
-            string clientID = await JSRuntime.InvokeAsync<string>("session_handler.getID");
-            if (!clients.ContainsKey(clientID))
-                clients.Add(clientID, this);
             firstRenderDone = true;
             base.StateHasChanged();
         }
+
     }
 
     [JSInvokable]
@@ -238,6 +232,7 @@
         await Task.Delay(200);
         if (MouseIn > Mouseout)
         {
+
             if (MouseOverHouse != houseNumber)
                 return;
 
@@ -370,13 +365,7 @@
         await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
-    [JSInvokable]
-    public static void ChangeLghView(string clientID, int ind)
-    {
-        clients[clientID].CurrentView = ind;
-        clients[clientID].MobileSelection = -1;
-        clients[clientID].StateHasChanged();
-    }
+
 
     private async void HousingClickedIM(int houseID)
     {
