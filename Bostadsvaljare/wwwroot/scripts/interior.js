@@ -16,22 +16,15 @@
                 $(colorpick).removeClass("colorpickermenu")
                 $(colorpick).addClass("colorpickermenu2")
                 $(colorpickslink).addClass("animate__animated animate__bounce")
-
             }
-          
         },
 
-     
+
 
         adjustpan: function () {
             var width1 = parseInt($('#carousel-item-0').width());
-
             width1 = width1 * 0.75
-
             $('.iframe-container iframe').height(width1 + 'px');
-
-          
-
         },
 
         addResizeListener: function () {
@@ -71,61 +64,71 @@
 
             var ind = 0;
             data.images.forEach((image, i) => {
-                var img = new Image(), _ind = ind;
+                var img = $("#galler" + i), _ind = ind;
+
+
+                //var img = new Image(), _ind = ind;
+                //img.src = image.source;
+                //$(img).addClass('gallery-img');
+                //$(img).on('click', e => self._onClickGalleryImg(e, i));
+
+
                 img.onload = onLoadImg;
-                img.src = image.source;
-                $(img).addClass('gallery-img');
-                $(img).on('click', e => self._onClickGalleryImg(e, i));
                 if (image.type === this.imageType.image || image.type === this.imageType.roundme) {
                     $(img).attr('c_ind', _ind);
                     ind = ind + 1;
-                
                 }
                 imageData.push({
                     img: img,
                     parentID: 'gallery-item-' + i,
                 });
 
-                if (image.type === this.imageType.image) {
-                    var carouselImg = img.cloneNode();
-                    $(carouselImg).removeClass();
-                    $(carouselImg).addClass('d-block w-100');
-                    $(carouselImg).on('click', e => self._onClickCarousel(e));
-                    imageData.push({
-                        img: carouselImg,
-                        parentID: 'carousel-item-' + i,
-                    });
-                }
+                var carouselImg = $("#carosal" + i);
+                imageData.push({
+                    img: carouselImg,
+                    parentID: 'carousel-item-' + i,
+                });
 
-                if (image.type === this.imageType.roundme) {
-                    var carouselImg = img.cloneNode();
-                    $(carouselImg).removeClass();
-                    $(carouselImg).addClass('hideit');
-                    $(carouselImg).on('click', e => self._onClickCarousel(e));
-                    imageData.push({
-                        img: carouselImg,
-                        parentID: 'carousel-item-' + i,
-                    });
-                }
+                //if (image.type === this.imageType.image) {
+                //    var carouselImg = img.cloneNode();
+                //    $(carouselImg).removeClass();
+                //    $(carouselImg).addClass('d-block w-100');
+                //    $(carouselImg).on('click', e => self._onClickCarousel(e));
+                //    imageData.push({
+                //        img: carouselImg,
+                //        parentID: 'carousel-item-' + i,
+                //    });
+                //}
+
+                //if (image.type === this.imageType.roundme) {
+                //    var carouselImg = img.cloneNode();
+                //    $(carouselImg).removeClass();
+                //    $(carouselImg).addClass('hideit');
+                //    $(carouselImg).on('click', e => self._onClickCarousel(e));
+                //    imageData.push({
+                //        img: carouselImg,
+                //        parentID: 'carousel-item-' + i,
+                //    });
+                //}
 
             });
 
             this.images[houseType] = imageData;
-            while (imagesLoaded > 0) {
-                await util.delay(100);
-            }
+            //while (imagesLoaded > 0) {
+            await util.delay(100);
+            //}
             return true;
         },
 
         applyImages: function (houseType) {
             var data;
 
-            for (data of this.images[houseType]) {
-                // Remove any style that may have been added previously
-                $(data.img).removeAttr('style');
-                // Add img element
-                $('#' + data.parentID).append(data.img);
-            }
+            //for (data of this.images[houseType]) {
+            //    // Remove any style that may have been added previously
+            //    $(data.img).removeAttr('style');
+            //    // Add img element
+            //    $('#' + data.parentID).append(data.img);
+            //}
 
             for (data of this.imageMaps) {
                 // Reset any style that may have been added previously,
@@ -134,10 +137,11 @@
                 if (data.style)
                     $(data.img).css(data.style);
                 // Add img element
-                $('#'+ data.parentID).append(data.img);
+                $('#' + data.parentID).append(data.img);
                 // Add image map functionality
-                $('#'+ data.img.id).attr('usemap', data.usemap);
+                $('#' + data.img.id).attr('usemap', data.usemap);
                 this._loadFloorplan(data.img, data.style.width);
+                util.delay(300);
             }
         },
 
@@ -158,7 +162,7 @@
             if (oldImage.type === this.imageType.panorama &&
                 newImage.type !== this.imageType.panorama) {
                 var img = util.getImgElement(newImage.source, '#gallery');
-            bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
+                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
             }
 
             if (newImage.type === this.imageType.image) {
@@ -178,7 +182,7 @@
                 parentID = 'floorplan-' + floor;
 
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
-            mapster.addMapHighlights(parentID, parentID +'-img', 'hotspots-'+ floor, '', 0.6, 0.9);
+            mapster.addMapHighlights(parentID, parentID + '-img', 'hotspots-' + floor, '', 0.6, 0.9);
             await util.delay(100);
             mapster.selectAll();
 
@@ -204,14 +208,11 @@
         },
 
         _onClickGalleryImg: function (event, ind) {
-
-
             var self = this;
             DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
-
         },
 
         _onResize: function (event) {
@@ -220,7 +221,7 @@
                 var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
                 $('#info').height('auto')
-              
+
 
             }
             else if ($(window).width() <= 1380) {
@@ -230,7 +231,7 @@
 
                 var height4 = height3 - height2 - height1 - 35;
 
-            
+
                 $('#info').height(height4 + 'px');
                 var width1 = parseInt($('#carousel-item-0').width());
                 width1 = width1 * 0.75

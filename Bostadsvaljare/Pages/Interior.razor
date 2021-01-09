@@ -10,7 +10,7 @@
 @using BlazorPro.Spinkit
 
 
-<SpinLoader IsLoading="SelectedImage == null || !ImagesLoaded">
+<SpinLoader IsLoading="SelectedImage == null && !ImagesLoaded ">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -29,168 +29,176 @@
                 </div>
             </div>
         </div>
-      <div class="containerbig"> 
-        <input value="@HouseID" id="houseinputid" style="display:none;" />
-        <div class="line-7">
-            <!-- Stillbilder -->
-            <div id="slideshow" class="@(ShowInfo ? "" : "full")">
-                <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        @for (int i = 0; i < HouseData.Images.Count; i++)
-                        {
 
 
-                            <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
-                        }
-                    </ol>
-                    <div class="carousel-inner">
-                        @for (int i = 0; i < HouseData.Images.Count; i++)
-                        {
+        <div class="containerbig">
+            <input value="@HouseID" id="houseinputid" style="display:none;" />
+            <div class="line-7">
+                <!-- Stillbilder -->
+                <div id="slideshow" class="@(ShowInfo ? "" : "full")">
+                    <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
+                                <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
 
 
-                            var _i = i;
-                     
-                            <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
-                                @if (HouseData.Images[_i].Type == Bostadsvaljare.Data.ImageType.Roundme)
-                                {
-                                    <div class="iframe-container">
-                                        <iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen src="@HouseData.Images[_i].Link" @onload="OnLoadRoundme"> </iframe>
-                                    </div>
-                                }
-                            </div>
-                    
-                        }
+                                var _i = i;
+
+                                <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
+                                    @if (HouseData.Images[_i].Type == Bostadsvaljare.Data.ImageType.Roundme)
+                                    {
+                                        <div class="iframe-container">
+                                            <iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen src="@HouseData.Images[_i].Link" @onload="OnLoadRoundme"> </iframe>
+                                        </div>
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="hideit" c_ind="@_i">
+                                    }
+                                    else
+                                    {
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="d-block w-100" c_ind="@_i">
+                                    }
+                                </div>
+
+                            }
+                        </div>
+                        <a class="carousel-control-prev" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" onclick="interior.adjustpan()" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" onclick="interior.adjustpan()" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
                     </div>
-                    <a class="carousel-control-prev" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" onclick="interior.adjustpan()" role="button" data-slide="prev" >
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" onclick="interior.adjustpan()" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
                 </div>
             </div>
-        </div>
-        <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
-        <div class="line-4">
-            <div style="margin-top:-7px;" class="planritning floorplancontain pan_el">
-                <SfCard>
-                    <CardStacked>
-                        <div class="btn-group">
-                            @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                            {
-                                var _i = i;
-                                <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
-                            }
-                        </div>
-                        <div id="floorplan-main">
-                            @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                            {
-                                var _i = i;
-                                <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="position: relative; @(FloorplanInited ? "" : "visibility: hidden;")">
-                                    <map id="hotspots-@_i" name="hotspots-@_i">
-                                        @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
-                                        {
-                                            var _j = j;
-                                            var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
-                                            <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
-                                                  coords="@coords.X,@coords.Y,@Radius" shape="circle">
-                                        }
-                                    </map>
-                                </div>
-                            }
-                        </div>
-                    </CardStacked>
-                </SfCard>
-            </div>
 
+            <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
 
-
-            <div id="gallery"  class="gallercontain">
-                @for (int i = 0; i < HouseData.Images.Count; i++)
-                {
-
-                    <span id="gallery-item-@i">
-                    </span>
-                }
-            </div>
-
-
-            <div class="infocontain">
-                <div>
+            <div class="line-4">
+                <div style="margin-top:-7px;" class="planritning floorplancontain pan_el">
                     <SfCard>
                         <CardStacked>
-                            <div id="info" class="infodiv">
-
-                                <div class="textitem">
-                                    <text class="card-info-header">Hus nr.</text>
-
-                                </div>
-
-                                <div class="textitem">
-
-                                    <text class="card-info-header-fat">@House.HouseNumber</text>
-                                </div>
-
-                                <div class="textitem2">
-                                    <text class="card-info-header">Pris</text>
-
-                                </div>
-
-                                <div class="textitem">
-
-                                    <text class="card-info-header-fat">Uppgift saknas</text>
-                                </div>
-
-                                <div class="textitem">
-                                    <text class="card-info-header">Boarea</text>
-
-                                </div>
-
-                                <div class="textitem">
-
-                                    <text class="card-info-header-fat">@House.Sqm m²</text>
-                                </div>
-
-                                <div class="textitem2">
-                                    <text class="card-info-header">Tomtarea</text>
-
-                                </div>
-
-                                <div class="textitem">
-
-                                    <text class="card-info-header-fat">Uppgift saknas</text>
-                                </div>
-
-                                <div style="width:100%; display:flex;">
-                                    <div class="bofakta-link" style=" width: 20%;">
-
-                                        <a class="card-info-header-fat" href="www.c4hus.se">Bofaktablad</a>
+                            <div class="btn-group">
+                                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                                {
+                                    var _i = i;
+                                    <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                                }
+                            </div>
+                            <div id="floorplan-main">
+                                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                                {
+                                    var _i = i;
+                                    <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="position: relative; @(FloorplanInited ? "" : "visibility: hidden;")">
+                                        <map id="hotspots-@_i" name="hotspots-@_i">
+                                            @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                                            {
+                                                var _j = j;
+                                                var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
+                                                <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
+                                                      coords="@coords.X,@coords.Y,@Radius" shape="circle">
+                                            }
+                                        </map>
                                     </div>
-                                    <div class="rightbutton-div">
-                                        <SfButton CssClass="rightbutton" IsPrimary="true">Anmäl intresse nu</SfButton>
-                                    </div>
-                                </div>
-
+                                }
                             </div>
                         </CardStacked>
                     </SfCard>
                 </div>
 
-                @*<div class="arkitekt">
 
-                <SfCard ID="ArkitektenHarOrdet">
-                    <CardStacked>
-                        <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-                        <text class="italicfont" style="margin-left:6px;">"@HouseData.Comment" </text>
-                    </CardStacked>
-                </SfCard>
 
-            </div>*@
+                <div id="gallery" class="gallercontain">
+                    @for (int i = 0; i < HouseData.Images.Count; i++)
+                    {
+                        var _i = i;
+                        <span id="gallery-item-@i">
+                            <img id="@("galler" + i)" src="@HouseData.Images[i].Source" class="gallery-img" c_ind="@i" @onclick="e=>StaticChangeRoomClick(_i)">
+                        </span>
+                    }
+                </div>
+
+
+                <div class="infocontain">
+                    <div>
+                        <SfCard>
+                            <CardStacked>
+                                <div id="info" class="infodiv">
+
+                                    <div class="textitem">
+                                        <text class="card-info-header">Hus nr.</text>
+
+                                    </div>
+
+                                    <div class="textitem">
+
+                                        <text class="card-info-header-fat">@House.HouseNumber</text>
+                                    </div>
+
+                                    <div class="textitem2">
+                                        <text class="card-info-header">Pris</text>
+
+                                    </div>
+
+                                    <div class="textitem">
+
+                                        <text class="card-info-header-fat">Uppgift saknas</text>
+                                    </div>
+
+                                    <div class="textitem">
+                                        <text class="card-info-header">Boarea</text>
+
+                                    </div>
+
+                                    <div class="textitem">
+
+                                        <text class="card-info-header-fat">@House.Sqm m²</text>
+                                    </div>
+
+                                    <div class="textitem2">
+                                        <text class="card-info-header">Tomtarea</text>
+
+                                    </div>
+
+                                    <div class="textitem">
+
+                                        <text class="card-info-header-fat">Uppgift saknas</text>
+                                    </div>
+
+                                    <div style="width:100%; display:flex;">
+                                        <div class="bofakta-link" style=" width: 20%;">
+
+                                            <a class="card-info-header-fat" href="www.c4hus.se">Bofaktablad</a>
+                                        </div>
+                                        <div class="rightbutton-div">
+                                            <SfButton CssClass="rightbutton" IsPrimary="true">Anmäl intresse nu</SfButton>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </CardStacked>
+                        </SfCard>
+                    </div>
+
+                    @*<div class="arkitekt">
+
+                            <SfCard ID="ArkitektenHarOrdet">
+                                <CardStacked>
+                                    <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
+                                    <text class="italicfont" style="margin-left:6px;">"@HouseData.Comment" </text>
+                                </CardStacked>
+                            </SfCard>
+
+                        </div>*@
+                </div>
             </div>
         </div>
-     </div>
 
         @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
         @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
@@ -252,7 +260,7 @@
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
+            //ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -260,8 +268,12 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
+
+        ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
+
+
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
         FloorplanInited = true;
         base.StateHasChanged();
@@ -335,6 +347,18 @@
 
         return new Data.HouseType.Image[] { oldImage, self.SelectedImage };
     }
+
+
+    public async void StaticChangeRoomClick(int ind)
+    {
+        Data.HouseType.Image oldImage = SelectedImage;
+        SelectedImage = HouseData.Images[ind];
+        SelectedType = SelectedImage.Type;
+        StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, SelectedImage);
+    }
+
 
     private async void ChangeFloor(int floor)
     {
@@ -414,7 +438,7 @@
 
 
         .iframe-container iframe {
-            
+
             width: 100%;
         }
     .rightbutton{
@@ -525,7 +549,7 @@
         border: 2px solid #415965;
         border-radius: 2px;
         margin-left:1px;
-        
+
     }
 
     /* Clear floats (clearfix hack) */
@@ -626,7 +650,7 @@
     [class*="line-"] {
         float: left;
         padding: 7px;
-      
+
     }
 
 
@@ -645,10 +669,10 @@
     }
 
     .infocontain {
-        
+
         padding: 7px;
         width: 100%;
-        
+
     }
 
     #slideshow {
@@ -741,12 +765,12 @@
         white-space: nowrap;
         display: flex;
         flex-direction: row;
-        
+
     }
 
         #gallery span {
             display: contents;
-          
+
         }
 
 
@@ -802,7 +826,7 @@
         font-family: acumin-pro,sans-serif;
         font-size: 0.8vw;
         font-weight: 700;
-     
+
     }
 
     .list1 {
@@ -849,7 +873,7 @@
             justify-content: center;
         }
 
-       
+
 
         #gallery{
             padding-top:0px;
@@ -874,7 +898,7 @@
             padding:2px;
         }
 
-      
+
     }
 
     @@media (max-width: 927px) {
@@ -907,7 +931,7 @@
 
         .card-info-header-fat {
             font-family: acumin-pro,sans-serif;
-            font-size: 2vw;  
+            font-size: 2vw;
             float: right;
             display: inline-block;
             padding-bottom:0px;
@@ -918,7 +942,7 @@
             font-family: acumin-pro,sans-serif;
             font-size: 2vw;
             display: inline-block;
-           
+
         }
 
 
@@ -999,7 +1023,7 @@
         }
 
         .bofakta-link {
-            
+
             margin-left:-1.5%;
         }
 
@@ -1027,9 +1051,9 @@
         }
 
         .btn-group button {
-     
-            cursor: pointer; 
-            float: right; 
+
+            cursor: pointer;
+            float: right;
             width: 100%;
             border-radius: 2px;
             font-size: 9px;
