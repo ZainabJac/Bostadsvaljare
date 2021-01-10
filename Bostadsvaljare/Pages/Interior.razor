@@ -366,6 +366,7 @@
         base.StateHasChanged();
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
     }
 
     private void ToggleInfo()
