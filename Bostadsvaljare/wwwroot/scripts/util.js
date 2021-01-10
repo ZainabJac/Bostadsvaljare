@@ -10,8 +10,18 @@
         },
 
         enableClickMenu: function () {
+            setTimeout(() => { $('#topnav').removeClass('loading'); }, 1500);
+                                        
+        },
+
+           disableClickGridResize: function () {
+               $('#GridResize').addClass('loading');
             
-            $('#topnav').removeClass('loading');
+        },
+
+        enableClickGridResize: function () {
+            setTimeout(() => { $('#GridResize').removeClass('loading'); }, 1000);
+            
            
         },
 

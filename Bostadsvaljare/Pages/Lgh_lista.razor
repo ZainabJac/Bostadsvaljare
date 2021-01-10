@@ -193,6 +193,8 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+            await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
+
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             firstRenderDone = true;
             base.StateHasChanged();
@@ -219,6 +221,7 @@
     {
         ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+        await JSRuntime.InvokeVoidAsync("util.enableClickGridResize");
         await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
         ViewsInited = true;
         base.StateHasChanged();
@@ -422,6 +425,17 @@
 
 
 <style>
+
+    .loading {
+        cursor: wait; /* busy cursor feedback */
+
+    }
+
+        .loading * {
+            /* disable all mouse events on subElements */
+            pointer-events: none;
+            touch-action: none;
+        }
 
     .container {
         display: flex;
