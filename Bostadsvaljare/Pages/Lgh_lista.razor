@@ -210,11 +210,14 @@
         self.StateHasChanged();
     }
 
-    public void onImgMouseClick(int nId)
+    public async void onImgMouseClick(int nId)
     {
         CurrentView = nId;
         MobileSelection = -1;
         StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", nId);
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
