@@ -55,7 +55,7 @@
                 });
             });
 
-            if (this.images[houseType]) {
+            /*if (this.images[houseType]) {
                 return true;
             }
 
@@ -113,10 +113,10 @@
 
             });
 
-            this.images[houseType] = imageData;
-            //while (imagesLoaded > 0) {
-            await util.delay(100);
-            //}
+            this.images[houseType] = imageData;*/
+            while (imagesLoaded > 0) {
+                await util.delay(100);
+            }
             return true;
         },
 
