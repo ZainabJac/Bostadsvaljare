@@ -183,8 +183,6 @@
 
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
             mapster.addMapHighlights(parentID, parentID + '-img', 'hotspots-' + floor, '', 0.6, 0.9);
-            await util.delay(100);
-            mapster.selectAll();
 
             var height1 = parseInt($('.planritning').height());
             var height2 = parseInt($('#gallery').height());
@@ -193,6 +191,8 @@
             var height4 = height3 + height2 + height1 + 60;
 
             $('.iframe-container iframe').height(height4 + 'px');
+            await util.delay(500);
+            mapster.selectAll();
         },
 
         _onClickCarousel: function (event) {
