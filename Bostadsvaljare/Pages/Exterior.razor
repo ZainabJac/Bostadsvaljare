@@ -131,7 +131,6 @@
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
-    public bool HouseIsClicked { get; set; } = false;
 
 
     protected override void OnInitialized()
@@ -187,8 +186,7 @@
 
     public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-        if (HouseIsClicked == false)
-            ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
     }
 
     public void OnMouseOutIM(MouseEventArgs e)
@@ -242,12 +240,10 @@
 
     private async void HousingClicked(int houseID)
     {
-        HouseIsClicked = true;
-        HideTooltip();
-
         var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
         if (mobile && MobileSelection != houseID)
         {
+            //ShowTooltip(x, y, houseID);
             MobileSelection = houseID;
         }
         else
