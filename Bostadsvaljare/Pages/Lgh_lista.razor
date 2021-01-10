@@ -375,7 +375,8 @@
 
     private async void HousingClickedIM(int houseID)
     {
-        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+        //var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+        var mobile = false;
         if (mobile && MobileSelection != houseID)
         {
             MobileSelection = houseID;
@@ -391,7 +392,8 @@
     {
         if (args.IsInteracted)
         {
-            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            //var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            var mobile = false;
             if (mobile && MobileSelection != args.Data.ID)
                 MobileSelection = args.Data.ID;
             else
@@ -404,7 +406,8 @@
         if (args.IsInteracted)
         {
             await Task.Delay(50);
-            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            //var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            var mobile = false;
             if (mobile && MobileSelection == args.Data.ID)
                 navManager.NavigateTo("/interior/" + args.Data.ID);
         }
