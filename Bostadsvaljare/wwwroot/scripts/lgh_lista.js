@@ -116,7 +116,6 @@
 
         dispose: function () {
             window.removeEventListener('resize', this.listeners.resize, false);
-            mapster.dispose();
             this.images.length = 0;
             this.imageMaps.length = 0;
         },
