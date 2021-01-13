@@ -20,11 +20,25 @@
         },
 
         enableClickGridResize: function () {
-            setTimeout(() => { $('#GridResize').removeClass('loading'); }, 1000);
+            setTimeout(() => { $('#GridResize').removeClass('loading'); }, 1500);
             
            
         },
 
+        focuslistitem: function (housenumber) {
+
+            let idlist = 'list' + `${housenumber}`;
+           
+            $('#'+`${idlist}`).addClass('focus');
+            
+        },
+
+        removefocuslistitem: function (housenumber) {
+
+            let idlist = 'list' + `${housenumber}`
+            $('#'+`${idlist}`).removeClass('focus');
+
+        },
       
 
 

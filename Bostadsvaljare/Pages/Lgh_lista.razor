@@ -35,7 +35,7 @@
                                 @foreach (Data.HouseMap map in view.Value)
                                 {
                                     <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                          @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClickedIM(map.ID)"
+                                          @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID)"
                                           coords="@map.IMCoords" shape="poly">
                                 }
                             }
@@ -54,7 +54,36 @@
                 }
             </div>
         </div>
+
         <div class="line-6 container" id="GridResize">
+
+            <table style="width:100%;">
+                <tr >
+                    <th class="listitemheader">Husnummer</th>
+                    <th class="listitemheader">Boyta</th>
+                    <th class="listitemheader">Pris</th>
+                    <th class="listitemheader">Status</th>
+                </tr>
+
+                @for (int i = 0; i < HouseData.Count; i++)
+                {
+                    var _i = HouseData[i].ID;
+                    var __i = HouseData[i].HouseNumber;
+                  
+            <tr id="@("list"+i)"class="listitem"  @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(__i)" @onclick="() => HouselistClick(_i)">
+
+                
+                <td class="listitemcell">@HouseData[i].HouseNumber </td>
+                <td class="listitemcell">@HouseData[i].Sqm </td>
+                <td class="listitemcell">@HouseData[i].Price </td>
+                <td class="listitemcell">@HouseData[i].Status </td>
+            </tr>
+                   }
+
+            </table>
+
+        </div>
+        @*<div class="line-6 container" id="GridResize">
             <div style="width:100%">
                 <SfGrid Height="100%" Width="100%" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="false" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
                     <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
@@ -90,7 +119,7 @@
                     </GridColumns>
                 </SfGrid>
             </div>
-        </div>
+        </div>*@
     </ContentTemplate>
 </SpinLoader>
 
@@ -103,6 +132,8 @@
         public string ImageMapName { get; set; }
         public bool Initialized { get; set; } = false;
     }
+
+
 
     private static Lgh_lista self;
 
@@ -151,7 +182,20 @@
         },
     };
 
-
+    private async void HouselistClick(int houseID)
+    {
+        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+        if (mobile && MobileSelection != houseID)
+        {
+            //ShowTooltip(x, y, houseID);
+            MobileSelection = houseID;
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+            navManager.NavigateTo("/interior/" + houseID);
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -243,23 +287,24 @@
                 return;
 
             ShowTooltip(e.ClientX, e.ClientY, houseNumber);
-            HighlightInList(houseNumber);
+            await JSRuntime.InvokeVoidAsync("util.focuslistitem", houseNumber);
 
             MouseOverHouse = "";
         }
     }
 
-    private void OnMouseOutIM(MouseEventArgs e)
+    private async void OnMouseOutIM(string houseNumber)
     {
         Mouseout = Mouseout + 1;
 
         MouseOverHouse = "";
-        HideTooltip();
-        if (IsHighlighting)
-        {
-            RemoveListHighlight();
-            IsHighlighting = false;
-        }
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+        await JSRuntime.InvokeVoidAsync("util.removefocuslistitem", houseNumber);
+        //if (IsHighlighting)
+        //{
+        //    await this.HouseList.ClearRowSelection();
+        //    IsHighlighting = false;
+        //}
     }
 
     private async void OnMouseOverGrid(MouseEventArgs e)
@@ -280,11 +325,13 @@
         }
     }
 
-    private async void OnMouseOutGrid(MouseEventArgs e)
+    private async void OnMouseOutGrid()
     {
         Mouseout = Mouseout + 1;
         await JSRuntime.InvokeVoidAsync("mapster.deselect");
     }
+
+
 
     private async void HighlightInList(string houseNumber)
     {
@@ -321,15 +368,22 @@
 
     private async void HighlightInImageMap(string houseNumber)
     {
-        await JSRuntime.InvokeVoidAsync("mapster.deselect");
 
-        string viewName = Data.HouseMap.ImageNameToVariant(this.Views[this.CurrentView].Source);
-        string key = viewName +"_"+ houseNumber;
-        if (HouseToStatus.ContainsKey(key))
+        await Task.Delay(500);
+        MouseIn = MouseIn + 1;
+
+        if (MouseIn > Mouseout)
         {
-            string id = this.Views[this.CurrentView].ID;
-            string statusKey = HouseToStatus[key];
-            await JSRuntime.InvokeVoidAsync("mapster.select", id, id +"-img", statusKey);
+            await JSRuntime.InvokeVoidAsync("mapster.deselect");
+
+            string viewName = Data.HouseMap.ImageNameToVariant(this.Views[this.CurrentView].Source);
+            string key = viewName + "_" + houseNumber;
+            if (HouseToStatus.ContainsKey(key))
+            {
+                string id = this.Views[this.CurrentView].ID;
+                string statusKey = HouseToStatus[key];
+                await JSRuntime.InvokeVoidAsync("mapster.select", id, id + "-img", statusKey);
+            }
         }
     }
 
@@ -382,7 +436,7 @@
         }
         else
         {
-            HideTooltip();
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
             navManager.NavigateTo("/interior/" + houseID);
         }
     }
@@ -436,6 +490,61 @@
 
 <style>
 
+    .focus {
+        background-color: grey !important;
+    }
+
+    .listitemheader {
+        margin: 7px;
+        padding: 7px;
+        transition-property: filter;
+        transition-duration: 0.25s;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        text-align: center;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f6f6f6;
+    }
+
+
+    .listitem {
+        margin: 7px;
+        padding: 7px;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        text-align: center;
+    }
+
+    .listitem:hover {
+        margin: 7px;
+        padding: 7px;
+        transition-property: filter;
+        transition-duration: 0.25s;
+        -webkit-tap-highlight-color: transparent;
+        background-color: grey;
+    }
+
+    .listitemcell {
+        padding: 7px;
+        margin: 7px;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        font-family: acumin-pro,sans-serif;
+        font-size: 0.8vw;
+    }
+
+   
+
     .loading {
         cursor: wait; /* busy cursor feedback */
 
@@ -449,7 +558,8 @@
 
     .container {
         display: flex;
-        
+        overflow:scroll;
+    
       
     }
 

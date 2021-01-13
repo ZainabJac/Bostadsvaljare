@@ -10,7 +10,7 @@
 @using BlazorPro.Spinkit
 
 
-<SpinLoader IsLoading="SelectedImage == null || !ImagesLoaded ">
+<SpinLoader IsLoading="SelectedImage == null && !ImagesLoaded ">
     <LoadingTemplate>
         <div style="text-align:center; padding-top:18%;">
             <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
@@ -78,7 +78,6 @@
                 </div>
             </div>
 
-            <SfCheckBox @bind-Checked="isChecked" OnClick="@HideMinimap" CssClass="e-checkicon pan_el"></SfCheckBox>
 
             <div class="line-4">
                 <div style="margin-top:-7px;" class="planritning floorplancontain pan_el">
@@ -260,7 +259,7 @@
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
-            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
+            //ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
         }
@@ -268,6 +267,7 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
+        ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
 
@@ -295,22 +295,7 @@
         base.StateHasChanged();
     }
 
-    public void HideMinimap()
-    {
-        if (isChecked == false)
-        {
-            MoveIcon2 = "position: absolute; left: 95%; top: 12px;";
-            MoveIcon = "position: absolute; left: 98%; top: 17px;";
-            MinimapHide = "display:none;";
-        }
-        else
-        {
-            MoveIcon2 = "position: absolute; left: 52%; top: 12px;";
-            MoveIcon = "position: absolute; left: 78%; top: 17px;";
-            MinimapHide = "display:initial;";
-        }
-        base.StateHasChanged();
-    }
+  
 
     private async void OnClickHotspot(int roomID)
     {
@@ -365,11 +350,6 @@
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
         await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
-    }
-
-    private void ToggleInfo()
-    {
-        ShowInfo = !ShowInfo;
     }
 
     public void Dispose()

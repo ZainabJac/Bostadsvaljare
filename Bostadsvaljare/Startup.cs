@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Syncfusion.Blazor;
 using BlazorStrap;
+using Bostadsvaljare.Data;
 
 namespace Bostadsvaljare
 {
@@ -31,7 +32,17 @@ namespace Bostadsvaljare
             services.AddSyncfusionBlazor();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            
+            services.AddSingleton<HouseMap>();
+            services.AddSingleton<HouseType>();
+            services.AddSingleton<House>();
+            // signalR
+            services.AddSignalR(options =>
+            {
+               
+                    options.EnableDetailedErrors = true;
+               
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

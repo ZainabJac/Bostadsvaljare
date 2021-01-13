@@ -55,7 +55,7 @@
                 });
             });
 
-            /*if (this.images[houseType]) {
+            if (this.images[houseType]) {
                 return true;
             }
 
@@ -113,10 +113,10 @@
 
             });
 
-            this.images[houseType] = imageData;*/
-            while (imagesLoaded > 0) {
-                await util.delay(100);
-            }
+            this.images[houseType] = imageData;
+            //while (imagesLoaded > 0) {
+           // await util.delay(100);
+            //}
             return true;
         },
 
@@ -141,7 +141,7 @@
                 // Add image map functionality
                 $('#' + data.img.id).attr('usemap', data.usemap);
                 this._loadFloorplan(data.img, data.style.width);
-                util.delay(300);
+               
             }
         },
 
@@ -191,7 +191,7 @@
             var height4 = height3 + height2 + height1 + 60;
 
             $('.iframe-container iframe').height(height4 + 'px');
-            await util.delay(500);
+         
             mapster.selectAll();
         },
 

@@ -184,14 +184,45 @@
         base.StateHasChanged();
     }
 
-    public void OnMouseOverIM(MouseEventArgs e, string houseNumber)
+    public async void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-        ShowTooltip(e.ClientX, e.ClientY, houseNumber);
+        double x = e.ClientX;
+        double y = e.ClientY;
+
+        string msg;
+        Data.House house = null;
+        foreach (Data.House h in Data.House.GetHouseData())
+        {
+            if (h.HouseNumber == houseNumber)
+            {
+                house = h;
+                break;
+            }
+        }
+
+        switch (house.Status)
+        {
+            case "sold":
+                msg = "Såld";
+                break;
+            case "booked":
+                msg = "Reserverad";
+                break;
+            default:
+                msg = "Hus nr.\t" + houseNumber +
+                    "\nBoarea:\t" + house.Sqm + "m²" +
+                    "\nPris: \t" + house.Price;
+                break;
+        }
+
+        await JSRuntime.InvokeVoidAsync(
+            "util.showTooltip", x, y, msg
+        );
     }
 
-    public void OnMouseOutIM(MouseEventArgs e)
+    public async void OnMouseOutIM(MouseEventArgs e)
     {
-        HideTooltip();
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
     }
 
     public async void OnChangeHighlight(Syncfusion.Blazor.Buttons.ClickEventArgs e)

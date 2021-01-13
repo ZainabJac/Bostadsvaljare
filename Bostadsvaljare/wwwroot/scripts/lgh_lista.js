@@ -1,4 +1,5 @@
-﻿(function () {
+﻿
+(function () {
     window.lgh_lista = {
         images: [],
         imageMaps: [],
@@ -11,6 +12,10 @@
             window.addEventListener('resize', this.listeners.resize, false);
 
         },
+
+        
+    
+
 
         loadImages: async function (data) {
             var self = this,
@@ -42,9 +47,7 @@
                 });
             });
 
-            while (imagesLoaded > 0) {
-                await util.delay(100);
-            }
+         
             return true;
         },
 
@@ -70,7 +73,7 @@
                 this._loadIM(data.img, data.style.width);
             }
 
-            await util.delay(100);
+          
         },
 
         _loadIM: function (img, imgWidth) {

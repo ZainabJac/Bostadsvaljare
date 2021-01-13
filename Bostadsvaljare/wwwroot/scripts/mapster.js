@@ -64,6 +64,10 @@
             $('#'+ parentID +' #'+ imgID).mapster('highlight', statusKey);
         },
 
+        select2: function (parentID, imgID) {
+            $('#' + parentID + ' #' + imgID).mapster('highlight');
+        },
+
         selectAll: function () {
             $('area').mapster('select');
         },
