@@ -13,7 +13,20 @@
 
         },
 
-        
+        focuslistitem: function (housenumber) {
+
+            let idlist = 'list' + `${housenumber}`;
+
+            $('#' + `${idlist}`).addClass('focus');
+
+        },
+
+        removefocuslistitem: function (housenumber) {
+
+            let idlist = 'list' + `${housenumber}`
+            $('#' + `${idlist}`).removeClass('focus');
+
+        },
     
 
 

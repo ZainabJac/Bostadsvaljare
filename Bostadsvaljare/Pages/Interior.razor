@@ -313,23 +313,7 @@
         base.StateHasChanged();
     }
 
-    [JSInvokable]
-    public static void ShowImage()
-    {
-        self.ShowFullscreenImage = true;
-        self.StateHasChanged();
-    }
-
-    [JSInvokable("ChangeRoom")]
-    public static Data.HouseType.Image[] StaticChangeRoom(int ind)
-    {
-        Data.HouseType.Image oldImage = self.SelectedImage;
-        self.SelectedImage = self.HouseData.Images[ind];
-        self.SelectedType = self.SelectedImage.Type;
-        self.StateHasChanged();
-
-        return new Data.HouseType.Image[] { oldImage, self.SelectedImage };
-    }
+  
 
 
     public async void StaticChangeRoomClick(int ind)
@@ -631,7 +615,6 @@
         padding: 7px;
 
     }
-
 
     .gallercontain {
         float: left;
