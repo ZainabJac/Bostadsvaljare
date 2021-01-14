@@ -146,7 +146,6 @@
         },
 
         dispose: function () {
-            mapster.dispose();
             this.imageMaps.length = 0;
             window.removeEventListener('resize', this.listeners.resize, false);
         },

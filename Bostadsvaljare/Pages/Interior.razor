@@ -294,7 +294,7 @@
         base.StateHasChanged();
     }
 
-  
+
 
     private async void OnClickHotspot(int roomID)
     {
@@ -312,7 +312,7 @@
         base.StateHasChanged();
     }
 
-  
+
 
 
     public async void StaticChangeRoomClick(int ind)
@@ -345,6 +345,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        await JSRuntime.InvokeVoidAsync("mapster.dispose");
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("interior.dispose");
         //await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
