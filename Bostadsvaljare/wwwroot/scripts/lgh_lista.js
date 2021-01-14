@@ -16,18 +16,16 @@
         focuslistitem: function (housenumber) {
 
             let idlist = 'list' + `${housenumber}`;
-
             $('#' + `${idlist}`).addClass('focus');
 
         },
 
         removefocuslistitem: function (housenumber) {
 
-            let idlist = 'list' + `${housenumber}`
+            let idlist = 'list' + `${housenumber}`;
             $('#' + `${idlist}`).removeClass('focus');
 
         },
-    
 
 
         loadImages: async function (data) {
@@ -116,7 +114,6 @@
 
         dispose: function () {
             window.removeEventListener('resize', this.listeners.resize, false);
-            mapster.dispose();
             this.images.length = 0;
             this.imageMaps.length = 0;
         },

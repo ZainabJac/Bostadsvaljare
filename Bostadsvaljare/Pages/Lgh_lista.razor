@@ -67,18 +67,17 @@
 
                 @for (int i = 0; i < HouseData.Count; i++)
                 {
-                    var _i = HouseData[i].ID;
-                    var __i = HouseData[i].HouseNumber;
-                  
-            <tr id="@("list"+i)"class="listitem"  @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(__i)" @onclick="() => HouselistClick(_i)">
+                    var id = HouseData[i].ID;
+                    var houseNr = HouseData[i].HouseNumber;
 
-                
-                <td class="listitemcell">@HouseData[i].HouseNumber </td>
-                <td class="listitemcell">@HouseData[i].Sqm </td>
-                <td class="listitemcell">@HouseData[i].Price </td>
-                <td class="listitemcell">@HouseData[i].Status </td>
-            </tr>
-                   }
+                    <tr id="@("list"+houseNr)" class="listitem" @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(houseNr)" @onclick="() => HouselistClick(id)">
+
+                        <td class="listitemcell">@HouseData[i].HouseNumber </td>
+                        <td class="listitemcell">@HouseData[i].Sqm </td>
+                        <td class="listitemcell">@HouseData[i].Price </td>
+                        <td class="listitemcell">@HouseData[i].Status </td>
+                    </tr>
+                }
 
             </table>
 
@@ -231,11 +230,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("lgh_lista.init");
-        await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
-
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("lgh_lista.init");
             await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
 
@@ -244,6 +241,7 @@
             base.StateHasChanged();
         }
 
+        await JSRuntime.InvokeVoidAsync("lgh_lista.resizeComplete");
     }
 
 
