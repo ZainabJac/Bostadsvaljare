@@ -274,7 +274,7 @@
         base.StateHasChanged();
         await JSRuntime.InvokeVoidAsync("interior.resize");
         await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
-        await JSRuntime.InvokeVoidAsync("interior.adjustfloorplan");
+        //await JSRuntime.InvokeVoidAsync("interior.adjustfloorplan");
 
     }
 
@@ -293,7 +293,7 @@
         base.StateHasChanged();
     }
 
-  
+
 
     private async void OnClickHotspot(int roomID)
     {
@@ -311,7 +311,7 @@
         base.StateHasChanged();
     }
 
-  
+
 
 
     public async void StaticChangeRoomClick(int ind)
