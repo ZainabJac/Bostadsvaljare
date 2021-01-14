@@ -55,14 +55,16 @@
             </div>
         </div>
 
+     
+
         <div class="line-6 container" id="GridResize">
 
-            <table style="width:100%;">
-                <tr >
-                    <th class="listitemheader">Husnummer</th>
-                    <th class="listitemheader">Boyta</th>
-                    <th class="listitemheader">Pris</th>
-                    <th class="listitemheader">Status</th>
+            <table id="tabletest" style="width:100%;">
+                <tr>
+                    <th  onclick="sortTabletest(0)" class="listitemheader">Husnummer <i class="fas fa-sort"></i></th>
+                    <th  onclick="sortTabletest(1)" class="listitemheader">Boyta <i class="fas fa-sort"></i></th>
+                    <th  onclick="sortTabletest(2)" class="listitemheader">Pris <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTabletest(3)" class="listitemheader">Status <i class="fas fa-sort"></i></th>
                 </tr>
 
                 @for (int i = 0; i < HouseData.Count; i++)
@@ -75,7 +77,11 @@
                         <td class="listitemcell">@HouseData[i].HouseNumber </td>
                         <td class="listitemcell">@HouseData[i].Sqm </td>
                         <td class="listitemcell">@HouseData[i].Price </td>
-                        <td class="listitemcell">@HouseData[i].Status </td>
+                        <td class="listitemcell">
+                        @if (HouseData[i].Status == "available"){<p style="color:forestgreen; margin-bottom:2px; margin-top:5px; "> Ledig </p>}
+                        @if (HouseData[i].Status == "sold") {<p style="color:red;  margin-bottom:5px; margin-top:5px;">Såld</p> }
+                        @if (HouseData[i].Status == "booked") {<p style="color:darkorange;  margin-bottom:2px; margin-top:5px;">Reserverad</p> }</td>
+                       
                     </tr>
                 }
 
@@ -482,6 +488,14 @@
 
 <style>
 
+    .listitemheader:hover{
+        text-decoration:underline;
+    }
+
+    .listitemheader:focus {
+        text-decoration: underline;
+    }
+
     .focus {
         background-color: grey !important;
     }
@@ -498,6 +512,9 @@
         color: rgba(0, 0, 0, 0.87);
         outline: none;
         text-align: center;
+        font-family: acumin-pro,sans-serif;
+        font-size: 16px;
+        font-weight:500;
     }
 
     tr:nth-child(even) {
@@ -532,7 +549,7 @@
         box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
         color: rgba(0, 0, 0, 0.87);
         font-family: acumin-pro,sans-serif;
-        font-size: 0.8vw;
+        font-size: 14px;
     }
 
    
