@@ -19,7 +19,12 @@
             }
         },
 
-
+        //adjustfloorplan: function () {
+        //    var width2 = parseInt($('#floorplan-0-img').width());
+        //    var newheight = width2 * 0.75
+        //    $('#floorplan-0-img').height(newheight)
+        //    $('.mapster_el').height(newheight)
+        //},
 
         adjustpan: function () {
             var width1 = parseInt($('#carousel-item-0').width());
