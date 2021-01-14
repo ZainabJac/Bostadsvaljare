@@ -270,13 +270,12 @@
         ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
-
-
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
         FloorplanInited = true;
         base.StateHasChanged();
         await JSRuntime.InvokeVoidAsync("interior.resize");
         await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
+        await JSRuntime.InvokeVoidAsync("interior.adjustfloorplan");
 
     }
 
