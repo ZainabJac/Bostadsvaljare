@@ -256,7 +256,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
@@ -275,6 +275,8 @@
         await JSRuntime.InvokeVoidAsync("interior.resize");
         await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
         //await JSRuntime.InvokeVoidAsync("interior.adjustfloorplan");
+        await JSRuntime.InvokeVoidAsync("util.enableContent");
+
 
     }
 
@@ -503,15 +505,15 @@
 
 
     .btn-group button {
-        background-color: white;
         color: #415965;
         cursor: pointer;
         float: right;
         width: 100%;
-        border: 2px solid #415965;
-        border-radius: 2px;
-        margin-left:1px;
-
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
     }
 
     /* Clear floats (clearfix hack) */
@@ -521,17 +523,16 @@
         display: table;
     }
 
-    /* Add a background color on hover */
     .btn-group button:hover {
         background: #415965;
-        color:white;
-        border: 2px solid white;
+        color: white;
+      
     }
 
     .btn-group button:focus {
         background: #415965;
         color: white;
-        border: 2px solid white;
+       
     }
 
     .e-chip-list.e-chip, .e-chip-list .e-chip {

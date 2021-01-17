@@ -18,77 +18,80 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
+       
+            <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
-
-
-        <div class="line-6" id="gallerybox">
-            @for (int i = 0; i < Views.Count; i++)
-            {
-                var _i = i;
-                <div id="@Views[i].ID" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
-                    <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
-                        @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
-                        {
-                            if (view.Key == Data.HouseMap.ImageNameToVariant(Views[i].Source))
-                            {
-                                @foreach (Data.HouseMap map in view.Value)
-                                {
-                                    <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                          @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID)"
-                                          coords="@map.IMCoords" shape="poly">
-                                }
-                            }
-                        }
-                    </map>
-                </div>
-            }
-
-            <div id="gallery">
+            <div class="line-8"  id="gallerybox">
                 @for (int i = 0; i < Views.Count; i++)
                 {
                     var _i = i;
-                    <span id="gallery-item-@i" class="line-3">
-                        <img id="@("#abc"+i)" src="@Views[i].Source" view="@i" class="gallery-img" @onclick="e=>onImgMouseClick(_i)">
-                    </span>
+                    <div id="@Views[i].ID" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                        <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
+                            @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
+                            {
+                                if (view.Key == Data.HouseMap.ImageNameToVariant(Views[i].Source))
+                                {
+                                    @foreach (Data.HouseMap map in view.Value)
+                                    {
+                                        <area id="@Data.House.Get(map.ID).Status" status="" href="#"
+                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID)"
+                                              coords="@map.IMCoords" shape="poly">
+                                    }
+                                }
+                            }
+                        </map>
+                    </div>
                 }
+
+                <div id="gallery">
+                    @for (int i = 0; i < Views.Count; i++)
+                    {
+                        var _i = i;
+                        <span id="gallery-item-@i" style="width:19%;">
+                            <img id="@("#abc"+i)" src="@Views[i].Source" view="@i" class="gallery-img" @onclick="e=>onImgMouseClick(_i)">
+                        </span>
+                    }
+                </div>
             </div>
-        </div>
 
-     
 
-        <div class="line-6 container" id="GridResize">
 
-            <table id="tabletest" style="width:100%;">
-                <tr>
-                    <th  onclick="sortTabletest(0)" class="listitemheader">Husnummer <i class="fas fa-sort"></i></th>
-                    <th  onclick="sortTabletest(1)" class="listitemheader">Boyta <i class="fas fa-sort"></i></th>
-                    <th  onclick="sortTabletest(2)" class="listitemheader">Pris <i class="fas fa-sort"></i></th>
-                    <th onclick="sortTabletest(3)" class="listitemheader">Status <i class="fas fa-sort"></i></th>
-                </tr>
+            <div class="line-4 container" id="GridResize">
 
-                @for (int i = 0; i < HouseData.Count; i++)
-                {
-                    var id = HouseData[i].ID;
-                    var houseNr = HouseData[i].HouseNumber;
-
-                    <tr id="@("list"+houseNr)" class="listitem" @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(houseNr)" @onclick="() => HouselistClick(id)">
-
-                        <td class="listitemcell">@HouseData[i].HouseNumber </td>
-                        <td class="listitemcell">@HouseData[i].Sqm </td>
-                        <td class="listitemcell">@HouseData[i].Price </td>
-                        <td class="listitemcell">
-                        @if (HouseData[i].Status == "available"){<p style="color:forestgreen; margin-bottom:2px; margin-top:5px; "> Ledig </p>}
-                        @if (HouseData[i].Status == "sold") {<p style="color:red;  margin-bottom:5px; margin-top:5px;">Såld</p> }
-                        @if (HouseData[i].Status == "booked") {<p style="color:darkorange;  margin-bottom:2px; margin-top:5px;">Reserverad</p> }</td>
-                       
+                <table id="tabletest" style="width:100%;">
+                    <tr>
+                        <th onclick="sortTabletest(0)" class="listitemheader">Husnummer <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTabletest(1)" class="listitemheader">Boyta <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTabletest(2)" class="listitemheader">Pris <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTabletest(3)" class="listitemheader">Status <i class="fas fa-sort"></i></th>
                     </tr>
-                }
 
-            </table>
+                    @for (int i = 0; i < HouseData.Count; i++)
+                    {
+                        var id = HouseData[i].ID;
+                        var houseNr = HouseData[i].HouseNumber;
 
-        </div>
-        @*<div class="line-6 container" id="GridResize">
+                        <tr id="@("list"+houseNr)" class="listitem" @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(houseNr)" @onclick="() => HouselistClick(id)">
+
+                            <td class="listitemcell">@HouseData[i].HouseNumber </td>
+                            <td class="listitemcell">@HouseData[i].Sqm </td>
+                            <td class="listitemcell">@HouseData[i].Price </td>
+                            <td class="listitemcell">
+                                @if (HouseData[i].Status == "available")
+                                {<p style="color:forestgreen; margin-bottom:2px; margin-top:5px; "> Ledig </p>}
+                                @if (HouseData[i].Status == "sold")
+                                {<p style="color:red;  margin-bottom:5px; margin-top:5px;">Såld</p>}
+                                @if (HouseData[i].Status == "booked")
+                                {<p style="color:darkorange;  margin-bottom:2px; margin-top:5px;">Reserverad</p>}
+                            </td>
+
+                        </tr>
+                    }
+
+                </table>
+
+            </div>
+            @*<div class="line-6 container" id="GridResize">
             <div style="width:100%">
                 <SfGrid Height="100%" Width="100%" @ref="HouseList" DataSource="HouseData" AllowSorting="true" AllowFiltering="true" AllowPaging="false" EnableHover="true" @onmouseover="OnMouseOverGrid" @onmouseout="OnMouseOutGrid">
                     <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate"></GridFilterSettings>
@@ -125,6 +128,7 @@
                 </SfGrid>
             </div>
         </div>*@
+      
     </ContentTemplate>
 </SpinLoader>
 
@@ -167,22 +171,27 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5area.jpg",
+            Source = "IMG/OversiktStora_medium.jpg",
             ImageMapName = _mapName + _ind++,
         },
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Oversikt_V2Optimerad.jpg",
+            Source = "IMG/Oversikt_V2_medium.jpg",
             ImageMapName = _mapName + _ind++,
         },
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5red.jpg",
+            Source = "IMG/Oversikt1-5_medium.jpg",
             ImageMapName = _mapName + _ind++,
         },
         new ViewData {
             ID = _id + _ind,
-            Source = "IMG/Ext1-5grey.jpg",
+            Source = "IMG/Oversikt8_medium.jpg",
+            ImageMapName = _mapName + _ind++,
+        },
+            new ViewData {  
+            ID = _id + _ind,
+            Source = "IMG/Oversikt11_medium.jpg",
             ImageMapName = _mapName + _ind++,
         },
     };
@@ -239,7 +248,7 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("lgh_lista.init");
-            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+          
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
 
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
@@ -574,7 +583,7 @@
 
     #gallery {
         overflow-y: hidden;
-        overflow-x: auto;
+        overflow-x: hidden;
         white-space: nowrap;
     }
 
@@ -583,15 +592,20 @@
     }
 
     .gallery-img {
-        width: 25%;
-        padding: 7px;
-        filter: brightness(120%);
+        width: 19.8%;
+        padding-top: 3px;
+        filter: brightness(100%);
         transition-property: filter;
         transition-duration: 0.25s;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
     }
 
     .gallery-img:hover {
-        filter: brightness(100%);
+        filter: brightness(120%);
         cursor: pointer;
     }
 
@@ -625,11 +639,12 @@
     }
 
     .line-3 {
-        width: 25%;
+        width: 20%;
     }
 
     .line-4 {
-        width: 33.33%;
+        width: 38.33%;
+        margin-top:-15px;
     }
 
     .line-5 {
@@ -646,7 +661,8 @@
     }
 
     .line-8 {
-        width: 66.66%;
+        width: 61.66%;
+        margin-top:-15px;
     }
 
     .line-9 {
@@ -670,10 +686,17 @@
         padding: 7px;
     }
 
-    @@media (max-width: 1467px) {
-    }
+
 
     @@media (max-width: 927px) {
+
+        .listitemcell{
+            font-size:12px;
+        }
+        
+        .listitemheader{
+            font-size:14px;
+        }
 
         .line-1 {
             width: 25%;
@@ -689,6 +712,7 @@
 
         .line-4 {
             width: 100%;
+            margin:auto;
         }
 
         .line-5 {
@@ -705,6 +729,7 @@
 
         .line-8 {
             width: 100%;
+            margin-top: 0px;
         }
 
         .line-9 {
@@ -743,6 +768,10 @@
 
     @@media (max-width: 600px) {
 
+        .container{
+            overflow:initial;
+        }
+
         .line-1 {
             width: 25%;
         }
@@ -757,6 +786,7 @@
 
         .line-4 {
             width: 100%;
+            margin-top: 0px;
         }
 
         .line-5 {
@@ -773,6 +803,7 @@
 
         .line-8 {
             width: 100%;
+            margin-top: 0px;
         }
 
         .line-9 {
@@ -809,4 +840,16 @@
             margin: auto !important;
         }
     }
+
+    @@media (max-width: 400px) {
+
+        .listitemheader{
+            font-size:12px;
+        }
+
+        .listitemheader {
+            font-size: 11px;
+        }
+    }
+
 </style>

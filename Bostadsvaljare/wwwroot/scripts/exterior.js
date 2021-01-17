@@ -3,6 +3,8 @@
         images: [],
         mapIndex: {},
 
+     
+        
         loadImages: async function (data) {
             var self = this,
                 imagesLoaded = data.length * 3,

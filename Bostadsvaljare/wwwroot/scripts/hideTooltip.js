@@ -1,0 +1,4 @@
+﻿function hideTooltip () {
+    $('#tipmsg').hide();
+
+}

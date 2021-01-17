@@ -25,7 +25,15 @@
            
         },
 
-       
+        disableContent: function () {
+            $('#theWindow').addClass('loading');
+
+        },
+
+        enableContent: function () {
+            setTimeout(() => { $('#theWindow').removeClass('loading'); }, 1500);
+
+        },
       
 
 

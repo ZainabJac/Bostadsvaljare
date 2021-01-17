@@ -19,41 +19,49 @@
         </div>
     </LoadingTemplate>
     <ContentTemplate>
+        <div id="content">
+            <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
-        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
+            @for (int i = 0; i < Views.Count; i++)
+            {
+                var _i = i;
+                <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                    @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
+                    {
+                        var _j = j;
+                        var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
+                        <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
 
-        @for (int i = 0; i < Views.Count; i++)
-        {
-            var _i = i;
-            <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
-                @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
-                {
-                    var _j = j;
-                    var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
-                    <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
-                        
-                        <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
-                            @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
-                            {
-                                if (view.Key == Data.HouseMap.ImageNameToVariant(Views[_i].SunStudies["midday"]))
+                            <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
+                                @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                                 {
-                                    @foreach (Data.HouseMap map in view.Value)
+                                    if (view.Key == Data.HouseMap.ImageNameToVariant(Views[_i].SunStudies["midday"]))
                                     {
-                                        <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="OnMouseOutIM" @onclick="() => HousingClicked(map.ID)"
-                                              coords="@map.IMCoords" shape="poly">
+                                        @foreach (Data.HouseMap map in view.Value)
+                                        {
+                                            <area id="@Data.House.Get(map.ID).Status" status="" href="#"
+                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)"  onmouseout="hideTooltip()"  @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
+                                                  coords="@map.IMCoords" shape="poly">
+                                        }
                                     }
                                 }
-                            }
-                        </map>
-                    </div>
-                }
-            </div>
-        }
+                            </map>
+                        </div>
+                    }
+                </div>
+            }
 
         <div class="buttonrow">
+            <div id="highlight_all_checker">
+                <SfChipList Selection="Selection.Single">
+                    <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
+                    <ChipCollection>
+                        <ChipListChip Text="Visa status"></ChipListChip>
+                    </ChipCollection>
+                </SfChipList>
+            </div>
             <div id="view_menu">
-                <SfDropDownButton IconCss="e-icons e-view" Content="Byt Område">
+                <SfDropDownButton Content="Byt Område">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
                     <DropDownButtonItems>
                         @for (int i = 0; i < Views.Count; i++)
@@ -75,14 +83,8 @@
                 </SfDropDownButton>
             </div>
 
-            <div id="highlight_all_checker">
-                <SfChipList Selection="Selection.Single">
-                    <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
-                    <ChipCollection>
-                        <ChipListChip Text="Visa status"></ChipListChip>
-                    </ChipCollection>
-                </SfChipList>
-            </div>
+
+        </div>
         </div>
     </ContentTemplate>
 </SpinLoader>
@@ -105,9 +107,9 @@
             Name = "Område 1",
             ImageMapName = "imagemap-1",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Ext1-5area.jpg" },
-                { "midday", "IMG/Ext1-5area.jpg" },
-                { "evening", "IMG/Ext1-5area.jpg" },
+                { "morning", "IMG/OversiktStora_medium.jpg" },
+                { "midday", "IMG/OversiktStora_medium.jpg" },
+                { "evening", "IMG/OversiktStora_medium.jpg" },
             },
         },
         new ViewData() {
@@ -115,9 +117,39 @@
             Name = "Område 2",
             ImageMapName = "imagemap-2",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/Oversikt_V2Optimerad.jpg" },
-                { "midday", "IMG/Oversikt_V2Optimerad.jpg"},
-                { "evening", "IMG/Oversikt_V2Optimerad.jpg" },
+                { "morning", "IMG/Oversikt_V2_medium.jpg" },
+                { "midday", "IMG/Oversikt_V2_medium.jpg"},
+                { "evening", "IMG/Oversikt_V2_medium.jpg" },
+            },
+        },
+        new ViewData() {
+            ID = "view-3",
+            Name = "Område 3",
+            ImageMapName = "imagemap-3",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Oversikt1-5_medium.jpg" },
+                { "midday", "IMG/Oversikt1-5_medium.jpg"},
+                { "evening", "IMG/Oversikt1-5_medium.jpg" },
+            },
+        },
+        new ViewData() {
+            ID = "view-4",
+            Name = "Område 4",
+            ImageMapName = "imagemap-4",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Oversikt8_medium.jpg" },
+                { "midday", "IMG/Oversikt8_medium.jpg"},
+                { "evening", "IMG/Oversikt8_medium.jpg" },
+            },
+        },
+          new ViewData() {
+            ID = "view-5",
+            Name = "Område 5",
+            ImageMapName = "imagemap-4",
+            SunStudies = new Dictionary<string, string>() {
+                { "morning", "IMG/Oversikt11_medium.jpg" },
+                { "midday", "IMG/Oversikt11_medium.jpg"},
+                { "evening", "IMG/Oversikt11_medium.jpg" },
             },
         },
     };
@@ -131,6 +163,7 @@
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
+    private bool TooltipIsdisabled = false;
 
 
     protected override void OnInitialized()
@@ -145,7 +178,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
@@ -155,6 +188,8 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
+
+        await JSRuntime.InvokeVoidAsync("util.enableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("exterior.applyImages");
         ViewsInited = true;
@@ -186,44 +221,48 @@
 
     public async void OnMouseOverIM(MouseEventArgs e, string houseNumber)
     {
-        double x = e.ClientX;
-        double y = e.ClientY;
-
-        string msg;
-        Data.House house = null;
-        foreach (Data.House h in Data.House.GetHouseData())
+        if (TooltipIsdisabled == true)
         {
-            if (h.HouseNumber == houseNumber)
+            return;
+        }
+
+        else {
+
+            double x = e.ClientX;
+            double y = e.ClientY;
+
+            string msg;
+            Data.House house = null;
+            foreach (Data.House h in Data.House.GetHouseData())
             {
-                house = h;
-                break;
+                if (h.HouseNumber == houseNumber)
+                {
+                    house = h;
+                    break;
+                }
             }
-        }
 
-        switch (house.Status)
-        {
-            case "sold":
-                msg = "Såld";
-                break;
-            case "booked":
-                msg = "Reserverad";
-                break;
-            default:
-                msg = "Hus nr.\t" + houseNumber +
-                    "\nBoarea:\t" + house.Sqm + "m²" +
-                    "\nPris: \t" + house.Price;
-                break;
-        }
+            switch (house.Status)
+            {
+                case "sold":
+                    msg = "Såld";
+                    break;
+                case "booked":
+                    msg = "Reserverad";
+                    break;
+                default:
+                    msg = "Hus nr.\t" + houseNumber +
+                        "\nBoarea:\t" + house.Sqm + "m²" +
+                        "\nPris: \t" + house.Price;
+                    break;
+            }
 
-        await JSRuntime.InvokeVoidAsync(
-            "util.showTooltip", x, y, msg
-        );
+            await JSRuntime.InvokeVoidAsync(
+                "util.showTooltip", x, y, msg
+            );
+        }
     }
 
-    public async void OnMouseOutIM(MouseEventArgs e)
-    {
-        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-    }
 
     public async void OnChangeHighlight(Syncfusion.Blazor.Buttons.ClickEventArgs e)
     {
@@ -236,6 +275,8 @@
 
     private async void ShowTooltip(double x, double y, string houseNumber)
     {
+
+
         string msg;
         Data.House house = null;
         foreach (Data.House h in Data.House.GetHouseData()) {
@@ -264,23 +305,34 @@
         );
     }
 
-    private async void HideTooltip()
-    {
-        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-    }
 
-    private async void HousingClicked(int houseID)
+
+    private async void HousingClicked(int houseID, string ID, int view)
     {
-        var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
-        if (mobile && MobileSelection != houseID)
+        if (ID == "view-1")
         {
-            //ShowTooltip(x, y, houseID);
-            MobileSelection = houseID;
+            //this.CurrentView = int.Parse(view);
+            await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
+
+            this.MobileSelection = -1;
+            base.StateHasChanged();
         }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-            navManager.NavigateTo("/interior/" + houseID);
+
+        else {
+
+            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+            if (mobile && MobileSelection != houseID)
+            {
+                //ShowTooltip(x, y, houseID);
+                MobileSelection = houseID;
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("util.disableContent");
+                await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+                await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+                navManager.NavigateTo("/interior/" + houseID);
+            }
         }
     }
 
@@ -295,6 +347,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        await JSRuntime.InvokeVoidAsync("mapster.dispose");
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("exterior.dispose");
     }
@@ -305,21 +358,32 @@
 
 <style>
 
-   
+
 
     .buttonrow {
         position: fixed;
         top: 60px;
         left: 28px;
-        display: inline-block;
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+     
+
     }
 
     .e-chip-list.e-chip, .e-chip-list .e-chip {
+        width: 122px;
+        height: 34px;
         border-radius: 3px;
-        background-color: #fafafa;
-        color: #415965;
+        background-color: #555555;
+        color: white;
         font-family: acumin-pro,sans-serif;
-        padding: 7px;
+        margin-left: -2px;
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: 8px;
+        padding-top: 8px;
+        font-size: 15px;
     }
 
    
@@ -355,72 +419,52 @@
         padding: 0px;
     }
 
-    .e-view {
-        content: url(IMG/icons/noun_rotate_24052.png);
-        /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
+    .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
         color: white;
         font-family: acumin-pro,sans-serif;
-        display: inline-block;
-    }
-
-    .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
-        color: #415965;
-        font-family: acumin-pro,sans-serif;
-        font-size: 13px;
-        display: inline-block;
+        font-size: 15px;
+        border-radius: 3px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        background-color: #555555;
     }
 
     .e-sun-study {
-        content: url(IMG/icons/icons8-day-and-night-100.png);
-        /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
+
         color: white;
         font-family: acumin-pro,sans-serif;
         display: inline-block;
+    }
+
+    @@media (max-width: 1538px) {
+        .buttonrow {
+            flex-direction: row-reverse;
+        }
+
+        .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
+            margin-top: 8px;
+            margin-right: 2px;
+        }
     }
 
     @@media (max-width: 1695px){
         .marginmobile {
-            margin-top: 17px;
+            margin-top: 30px;
         }
+
+
     }
 
      @@media (max-width: 768px){
-
+        .buttonrow {
+            flex-direction: row-reverse;
+            top:65px;
+        }
          .marginmobile{
-             margin-top: 30px;
+             margin-top: 35px;
          }
 
        
      }
 
-    @@media (max-width: 363px) {
-
-
-      
-        .e-chip-list.e-chip, .e-chip-list .e-chip {
-            display: inline-block;
-        }
-
-        .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
-            color: #415965;
-            font-family: acumin-pro,sans-serif;
-            display: inline-block;
-        }
-
-        .e-sun-study {
-            content: url(IMG/icons/icons8-day-and-night-100.png);
-            /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
-            color: white;
-            font-family: acumin-pro,sans-serif;
-            display: inline-block;
-        }
-        .e-view {
-            content: url(IMG/icons/noun_rotate_24052.png);
-            /* ICON WITHOUT LISCENSE IF USED NEEDS TO BE BOUGHT OR CHNAGED*/
-            color: white;
-            font-family: acumin-pro,sans-serif;
-            display: inline-block;
-        }
-
-    }
 </style>

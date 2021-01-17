@@ -9,11 +9,11 @@
         <input class="menu-btn" type="checkbox" id="menu-btn" />
         <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
         <ul class="menu" style="color:white;">
-            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="">Bostadsväljare</a></li>
-            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="lgh_lista">Lägenhetslista</a></li>
-            <li><a style="color:#415965;" @onclick="@MenuOnClick" href="närområde">Närområde</a></li>
+            <li><a style="color:#415965;" onclick="menuOnClick(this)" href="">Bostadsväljare</a></li>
+            <li><a style="color:#415965;" onclick="menuOnClick(this)" href="lgh_lista">Lägenhetslista</a></li>
+            <li><a style="color:#415965;" onclick="menuOnClick(this)" href="närområde">Närområde</a></li>
          
-            <li class="colorpickermenu" id="colorpick" ><a id="colorpickslink" style="color:white" @onclick="@MenuOnClick" href="Colorpicker">Färgväljare</a></li>
+            <li class="colorpickermenu" id="colorpick" ><a id="colorpickslink" style="color:white" onclick="menuOnClick(this)" href="Colorpicker">Färgväljare</a></li>
         
             @*<li><a style="color:#415965" href="VR-video">VR-video</a></li>
         <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
@@ -35,10 +35,7 @@
             await JSRuntime.InvokeVoidAsync("bv.initialize");
     }
 
-    private async void MenuOnClick(MouseEventArgs ev)
-    {
-        await JSRuntime.InvokeVoidAsync("MenuOnClick");
-    }
+   
 
 }
 

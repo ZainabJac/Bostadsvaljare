@@ -7,25 +7,24 @@ namespace Bostadsvaljare.Data
     {
         private static Dictionary<string, List<HouseMap>> data;
         private static readonly Dictionary<string, string> imageToVariant = new Dictionary<string, string> {
-            { "IMG/Ext1-5area.jpg", "view-1" },
-            { "IMG/Morgon.jpg", "view-1" },
-            { "IMG/Natt.jpg", "view-1" },
-            { "IMG/Oversikt_V2Optimerad.jpg", "view-2" },
-            { "IMG/Ext1-5redAndgrey.jpg", "view-3" },
-            { "IMG/Ext1-5red.jpg", "view-3" },
-            { "IMG/Ext1-5grey.jpg", "view-3" },
+            { "IMG/OversiktStora_medium.jpg", "view-1" },
+            { "IMG/Oversikt_V2_medium.jpg", "view-2" },
+            { "IMG/Oversikt1-5_medium.jpg", "view-3" },
+            { "IMG/Oversikt8_medium.jpg", "view-4" },
+            { "IMG/Oversikt11_medium.jpg", "view-5" },
             { "IMG/Extra_G3K(t).jpg", "view-1" }
         };
 
         public int ID { get; set; }
         public string HouseNumber { get; set; }
         public string IMCoords { get; set; }
+        public int View { get; set; }
 
         public static Dictionary<string, List<HouseMap>> GetHouseMapData()
         {
             if (data == null) {
                 data = new Dictionary<string, List<HouseMap>> {
-                    { "view-1", new List<HouseMap> {
+                    { "view-5", new List<HouseMap> {
                         new HouseMap { HouseNumber = "1", IMCoords = "2352, 1976, 1963, 1931, 1879, 1921, 1884, 1843, 1966, 1835, 1971, 1780, 1965, 1780, 1972, 1706, 1978, 1705, 1983, 1649, 2298, 1681, 2292, 1806, 2353, 1813, 2347, 1861"  },
                         new HouseMap { HouseNumber = "2", IMCoords = "1218, 937, 1459, 1011, 1472, 994, 1470, 962, 1480, 952, 1487, 846, 1444, 809, 1284, 766, 1249, 839, 1254, 914"  },
                         new HouseMap { HouseNumber = "3", IMCoords = "1147, 979, 1388, 1053, 1401, 1036, 1401, 1005, 1409, 994, 1416, 888, 1377, 847, 1213, 808, 1178, 881, 1183, 956" },
@@ -68,6 +67,17 @@ namespace Bostadsvaljare.Data
                                         { "view-3", new List<HouseMap> {
                         new HouseMap { HouseNumber = "1", IMCoords = "167" },
               
+                    }},
+                                        { "view-4", new List<HouseMap> {
+                        new HouseMap { HouseNumber = "1", IMCoords = "167" },
+
+                    }},
+                                        { "view-1", new List<HouseMap> {
+                        new HouseMap { View=2, HouseNumber = "1", IMCoords = "1516, 815, 1554, 1172, 1594, 1222, 1598, 1281, 1727, 1455, 2690, 1466, 2804, 1361, 2972, 1221, 2686, 807, 2676, 723, 2528, 712, 2529, 682, 2398, 675, 2378, 693, 2336, 709, 2326, 715, 2320, 719, 2325, 720, 2232, 723, 2247, 798, 2169, 800, 2130, 765, 2074, 802, 1957, 801, 1921, 768, 1862, 805, 1754, 809, 1710, 772, 1657, 812" },
+                         new HouseMap { View=3,HouseNumber = "1", IMCoords = "1918, 445, 2014, 325, 2178, 296, 2236, 291, 2250, 241, 2343, 238, 2356, 258, 2364, 257, 2366, 279, 2480, 278, 2528, 544, 2576, 681, 2575, 689, 2358, 666, 2293, 625, 2209, 615, 2184, 629, 1994, 615" },
+                          new HouseMap { View=4,HouseNumber = "1", IMCoords = "1357, 671, 1436, 815, 1655, 815, 2246, 800, 2224, 697, 2210, 619, 2182, 632, 2090, 625, 1995, 616, 1920, 452, 1541, 436, 1564, 607, 1434, 608, 1436, 629, 1398, 639" },
+                           new HouseMap { View=5, HouseNumber = "1", IMCoords = "1561, 593, 1540, 438, 1408, 383, 1280, 333, 907, 315, 883, 417, 900, 513, 799, 519, 751, 575, 656, 585, 610, 543, 151, 599, 38, 704, 132, 1235, 164, 1264, 256, 1325, 462, 1358, 832, 963, 920, 909, 1218, 929, 1414, 893, 1299, 672, 1351, 673, 1339, 617, 1396, 637, 1431, 631, 1431, 605, 1561, 606" },
+
                     }},
                 };
                   
