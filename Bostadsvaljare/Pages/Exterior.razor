@@ -40,7 +40,7 @@
                                         @foreach (Data.HouseMap map in view.Value)
                                         {
                                             <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)"  onmouseout="hideTooltip()"  @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
+                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)"  onmouseout="hideTooltip()"  @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
                                                   coords="@map.IMCoords" shape="poly">
                                         }
                                     }
@@ -219,47 +219,85 @@
         base.StateHasChanged();
     }
 
-    public async void OnMouseOverIM(MouseEventArgs e, string houseNumber)
+    public async void OnMouseOverIM(MouseEventArgs e, string houseNumber, string views, int view)
     {
         if (TooltipIsdisabled == true)
         {
             return;
         }
 
-        else {
-
+        else
+        {
             double x = e.ClientX;
             double y = e.ClientY;
 
-            string msg;
-            Data.House house = null;
-            foreach (Data.House h in Data.House.GetHouseData())
+            if (views == "view-1")
             {
-                if (h.HouseNumber == houseNumber)
+                string msg2 = "";
+
+                if (view == 1 )
                 {
-                    house = h;
-                    break;
+                    msg2 = "6-7 och 10";
                 }
+
+                else if (view == 4)
+                {
+                    msg2 = "9 och 11";
+                }
+
+                else if (view == 2)
+                {
+                    msg2 = "1-5";
+                }
+
+                else if (view == 3)
+                {
+                    msg2 = "8";
+                }
+
+                string msg;
+
+
+                msg = "Område \t" + msg2;
+
+                await JSRuntime.InvokeVoidAsync(
+              "util.showTooltip", x, y, msg);
             }
 
-            switch (house.Status)
+            else
             {
-                case "sold":
-                    msg = "Såld";
-                    break;
-                case "booked":
-                    msg = "Reserverad";
-                    break;
-                default:
-                    msg = "Hus nr.\t" + houseNumber +
-                        "\nBoarea:\t" + house.Sqm + "m²" +
-                        "\nPris: \t" + house.Price;
-                    break;
-            }
 
-            await JSRuntime.InvokeVoidAsync(
-                "util.showTooltip", x, y, msg
-            );
+
+                string msg;
+                Data.House house = null;
+                foreach (Data.House h in Data.House.GetHouseData())
+                {
+                    if (h.HouseNumber == houseNumber)
+                    {
+                        house = h;
+                        break;
+                    }
+                }
+
+                switch (house.Status)
+                {
+                    case "sold":
+                        msg = "Såld";
+                        break;
+                    case "booked":
+                        msg = "Reserverad";
+                        break;
+                    default:
+                        msg = "Hus nr.\t" + houseNumber +
+                            "\nBoarea:\t" + house.Sqm + "m²" +
+                            "\nPris: \t" + house.Price;
+                        break;
+                }
+
+                await JSRuntime.InvokeVoidAsync(
+                    "util.showTooltip", x, y, msg
+                );
+            }
         }
     }
 
@@ -311,7 +349,7 @@
     {
         if (ID == "view-1")
         {
-            //this.CurrentView = int.Parse(view);
+            this.CurrentView = view;
             await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
 
             this.MobileSelection = -1;
