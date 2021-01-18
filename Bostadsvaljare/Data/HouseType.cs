@@ -81,7 +81,36 @@ namespace Bostadsvaljare.Data
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
 
-        
+                    { "G2", new HouseType {
+                        Floorplans = new List<Floorplan> {
+                            new Floorplan { Source = "IMG/plan1.jpg", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 964, Y = 334 } },
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 965, Y = 511 } },
+                                new Floorplan.Room { RoomID = 5, Coords = new Vector2 { X = 700, Y = 571 } },
+                                new Floorplan.Room { RoomID = 2, Coords = new Vector2 { X = 885, Y = 415 } },
+                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 592, Y = 571 } },
+                            }},
+                            new Floorplan { Source = "IMG/plan2.jpg", Rooms = new List<Floorplan.Room> {
+
+                            }},
+                            new Floorplan { Source = "IMG/plan3.jpg", Rooms = new List<Floorplan.Room> {
+                            
+                            }},
+                        },
+                        Images = new List<Image> {
+                            new Image { Source="IMG/G2-Hus_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
+                            new Image { Source="IMG/360motkökplceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
+                    
+
+                        },
+                        Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
+                    }},
+
+
 
 
                     { "V2", new HouseType {
@@ -105,6 +134,8 @@ namespace Bostadsvaljare.Data
 
 
                         },
+
+
                        
                     }},
                 };
