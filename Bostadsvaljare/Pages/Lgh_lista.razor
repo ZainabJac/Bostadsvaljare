@@ -189,7 +189,7 @@
             Source = "IMG/Oversikt8_medium.jpg",
             ImageMapName = _mapName + _ind++,
         },
-            new ViewData {  
+            new ViewData {
             ID = _id + _ind,
             Source = "IMG/Oversikt11_medium.jpg",
             ImageMapName = _mapName + _ind++,
@@ -206,6 +206,8 @@
         }
         else
         {
+            await JSRuntime.InvokeVoidAsync("util.disableContent");
+            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("util.hideTooltip");
             navManager.NavigateTo("/interior/" + houseID);
         }
@@ -248,7 +250,7 @@
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("lgh_lista.init");
-          
+
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
 
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
@@ -442,6 +444,8 @@
         }
         else
         {
+            await JSRuntime.InvokeVoidAsync("util.disableContent");
+            await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
             await JSRuntime.InvokeVoidAsync("util.hideTooltip");
             navManager.NavigateTo("/interior/" + houseID);
         }
