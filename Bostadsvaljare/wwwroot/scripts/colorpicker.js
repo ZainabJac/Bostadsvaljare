@@ -87,25 +87,14 @@
         applyImages: function (houseType) {
             var data;
 
-            for (data of this.images[houseType]) {
-                // Remove any style that may have been added previously
-                $(data.img).removeAttr('style');
-                // Add img element
-                $('#' + data.parentID).append(data.img);
-            }
+            //for (data of this.images[houseType]) {
+            //    // Remove any style that may have been added previously
+            //    $(data.img).removeAttr('style');
+            //    // Add img element
+            //    $('#' + data.parentID).append(data.img);
+            //}
 
-            for (data of this.imageMaps) {
-                // Reset any style that may have been added previously,
-                // and add in our own
-                $(data.img).removeAttr('style');
-                if (data.style)
-                    $(data.img).css(data.style);
-                // Add img element
-                $('#' + data.parentID).append(data.img);
-                // Add image map functionality
-                $('#' + data.img.id).attr('usemap', data.usemap);
-          
-            }
+            
         },
 
         dispose: function () {
@@ -119,19 +108,21 @@
         },
 
         changeRoom: function (oldImage, newImage) {
+
             if (oldImage.type === this.imageType.panorama &&
-                newImage.type !== this.imageType.panorama)
-                pan_viewer.softDispose();
+                newImage.type !== this.imageType.panorama) {
+                var img = util.getImgElement(newImage.source, '#gallery');
+                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
+            }
 
             if (newImage.type === this.imageType.image) {
                 var img = util.getImgElement(newImage.source, '#gallery');
                 bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
             }
-            else if (newImage.type === this.imageType.panorama) {
-                if (oldImage.type === this.imageType.panorama)
-                    pan_viewer.changeRoom(newImage.roomName);
-                else
-                    pan_viewer.start(newImage.link, newImage.roomName);
+
+            else {
+                var img = util.getImgElement(newImage.source, '#gallery');
+                bstrap.carousel_changeImage(parseInt($(img).attr('c_ind')));
             }
         },
 
