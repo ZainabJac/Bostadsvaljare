@@ -211,7 +211,7 @@
                     string imgId = "sun-study-"+ i +"-"+ sunStudies.Key +"-img";
                     string mapName = "houses-"+ i +"-"+ sunStudies.Key;
                     await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
-                    await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName);
+                    await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName, "center");
                 }
             }
         }
