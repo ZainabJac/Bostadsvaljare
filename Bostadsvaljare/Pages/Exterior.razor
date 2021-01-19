@@ -22,6 +22,16 @@
         <div id="content">
             <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
+            @*<img src="/IMG/Oversikt_V2_medium.jpg"  usemap="#workmap" width="400" height="379"/>
+           
+
+            <map name="workmap">
+                <area shape="rect" coords="34,44,270,350" alt="Computer" href="computer.htm">
+                <area shape="rect" coords="290,172,333,250" alt="Phone" href="phone.htm">
+                <area shape="circle" coords="337,300,44" alt="Cup of coffee" href="coffee.htm">
+                <area shape="poly" href="/interior/1" alt="up of cofee" coords="34,44,270,350,337,300,44">
+            </map>*@
+
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
@@ -32,10 +42,9 @@
                         var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
                         <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
 
-                            @if (IsiOS)
-                            {
-                                <img id="sun-study-@_i-@sunStudy-img" src="@Views[_i].SunStudies[sunStudy]" view="@_i" sun-study="@sunStudy" usemap="#houses-@_i-@sunStudy" style="width: 99%;" />
-                            }
+                         
+                           <img style="width:99%" id="sun-study-@_i-@sunStudy-img" src="@Views[_i].SunStudies[sunStudy]" view="@_i" sun-study="@sunStudy" usemap="#houses-@_i-@sunStudy"  />
+                        
                             <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                                 @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                                 {
@@ -43,8 +52,8 @@
                                     {
                                         @foreach (Data.HouseMap map in view.Value)
                                         {
-                                            <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)"  onmouseout="hideTooltip()"  @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
+                                            <area id="@Data.House.Get(map.ID).Status" status="" alt="bostad" href="#"
+                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)" onmouseout="hideTooltip()" @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
                                                   coords="@map.IMCoords" shape="poly">
                                         }
                                     }
@@ -55,40 +64,40 @@
                 </div>
             }
 
-        <div class="buttonrow">
-            <div id="highlight_all_checker">
-                <SfChipList Selection="Selection.Single">
-                    <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
-                    <ChipCollection>
-                        <ChipListChip Text="Visa status"></ChipListChip>
-                    </ChipCollection>
-                </SfChipList>
-            </div>
-            <div id="view_menu">
-                <SfDropDownButton Content="Byt Område">
-                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
-                    <DropDownButtonItems>
-                        @for (int i = 0; i < Views.Count; i++)
-                        {
-                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
-                        }
-                    </DropDownButtonItems>
-                </SfDropDownButton>
-            </div>
+            <div class="buttonrow">
+                <div id="highlight_all_checker">
+                    <SfChipList Selection="Selection.Single">
+                        <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
+                        <ChipCollection>
+                            <ChipListChip Text="Visa status"></ChipListChip>
+                        </ChipCollection>
+                    </SfChipList>
+                </div>
+                <div id="view_menu">
+                    <SfDropDownButton Content="Byt Område">
+                        <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
+                        <DropDownButtonItems>
+                            @for (int i = 0; i < Views.Count; i++)
+                            {
+                                <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+                            }
+                        </DropDownButtonItems>
+                    </SfDropDownButton>
+                </div>
 
-            <div id="sun_study_menu" style="display:none">
-                <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
-                    <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
-                    <DropDownButtonItems>
-                        <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
-                        <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
-                        <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
-                    </DropDownButtonItems>
-                </SfDropDownButton>
+                <div id="sun_study_menu" style="display:none">
+                    <SfDropDownButton IconCss="e-icons e-sun-study" Content="Solstudie">
+                        <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeSunStudy" />
+                        <DropDownButtonItems>
+                            <DropDownButtonItem Id="morning" Text="Morgon"></DropDownButtonItem>
+                            <DropDownButtonItem Id="midday" Text="Mitt på dagen"></DropDownButtonItem>
+                            <DropDownButtonItem Id="evening" Text="Kväll"></DropDownButtonItem>
+                        </DropDownButtonItems>
+                    </SfDropDownButton>
+                </div>
+
+
             </div>
-
-
-        </div>
         </div>
     </ContentTemplate>
 </SpinLoader>
@@ -169,7 +178,7 @@
 
     private bool IsiOS { get; set; } = false;
     private bool ImagesLoaded { get; set; } = false;
-    private bool ViewsInited { get; set; } = false;
+    private bool ViewsInited { get; set; } = true;
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
     private bool TooltipIsdisabled = false;
@@ -199,22 +208,23 @@
     {
         await JSRuntime.InvokeVoidAsync("util.enableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        await JSRuntime.InvokeVoidAsync("exterior.applyImages");
-        if (IsiOS)
+        //await JSRuntime.InvokeVoidAsync("exterior.applyImages");
+        //if (IsiOS)
+        //{
+
+        for (int i = 0; i < Views.Count; i++)
         {
-            for (int i = 0; i < Views.Count; i++)
+            foreach (KeyValuePair<string, string> sunStudies in Views[i].SunStudies)
             {
-                foreach (KeyValuePair<string, string> sunStudies in Views[i].SunStudies)
-                {
-                    int ind = await JSRuntime.InvokeAsync<int>("exterior.getMapIndex", sunStudies.Key, i);
-                    string parentId = "view-" + i + " #sun-study-" + sunStudies.Key;
-                    string imgId = "sun-study-"+ i +"-"+ sunStudies.Key +"-img";
-                    string mapName = "houses-"+ i +"-"+ sunStudies.Key;
-                    await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
-                    await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName);
-                }
+                int ind = await JSRuntime.InvokeAsync<int>("exterior.getMapIndex", sunStudies.Key, i);
+                string parentId = "view-" + i + " #sun-study-" + sunStudies.Key;
+                string imgId = "sun-study-" + i + "-" + sunStudies.Key + "-img";
+                string mapName = "houses-" + i + "-" + sunStudies.Key;
+                await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
+                await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName);
             }
         }
+        //}
         ViewsInited = true;
         base.StateHasChanged();
     }
