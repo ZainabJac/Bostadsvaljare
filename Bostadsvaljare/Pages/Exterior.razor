@@ -208,23 +208,22 @@
     {
         await JSRuntime.InvokeVoidAsync("util.enableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        //await JSRuntime.InvokeVoidAsync("exterior.applyImages");
-        //if (IsiOS)
-        //{
-
-        for (int i = 0; i < Views.Count; i++)
+        await JSRuntime.InvokeVoidAsync("exterior.applyImages");
+        if (IsiOS)
         {
-            foreach (KeyValuePair<string, string> sunStudies in Views[i].SunStudies)
+            for (int i = 0; i < Views.Count; i++)
             {
-                int ind = await JSRuntime.InvokeAsync<int>("exterior.getMapIndex", sunStudies.Key, i);
-                string parentId = "view-" + i + " #sun-study-" + sunStudies.Key;
-                string imgId = "sun-study-" + i + "-" + sunStudies.Key + "-img";
-                string mapName = "houses-" + i + "-" + sunStudies.Key;
-                await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
-                await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName);
+                foreach (KeyValuePair<string, string> sunStudies in Views[i].SunStudies)
+                {
+                    int ind = await JSRuntime.InvokeAsync<int>("exterior.getMapIndex", sunStudies.Key, i);
+                    string parentId = "view-" + i + " #sun-study-" + sunStudies.Key;
+                    string imgId = "sun-study-"+ i +"-"+ sunStudies.Key +"-img";
+                    string mapName = "houses-"+ i +"-"+ sunStudies.Key;
+                    await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
+                    await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName, "center");
+                }
             }
         }
-        //}
         ViewsInited = true;
         base.StateHasChanged();
     }
