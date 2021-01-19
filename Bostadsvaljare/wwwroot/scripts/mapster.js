@@ -19,7 +19,8 @@
             if (highlightOpacity)
                 options.render_highlight = { fillOpacity: highlightOpacity };
 
-            var initialOptions = { ...options };
+            // Shallow copy options
+            var initialOptions = Object.assign({}, options);
             initialOptions.onConfigured = function (success) {
                 if (success) {
                     var statuses = {};
