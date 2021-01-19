@@ -183,6 +183,10 @@
             }
         },
 
+        loadFloorplan: function (imgId) {
+            this._loadFloorplan($('#'+ imgId)[0], '99.99%');
+        },
+
         _loadFloorplan: async function (img, imgWidth) {
             var floor = $(img).attr('floor'),
                 imgWidth = imgWidth || $(img).css('width'),

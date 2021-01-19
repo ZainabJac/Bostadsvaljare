@@ -275,6 +275,13 @@
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
+        if (IsiOS)
+        {
+            for (int i = 0; i < HouseData.Floorplans.Count; i++)
+            {
+                await JSRuntime.InvokeVoidAsync("interior.loadFloorplan", "floorplan-"+ i +"-img");
+            }
+        }
         FloorplanInited = true;
         base.StateHasChanged();
         await JSRuntime.InvokeVoidAsync("interior.resize");

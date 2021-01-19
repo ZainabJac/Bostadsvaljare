@@ -34,7 +34,7 @@
 
                             @if (IsiOS)
                             {
-                                <img id="sun-study-@_i-@sunStudy-img" src="@Views[_i].SunStudies[sunStudy]" view="@_i" sun-study="@sunStudy" usemap="#houses-@_i-@sunStudy" />
+                                <img id="sun-study-@_i-@sunStudy-img" src="@Views[_i].SunStudies[sunStudy]" view="@_i" sun-study="@sunStudy" usemap="#houses-@_i-@sunStudy" style="width: 99%;" />
                             }
                             <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                                 @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
@@ -197,10 +197,24 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-
         await JSRuntime.InvokeVoidAsync("util.enableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("exterior.applyImages");
+        if (IsiOS)
+        {
+            for (int i = 0; i < Views.Count; i++)
+            {
+                foreach (KeyValuePair<string, string> sunStudies in Views[i].SunStudies)
+                {
+                    int ind = await JSRuntime.InvokeAsync<int>("exterior.getMapIndex", sunStudies.Key, i);
+                    string parentId = "view-" + i + " #sun-study-" + sunStudies.Key;
+                    string imgId = "sun-study-"+ i +"-"+ sunStudies.Key +"-img";
+                    string mapName = "houses-"+ i +"-"+ sunStudies.Key;
+                    await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", ind, parentId, "99%");
+                    await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, imgId, mapName);
+                }
+            }
+        }
         ViewsInited = true;
         base.StateHasChanged();
     }

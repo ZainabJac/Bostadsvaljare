@@ -29,7 +29,7 @@
 
                         @if (IsiOS)
                         {
-                            <img id="@Views[_i].ID-img" src="@Views[_i].Source" view="@_i" usemap="#@Views[_i].ImageMapName" />
+                            <img id="@Views[_i].ID-img" src="@Views[_i].Source" view="@_i" usemap="#@Views[_i].ImageMapName" style="width: 99.99%;"/>
                         }
                         <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
@@ -285,6 +285,14 @@
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("util.enableClickGridResize");
         await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
+        if (IsiOS) {
+            for (int i = 0; i < Views.Count; i++)
+            {
+                string parentId = Views[i].ID;
+                await JSRuntime.InvokeVoidAsync("mapster_responsive.setValues", i, parentId, "99.99%");
+                await JSRuntime.InvokeVoidAsync("mapster.addMapHighlights", parentId, parentId +"-img", Views[i].ImageMapName);
+            }
+        }
         ViewsInited = true;
         base.StateHasChanged();
     }

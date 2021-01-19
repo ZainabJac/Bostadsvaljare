@@ -3,8 +3,11 @@
         images: [],
         mapIndex: {},
 
-     
-        
+
+        getMapIndex: function (name, i) {
+            return this.mapIndex[name + i];
+        },
+
         loadImages: async function (data) {
             var self = this,
                 imagesLoaded = 0,
