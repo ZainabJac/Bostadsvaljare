@@ -95,6 +95,10 @@
                                 {
                                     var _i = i;
                                     <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="position: relative; @(FloorplanInited ? "" : "visibility: hidden;")">
+                                        @if (IsiOS)
+                                        {
+                                            <img id="floorplan-@_i-img" src="@HouseData.Floorplans[_i].Source" floor="@_i" usemap="#hotspots-@_i" style="width: 99.99%;"/>
+                                        }
                                         <map id="hotspots-@_i" name="hotspots-@_i">
                                             @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
                                             {
@@ -224,6 +228,7 @@
     private bool ShowFullscreenImage { get; set; } = false;
     private int Floor { get; set; } = 0;
     private int Radius { get; set; } = 15;
+    private bool IsiOS { get; set; } = false;
     private bool ImagesLoaded { get; set; } = false;
     private bool FloorplanInited { get; set; } = false;
     private bool InitVR { get; set; } = false;
@@ -256,9 +261,9 @@
     {
         if (firstRender)
         {
-
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
+            IsiOS = await JSRuntime.InvokeAsync<bool>("util.isiOS");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
             firstRenderDone = true;
             base.StateHasChanged();

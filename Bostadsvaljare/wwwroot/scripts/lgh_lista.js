@@ -30,33 +30,36 @@
 
         loadImages: async function (data) {
             var self = this,
-                imagesLoaded = data.length,
+                imagesLoaded = 0,
                 onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
             // Load images that use image maps every time
             // TODO: fix so it's not neccessary to load every time;
             //       some bug causes only some image maps to load otherwise
-            data.forEach((view, i) => {
-                var img = new Image();
-                img.onload = onLoadImg;
-                img.id = 'house-main-' + i + '-img';
-                img.src = view.source;
-                $(img).attr('view', i);
-                self.imageMaps.push({
-                    img: img,
-                    parentID: 'house-main-' + i,
-                    usemap: '#house-map-' + i,
-                    style: { width: '99.99%' },
-                });
+            if (!util.isiOS()) {
+                imagesLoaded = data.length;
+                data.forEach((view, i) => {
+                    var img = new Image();
+                    img.onload = onLoadImg;
+                    img.id = 'house-main-'+ i +'-img';
+                    img.src = view.source;
+                    $(img).attr('view', i);
+                    self.imageMaps.push({
+                        img: img,
+                        parentID: 'house-main-'+ i,
+                        usemap: '#house-map-'+ i,
+                        style: { width: '99.99%' },
+                    });
 
-                //img = img.cloneNode();
-                img = $("#abc" + i);
-                //$(img).addClass('gallery-img');
-                //$(img).on('click', e => self._onClickGalleryImg(e, i));
-                self.images.push({
-                    img: img,
-                    parentID: 'gallery-item-' + i,
+                    //img = img.cloneNode();
+                    img = $("#abc" + i);
+                    //$(img).addClass('gallery-img');
+                    //$(img).on('click', e => self._onClickGalleryImg(e, i));
+                    self.images.push({
+                        img: img,
+                        parentID: 'gallery-item-'+ i,
+                    });
                 });
-            });
+            }
 
          
             return true;

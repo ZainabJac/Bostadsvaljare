@@ -32,6 +32,10 @@
                         var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
                         <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
 
+                            @if (IsiOS)
+                            {
+                                <img id="sun-study-@_i-@sunStudy-img" src="@Views[_i].SunStudies[sunStudy]" view="@_i" sun-study="@sunStudy" usemap="#houses-@_i-@sunStudy" />
+                            }
                             <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
                                 @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                                 {
@@ -163,6 +167,7 @@
     private string CurrentStudy { get; set; } = "midday";
     private int MobileSelection { get; set; } = -1;
 
+    private bool IsiOS { get; set; } = false;
     private bool ImagesLoaded { get; set; } = false;
     private bool ViewsInited { get; set; } = false;
     private bool highlightAllIsChecked = false;
@@ -182,8 +187,8 @@
     {
         if (firstRender)
         {
-
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
+            IsiOS = await JSRuntime.InvokeAsync<bool>("util.isiOS");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();

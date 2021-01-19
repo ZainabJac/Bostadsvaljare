@@ -7,31 +7,34 @@
         
         loadImages: async function (data) {
             var self = this,
-                imagesLoaded = data.length * 3,
+                imagesLoaded = 0,
                 onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
             // Load images that use image maps every time
             // TODO: fix so it's not neccessary to load every time;
             //       some bug causes only some image maps to load otherwise
-            data.forEach((view, i) => {
-                var name, source, img;
-                for (name in view.sunStudies) {
-                    source = view.sunStudies[name];
-                    img = new Image();
-                    img.onload = onLoadImg;
-                    img.id = 'sun-study-' + i + '-' + name + '-img';
-                    img.src = source;
-                    $(img).attr({
-                        view: i,
-                        'sun-study': name,
-                    });
-                    self.images.push({
-                        img: img,
-                        parentID: '#view-' + i + ' #sun-study-' + name,
-                        usemap: '#houses-' + i + '-' + name,
-                        style: { width: '99%' },
-                    });
-                }
-            });
+            if (!util.isiOS()) {
+                imagesLoaded = data.length * 3;
+                data.forEach((view, i) => {
+                    var name, source, img;
+                    for (name in view.sunStudies) {
+                        source = view.sunStudies[name];
+                        img = new Image();
+                        img.onload = onLoadImg;
+                        img.id = 'sun-study-'+ i +'-'+ name +'-img';
+                        img.src = source;
+                        $(img).attr({
+                            view: i,
+                            'sun-study': name,
+                        });
+                        self.images.push({
+                            img: img,
+                            parentID: '#view-'+ i +' #sun-study-'+ name,
+                            usemap: '#houses-'+ i +'-'+ name,
+                            style: { width: '99%' },
+                        });
+                    }
+                });
+            }
 
             var i, name, ind = 0;
             for (i in data) {

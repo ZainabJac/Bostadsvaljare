@@ -41,24 +41,27 @@
 
         loadImages: async function (houseType, data) {
             var self = this,
-                imagesLoaded = data.floorplans.length,
+                imagesLoaded = 0,
                 onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
             // Load images that use image maps every time
             // TODO: fix so it's not neccessary to load every time;
             //       some bug causes only some image maps to load otherwise
-            data.floorplans.forEach((floorplan, i) => {
-                var img = new Image();
-                img.onload = onLoadImg;
-                img.id = 'floorplan-' + i + '-img';
-                img.src = floorplan.source;
-                $(img).attr('floor', i);
-                self.imageMaps.push({
-                    img: img,
-                    parentID: 'floorplan-' + i,
-                    usemap: '#hotspots-' + i,
-                    style: { width: '99.99%' },
+            if (!util.isiOS()) {
+                imagesLoaded = data.floorplans.length;
+                data.floorplans.forEach((floorplan, i) => {
+                    var img = new Image();
+                    img.onload = onLoadImg;
+                    img.id = 'floorplan-' + i + '-img';
+                    img.src = floorplan.source;
+                    $(img).attr('floor', i);
+                    self.imageMaps.push({
+                        img: img,
+                        parentID: 'floorplan-' + i,
+                        usemap: '#hotspots-' + i,
+                        style: { width: '99.99%' },
+                    });
                 });
-            });
+            }
 
             if (this.images[houseType]) {
                 return true;

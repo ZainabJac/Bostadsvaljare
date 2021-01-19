@@ -26,6 +26,11 @@
                 {
                     var _i = i;
                     <div id="@Views[i].ID" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+
+                        @if (IsiOS)
+                        {
+                            <img id="@Views[_i].ID-img" src="@Views[_i].Source" view="@_i" usemap="#@Views[_i].ImageMapName" />
+                        }
                         <map id="@Views[i].ImageMapName" name="@Views[i].ImageMapName">
                             @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                             {
@@ -152,6 +157,7 @@
     private int HighlightedRow { get; set; }
     private int MobileSelection { get; set; } = -1;
     private int CurrentView { get; set; } = 0;
+    private bool IsiOS { get; set; } = false;
     private bool ImagesLoaded { get; set; } = false;
     private bool ViewsInited { get; set; } = false;
     private string MouseOverHouse { get; set; } = "";
@@ -254,6 +260,7 @@
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
 
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
+            IsiOS = await JSRuntime.InvokeAsync<bool>("util.isiOS");
             firstRenderDone = true;
             base.StateHasChanged();
         }
