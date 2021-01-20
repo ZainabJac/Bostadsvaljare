@@ -192,7 +192,7 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-
+        await JSRuntime.InvokeVoidAsync("util.hideCP");
         await JSRuntime.InvokeVoidAsync("util.enableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("exterior.applyImages");

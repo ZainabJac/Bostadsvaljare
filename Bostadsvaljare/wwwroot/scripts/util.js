@@ -22,6 +22,29 @@
             
         },
 
+        hidecolorpicker: function () {
+            if ($('#houseinputid').val() > 20 && $('#houseinputid').val() < 35) {
+                $('#colorpick').removeClass('hidecolorpicker');
+                $('#colorpick').addClass('showcolorpicker');
+                $('#colorpickslink').addClass('animate__animated animate__pulse animate__slower animate__infinite infinite');
+
+
+            }
+            else {
+                $('#colorpick').removeClass('showcolorpicker');
+                $('#colorpick').addClass('hidecolorpicker');
+                $('#colorpickslink').removeClass('animate__animated animate__pulse animate__slower animate__infinite infinite');
+
+            };
+        },
+
+        hideCP: function(){
+            $('#colorpick').removeClass('showcolorpicker');
+            $('#colorpick').addClass('hidecolorpicker');
+            $('#colorpickslink').removeClass('animate__animated animate__pulse animate__slower animate__infinite infinite');
+    },
+
+
         enableClickMenu: function () {
             setTimeout(() => { $('#topnav').removeClass('loading'); }, 1500);
                                         
@@ -48,7 +71,7 @@
 
         },
       
-
+  
 
         getElementFromPoint: function (target) {
             var list = document.querySelectorAll(':hover');
@@ -82,8 +105,9 @@
                     return img;
                 
             }
-            return undefined;
+            return img;
         },
+
 
         removeObjectByName: function (object, targetName) {
             var children = object.children;

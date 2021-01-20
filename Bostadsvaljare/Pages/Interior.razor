@@ -242,9 +242,6 @@
         string houseType = House.Housetype;
         HouseData = Data.HouseType.GetData(houseType);
         self = this;
-
-
-
         SelectedImage = HouseData.Images[0];
 
         base.StateHasChanged();
@@ -267,6 +264,7 @@
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
+        await JSRuntime.InvokeVoidAsync("util.hidecolorpicker");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
         //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");

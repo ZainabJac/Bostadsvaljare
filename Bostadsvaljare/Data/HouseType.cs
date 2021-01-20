@@ -65,7 +65,7 @@ namespace Bostadsvaljare.Data
                             }},
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image},
                             new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/360vardagsrumplaceholder.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
@@ -136,7 +136,36 @@ namespace Bostadsvaljare.Data
                         },
 
 
+
+
                        
+                    }},
+
+                       { "V2-color", new HouseType {
+                        Floorplans = new List<Floorplan> {
+                            new Floorplan { Source = "IMG/plan1_low.jpg", Rooms = new List<Floorplan.Room> {
+
+                            }},
+                            new Floorplan { Source = "IMG/plan2_low.jpg", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 1150, Y = 1280 } },
+                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 800, Y = 720 } },
+                            }},
+
+                        },
+                        Images = new List<Image> {
+                            new Image { Source="IMG/Red_25.jpg", Type=ImageType.Image, Thumbnail="IMG/rodT.jpg" },
+                            new Image { Source="IMG/Grey-Light_25.jpg", Type=ImageType.Image, Thumbnail="IMG/LjusgraT.jpg"},
+                            new Image { Source="IMG/Grey-Dark_25.jpg", Type=ImageType.Image, Thumbnail="IMG/MorkgraT.jpg"},
+                            new Image { Source="IMG/Green-Light_25.jpg", Type=ImageType.Image, Thumbnail="IMG/LjusgronT.jpg"},
+                            new Image { Source="IMG/Green-Middle_25.jpg", Type=ImageType.Image, Thumbnail="IMG/MellangronT.jpg" },
+                            new Image { Source="IMG/Green-Darkest_25.jpg", Type=ImageType.Image, Thumbnail="IMG/MorkgronT.jpg" },
+
+                        },
+
+
+
+
+
                     }},
                 };
             }

@@ -11,6 +11,26 @@
         },
 
 
+        hidecolorpicker: function () {
+            if ($(houseinputid).val() == 99) {
+                $(colorpick).removeClass("colorpickermenu")
+                $(colorpick).addClass("colorpickermenu2")
+                $(colorpickslink).addClass("animate__animated animate__bounce")
+            }
+        },
+
+        //adjustfloorplan: function () {
+        //    var width2 = parseInt($('#floorplan-0-img').width());
+        //    var newheight = width2 * 0.75
+        //    $('#floorplan-0-img').height(newheight)
+        //    $('.mapster_el').height(newheight)
+        //},
+
+        adjustpan: function () {
+            var width1 = parseInt($('#carousel-item-0').width());
+            width1 = width1 * 0.75
+            $('.iframe-container iframe').height(width1 + 'px');
+        },
 
         addResizeListener: function () {
             var self = this;
@@ -49,38 +69,59 @@
 
             var ind = 0;
             data.images.forEach((image, i) => {
-                var img = new Image(), _ind = ind;
+                var img = $("#galler" + i), _ind = ind;
+
+
+                //var img = new Image(), _ind = ind;
+                //img.src = image.source;
+                //$(img).addClass('gallery-img');
+                //$(img).on('click', e => self._onClickGalleryImg(e, i));
+
+
                 img.onload = onLoadImg;
-                img.src = image.thumbnail;
-                $(img).addClass('gallery-img-colorpicker');
-                $(img).on('click', e => self._onClickGalleryImg(e, i));
-                if (image.type === this.imageType.image) {
+                if (image.type === this.imageType.image || image.type === this.imageType.roundme) {
                     $(img).attr('c_ind', _ind);
                     ind = ind + 1;
                 }
                 imageData.push({
                     img: img,
-                    parentID: 'gallery-item-colorpicker-' + i,
+                    parentID: 'gallery-item-' + i,
                 });
 
-                if (image.type === this.imageType.image) {
-                    var carouselImg = new Image(), _ind = ind;
-                    carouselImg.onload = onLoadImg;
-                    carouselImg.src = image.source;
-                    $(carouselImg).removeClass();
-                    $(carouselImg).addClass('d-block w-100');
-                    $(carouselImg).on('click', e => self._onClickCarousel(e));
-                    imageData.push({
-                        img: carouselImg,
-                        parentID: 'carousel-item-colorpicker-' + i,
-                    });
-                }
+                var carouselImg = $("#carosal" + i);
+                imageData.push({
+                    img: carouselImg,
+                    parentID: 'carousel-item-' + i,
+                });
+
+                //if (image.type === this.imageType.image) {
+                //    var carouselImg = img.cloneNode();
+                //    $(carouselImg).removeClass();
+                //    $(carouselImg).addClass('d-block w-100');
+                //    $(carouselImg).on('click', e => self._onClickCarousel(e));
+                //    imageData.push({
+                //        img: carouselImg,
+                //        parentID: 'carousel-item-' + i,
+                //    });
+                //}
+
+                //if (image.type === this.imageType.roundme) {
+                //    var carouselImg = img.cloneNode();
+                //    $(carouselImg).removeClass();
+                //    $(carouselImg).addClass('hideit');
+                //    $(carouselImg).on('click', e => self._onClickCarousel(e));
+                //    imageData.push({
+                //        img: carouselImg,
+                //        parentID: 'carousel-item-' + i,
+                //    });
+                //}
+
             });
 
             this.images[houseType] = imageData;
-            while (imagesLoaded > 0) {
-                await util.delay(100);
-            }
+            //while (imagesLoaded > 0) {
+            // await util.delay(100);
+            //}
             return true;
         },
 
@@ -94,11 +135,22 @@
             //    $('#' + data.parentID).append(data.img);
             //}
 
-            
+            for (data of this.imageMaps) {
+                // Reset any style that may have been added previously,
+                // and add in our own
+                $(data.img).removeAttr('style');
+                if (data.style)
+                    $(data.img).css(data.style);
+                // Add img element
+                $('#' + data.parentID).append(data.img);
+                // Add image map functionality
+                $('#' + data.img.id).attr('usemap', data.usemap);
+                this._loadFloorplan(data.img, data.style.width);
+
+            }
         },
 
         dispose: function () {
-            mapster.dispose();
             this.imageMaps.length = 0;
             window.removeEventListener('resize', this.listeners.resize, false);
         },
@@ -108,6 +160,8 @@
         },
 
         changeRoom: function (oldImage, newImage) {
+
+
 
             if (oldImage.type === this.imageType.panorama &&
                 newImage.type !== this.imageType.panorama) {
@@ -133,7 +187,15 @@
 
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
             mapster.addMapHighlights(parentID, parentID + '-img', 'hotspots-' + floor, '', 0.6, 0.9);
-            await util.delay(100);
+
+            var height1 = parseInt($('.planritning').height());
+            var height2 = parseInt($('#gallery').height());
+            var height3 = parseInt($('#info').height());
+
+            var height4 = height3 + height2 + height1 + 60;
+
+            $('.iframe-container iframe').height(height4 + 'px');
+
             mapster.selectAll();
         },
 
@@ -143,25 +205,57 @@
             var img = $(event.target).clone();
             img.removeClass();
             img.css({ width: '100%' });
-            img.appendTo('.fs-border-colorpicker');
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImages')
+            img.appendTo('.fs-border');
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ShowImage')
                 .then(_data => { self._onResize(); });
+
         },
 
         _onClickGalleryImg: function (event, ind) {
             var self = this;
-            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRooms', ind)
+            DotNet.invokeMethodAsync('Bostadsvaljare', 'ChangeRoom', ind)
                 .then(r => {
                     self.changeRoom(r[0], r[1]);
                 });
         },
 
         _onResize: function (event) {
-            if ($(window).width() >= 995) {
-                var height = parseInt($('#gallery-carousel').height());
+
+            if ($(window).width() <= 927) {
+                var height = parseInt($('.planritning').height());
                 $('#gallery').height((height + 3) + 'px');
-            } else {
+                $('#info').height('auto')
+
+
+            }
+            else if ($(window).width() <= 1380) {
+                var height1 = parseInt($('.planritning').height());
+                var height2 = parseInt($('#gallery').height());
+                var height3 = parseInt($('#slideshow').height());
+
+                var height4 = height3 - height2 - height1 - 35;
+
+
+                $('#info').height(height4 + 'px');
+                var width1 = parseInt($('#carousel-item-0').width());
+                width1 = width1 * 0.75
+                $('.iframe-container iframe').height(width1 + 'px');
+
+            }
+
+            else {
+
+                var width1 = parseInt($('#carousel-item-0').width());
+                width1 = width1 * 0.75
+                $('.iframe-container iframe').height(width1 + 'px');
+
+                var height1 = parseInt($('.planritning').height());
+                var height2 = parseInt($('#gallery').height());
+                var height3 = parseInt($('#slideshow').height());
+                var height4 = height3 - height2 - height1 - 57;
                 $('#gallery').height('auto');
+                $('#info').height(height4 + 'px');
+
             }
 
             var height = Math.max($('.fs-border').height() + 97, $(window).height());

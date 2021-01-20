@@ -13,7 +13,7 @@
             <li><a style="color:#415965;" onclick="menuOnClick(this)" href="lgh_lista">Lägenhetslista</a></li>
             <li><a style="color:#415965;" onclick="menuOnClick(this)" href="närområde">Närområde</a></li>
          
-            <li class="colorpickermenu" id="colorpick" ><a id="colorpickslink" style="color:#415965" onclick="menuOnClick(this)" href="Colorpicker">Färgväljare</a></li>
+            <li class="hidecolorpicker " id="colorpick" ><a id="colorpickslink" style="color:#415965" onclick="menuOnClick(this)" href="Colorpicker">Färgväljare</a></li>
         
             @*<li><a style="color:#415965" href="VR-video">VR-video</a></li>
         <li><a style="color:#415965" href="360_bilder">360 Bilder</a></li>
@@ -35,6 +35,7 @@
             await JSRuntime.InvokeVoidAsync("bv.initialize");
     }
 
+
    
 
 }
@@ -51,14 +52,8 @@
             pointer-events: none;
             touch-action: none;
         }
-/*
-    .colorpickermenu {
-        display: none;
-    }
-
-    .colorpickermenu2{
-        display: initial;
-    }*/
+/**/
+  
 
     body {
         margin: 0;

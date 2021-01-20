@@ -26,6 +26,11 @@ namespace Bostadsvaljare.Data
             return houseData.Find(house => house.ID == id);
         }
 
+        public static House Getcolor(string housenumber)
+        {
+            return houseData.Find(house => house.HouseNumber == housenumber);
+        }
+
         public static List<House> GetHouseData()
         {
             if (houseData == null) {
@@ -101,11 +106,14 @@ namespace Bostadsvaljare.Data
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "68", Status = "available", Housetype="G3K" },
                      new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "69", Status = "available", Housetype="G3K" },
                     new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "70", Status = "available", Housetype="G3K" },
+                    new House { ID = id++, Sqm = 148, Price = "Kommer snart ", Rent = "3 800 ", HouseNumber = "0", Status = "available", Housetype="V2-color" },
 
                 };
             }
 
             return houseData;
         }
+
+    
     }
 }

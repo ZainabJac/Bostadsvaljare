@@ -83,6 +83,7 @@
             );
         }
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+        await JSRuntime.InvokeVoidAsync("util.hideCP");
     }
 
     private async void OnTravelModeValueChange(Syncfusion.Blazor.Buttons.ChangeArgs args)

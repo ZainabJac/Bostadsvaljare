@@ -274,6 +274,7 @@
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
+        await JSRuntime.InvokeVoidAsync("util.hideCP");
         ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("util.enableClickGridResize");

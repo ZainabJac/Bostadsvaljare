@@ -3,7 +3,8 @@ function menuOnClick(n) {
     if (window.location.href == n) {
         return;
     }
-    else { $('#topnav').addClass('loading');}
+    else { $('#topnav').addClass('loading'); }
+
 }
 
 

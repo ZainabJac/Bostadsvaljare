@@ -29,61 +29,64 @@
                 </div>
             </div>
         </div>
-         <div class="container"> 
-             <div class="slideshowbox">
-                 <!-- Stillbilder -->
-                 <div id="slideshow" class="@(ShowInfo ? "" : "full")">
-                     <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
-                         <ol class="carousel-indicators">
-                             @for (int i = 0; i < HouseData.Images.Count; i++)
-                             {
-                                 <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
-                             }
-                         </ol>
-                         <div class="carousel-inner">
-                             @for (int i = 0; i < HouseData.Images.Count; i++)
-                             {
+        <div class="container">
+            <div class="slideshowbox">
+                <!-- Stillbilder -->
+                <div id="slideshow" class="@(ShowInfo ? "" : "full")">
+                    <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
+                                <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
 
 
-                                 var _i = i;
+                                var _i = i;
 
-                                 <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
-                                     @if (HouseData.Images[_i].Type == Bostadsvaljare.Data.ImageType.Roundme)
-                                     {
-                                         <div class="iframe-container">
-                                             <iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen src="@HouseData.Images[_i].Link" @onload="OnLoadRoundme"> </iframe>
-                                         </div>
-                                         <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="hideit" c_ind="@_i">
-                                     }
-                                     else
-                                     {
-                                         <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="d-block w-100" c_ind="@_i">
-                                     }
-                                 </div>
+                                <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
+                                    @if (HouseData.Images[_i].Type == Bostadsvaljare.Data.ImageType.Roundme)
+                                    {
+                                        <div class="iframe-container">
+                                            <iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen src="@HouseData.Images[_i].Link" @onload="OnLoadRoundme"> </iframe>
+                                        </div>
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="hideit" c_ind="@_i">
+                                    }
+                                    else
+                                    {
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="d-block w-100" c_ind="@_i">
+                                    }
+                                </div>
 
-                             }
-                         </div>
-                         <a class="carousel-control-prev" href="#gallery-carousel" role="button" data-slide="prev">
-                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                             <span class="sr-only">Previous</span>
-                         </a>
-                         <a class="carousel-control-next" href="#gallery-carousel" role="button" data-slide="next">
-                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                             <span class="sr-only">Next</span>
-                         </a>
-                     </div>
-                 </div>
-
-             </div>
-
-
-            <div class="gallerybox">
-                <div id="gallery">
-                    @for (int i = 0; i < HouseData.Images.Count; i++)
-                    {
-                        <span id="gallery-item-colorpicker-@i" class="gallery-img-colorpicker"> </span>
-                    }
+                            }
+                        </div>
+                        <a class="carousel-control-prev" href="#gallery-carousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#gallery-carousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
                 </div>
+
+            </div>
+
+
+
+            <div id="gallery" class="gallercontain">
+                @for (int i = 0; i < HouseData.Images.Count; i++)
+                {
+                    var _i = i;
+                <span id="gallery-item-@i">
+                    <img id="@("galler" + i)" style="display:none" src="@HouseData.Images[i].Source" class="gallery-img" c_ind="@i" @onclick="e=>StaticChangeRoomClick(_i)">
+                    <img id="@("galler" + i)" src="@HouseData.Images[i].Thumbnail" class="gallery-img" c_ind="@i" @onclick="e=>StaticChangeRoomClick(_i)">
+                </span>
+                }
             </div>
         </div>
 
@@ -122,13 +125,11 @@
     {
         base.OnInitialized();
 
-        House = Data.House.Get(1);
+        House = Data.House.Getcolor("0");
         string houseType = House.Housetype;
         HouseData = Data.HouseType.GetData(houseType);
         self = this;
-
         SelectedImage = HouseData.Images[0];
-
         base.StateHasChanged();
     }
 
@@ -207,45 +208,41 @@
     }
 
     .slideshowbox{
-        display: flex;
-        width: 80%;
-    }
-
-    .gallerybox{
-        display:flex;
-        flex-direction:column;
-        width:12%;
+     
+        width: 90%;
         
     }
+
+
 
     .container {
         display: flex;
         justify-content: center;
         width: 100%;
+        flex-direction: column;
     }
 
     #gallery {
-        overflow-y: scroll;
-        overflow-x:hidden;
-        width: 80%;
+       
+        display:flex;
+        flex-direction:row;
+        width:90%;
+        overflow-x:scroll;
+
+
     }
 
-    .gallery-img-colorpicker {
+    .gallery-img {
         width: 100%;
-        padding-bottom: 60px;
-        transition-property: filter;
-        transition-duration: 0.25s;
-        transform: rotate(90deg) translateY(-100%);
-        transform-origin: top left;
-        margin-left: -20px;
+       padding:5px;
     }
 
-        .gallery-img-colorpicker:hover {
+        .gallery-img:hover {
             cursor: pointer;
             filter: brightness(120%);
         }
 
-        .gallery-img-colorpicker.active {
+        .gallery-img.active {
             filter: brightness(120%);
         }
 
@@ -300,11 +297,9 @@
         transform: rotate(-45deg);
     }
 
-
     #slideshow {
         float: left;
         width: 100%;
-        height: auto;
         transition-duration: 0.15s;
     }
     #slideshow.full {
@@ -313,43 +308,4 @@
     }
 
 
-    @@media (max-width: 995px) {
-
-        .slideshowbox {
-            width: 100%;
-        }
-
-        .container {
-            flex-direction: column;
-        }
-
-        .gallerybox {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            white-space: nowrap
-        }
-
-        #gallery {
-            overflow-y: hidden;
-            overflow-x: scroll;
-            width: 100%;
-        }
-
-
-        .gallery-img-colorpicker {
-            width: 19%;
-            padding: 1px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            transform: initial;
-            transform-origin: initial;
-            margin-left: 0;
-        }
-
-        /* width */
-
-
-
-    }
 </style>
