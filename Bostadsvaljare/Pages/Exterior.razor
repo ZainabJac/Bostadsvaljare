@@ -20,7 +20,7 @@
     </LoadingTemplate>
     <ContentTemplate>
         <div id="content">
-            <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
+            <img src="IMG/pixel.gif" alt=""  style="position: absolute; top: 0px; visibility: hidden;" />
 
             @for (int i = 0; i < Views.Count; i++)
             {
@@ -180,25 +180,40 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
+
         if (firstRender)
         {
-
+           
+            await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
+            await JSRuntime.InvokeVoidAsync("interior.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", true);
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("exterior.loadImages", Views);
             firstRenderDone = true;
             base.StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("exterior.applyImages");
+            await JSRuntime.InvokeVoidAsync("util.hideCP");
+            await JSRuntime.InvokeVoidAsync("util.enableContent");
+            await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+            ViewsInited = true;
+            base.StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("interior.resize");
+            await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
+            await JSRuntime.InvokeVoidAsync("util.enableContent");
+
         }
+
+
+
+
     }
 
-    private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
-    {
-        await JSRuntime.InvokeVoidAsync("util.hideCP");
-        await JSRuntime.InvokeVoidAsync("util.enableContent");
-        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        await JSRuntime.InvokeVoidAsync("exterior.applyImages");
-        ViewsInited = true;
-        base.StateHasChanged();
-    }
+    //private async void OnAfterLoader()
+    //{
+
+    //}
 
     private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
@@ -389,6 +404,7 @@
 
     public async ValueTask DisposeAsync()
     {
+
         await JSRuntime.InvokeVoidAsync("mapster.dispose");
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("exterior.dispose");

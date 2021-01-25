@@ -12,11 +12,19 @@
 
 
         hidecolorpicker: function () {
-            if ($(houseinputid).val() == 99) {
-                $(colorpick).removeClass("colorpickermenu")
-                $(colorpick).addClass("colorpickermenu2")
-                $(colorpickslink).addClass("animate__animated animate__bounce")
+            if ($('#houseinputid').val() == 99) {
+                $('#colorpick').removeClass("colorpickermenu")
+                $('#colorpick').addClass("colorpickermenu2")
+                $('#colorpickslink').addClass("animate__animated animate__bounce")
+            
             }
+        },
+
+        addanimation: function () {
+   
+            $(".icons").removeClass("animate__animated animate__bounce")
+            $('.icons').addClass("animate__animated animate__bounce")
+        
         },
 
         //adjustfloorplan: function () {
@@ -148,6 +156,18 @@
                 this._loadFloorplan(data.img, data.style.width);
                
             }
+            $('#gallery').height('auto');
+            $('#rightContainer').height(parseInt($('#slideshow').height()))
+            var height1 = parseInt($('#carousel-item-1').height())
+            
+            var heightfloor = $('.planritning').height()
+            var heightgal = $('.gallercontain').height()
+            var heightbutton = $('#buttonAndFact').height()
+            var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
+            $('#info').height(newheight + 'px')
+
+            var height10 = parseInt($('#carousel-item-1').height())
+            $('.iframe-container iframe').height(height10 + 'px');
         },
 
         dispose: function () {
@@ -188,14 +208,6 @@
             mapster_responsive.setValues(parseInt(floor), parentID, imgWidth);
             mapster.addMapHighlights(parentID, parentID + '-img', 'hotspots-' + floor, '', 0.6, 0.9);
 
-            var height1 = parseInt($('.planritning').height());
-            var height2 = parseInt($('#gallery').height());
-            var height3 = parseInt($('#info').height());
-
-            var height4 = height3 + height2 + height1 + 60;
-
-            $('.iframe-container iframe').height(height4 + 'px');
-         
             mapster.selectAll();
         },
 
@@ -223,38 +235,38 @@
 
             if ($(window).width() <= 927) {
                 var height = parseInt($('.planritning').height());
-                $('#gallery').height((height + 3) + 'px');
+                $('#gallery').height(height + 'px');
                 $('#info').height('auto')
+                var height10 = parseInt($('#carousel-item-1').height())
+                $('.iframe-container iframe').height(height10 + 'px');
 
-
-            }
-            else if ($(window).width() <= 1380) {
-                var height1 = parseInt($('.planritning').height());
-                var height2 = parseInt($('#gallery').height());
-                var height3 = parseInt($('#slideshow').height());
-
-                var height4 = height3 - height2 - height1 - 35;
-
-
-                $('#info').height(height4 + 'px');
-                var width1 = parseInt($('#carousel-item-0').width());
-                width1 = width1 * 0.75
-                $('.iframe-container iframe').height(width1 + 'px');
+              
 
             }
+            //else if ($(window).width() <= 1380) {
+            //    $('#gallery').height('auto');
+            //    $('#rightContainer').height(parseInt($('#slideshow').height()))
+            //    var height1 = parseInt($('#slideshow').height())
+            //    var height2 = height1 *0.14
+            //    $('#info').height(height2)
+                
+            
+
+            //}
 
             else {
-
-                var width1 = parseInt($('#carousel-item-0').width());
-                width1 = width1 * 0.75
-                $('.iframe-container iframe').height(width1 + 'px');
-
-                var height1 = parseInt($('.planritning').height());
-                var height2 = parseInt($('#gallery').height());
-                var height3 = parseInt($('#slideshow').height());
-                var height4 = height3 - height2 - height1 - 57;
                 $('#gallery').height('auto');
-                $('#info').height(height4 + 'px');
+                $('#rightContainer').height(parseInt($('#slideshow').height()))
+                var height1 = parseInt($('#slideshow').height())
+                var height2 = height1 * 0.15
+                var heightfloor = $('.planritning').height()
+                var heightgal = $('.gallercontain').height() 
+                var heightbutton = $('#buttonAndFact').height() 
+                var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
+                $('#info').height(newheight + 'px')
+                var height10 = parseInt($('#carousel-item-1').height())
+                $('.iframe-container iframe').height(height10 + 'px');
+
 
             }
 

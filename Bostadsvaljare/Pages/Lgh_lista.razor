@@ -249,12 +249,23 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("exterior.dispose");
+            await JSRuntime.InvokeVoidAsync("interior.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
             await JSRuntime.InvokeVoidAsync("lgh_lista.init");
 
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
 
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             firstRenderDone = true;
+            base.StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("util.hideCP");
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
+            await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+            await JSRuntime.InvokeVoidAsync("util.enableClickGridResize");
+            await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
+            ViewsInited = true;
             base.StateHasChanged();
         }
 
@@ -270,17 +281,12 @@
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", nId);
         await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
+
     }
 
     private async void OnAfterLoader(Microsoft.AspNetCore.Components.Web.ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("util.hideCP");
-        ImagesLoaded = await JSRuntime.InvokeAsync<bool>("lgh_lista.loadImages", Views);
-        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        await JSRuntime.InvokeVoidAsync("util.enableClickGridResize");
-        await JSRuntime.InvokeVoidAsync("lgh_lista.applyImages");
-        ViewsInited = true;
-        base.StateHasChanged();
+
     }
 
     private async void OnMouseOverIM(MouseEventArgs e, string houseNumber)

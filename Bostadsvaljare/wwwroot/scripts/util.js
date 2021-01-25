@@ -27,6 +27,10 @@
                 $('#colorpick').removeClass('hidecolorpicker');
                 $('#colorpick').addClass('showcolorpicker');
                 $('#colorpickslink').addClass('animate__animated animate__pulse animate__slower animate__infinite infinite');
+                $('.visibleButton').addClass("visibleButtonCP")
+                $('.visibleButton').removeClass("visibleButton")
+                $('.hiddenButton').addClass("hiddenButtonCP")
+                $('.hiddenButton').removeClass("hiddenButton")
 
 
             }

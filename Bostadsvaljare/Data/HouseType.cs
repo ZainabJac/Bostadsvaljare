@@ -31,6 +31,12 @@ namespace Bostadsvaljare.Data
             {
                 public int RoomID { get; set; }
                 public Vector2 Coords { get; set; }
+
+                public string Top { get; set; }
+
+                public string Left { get; set; }
+
+                public string IconClass { get; set; }
             }
 
             public string Source { get; set; }
@@ -49,11 +55,11 @@ namespace Bostadsvaljare.Data
                     { "G3K", new HouseType {
                         Floorplans = new List<Floorplan> {
                             new Floorplan { Source = "IMG/plan1.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 0, Coords = new Vector2 { X = 964, Y = 334 } },
-                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 965, Y = 511 } },
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 700, Y = 571 } },
-                                new Floorplan.Room { RoomID = 1, Coords = new Vector2 { X = 885, Y = 415 } },
-                                new Floorplan.Room { RoomID = 2, Coords = new Vector2 { X = 592, Y = 571 } },
+                                new Floorplan.Room { RoomID = 0, Left = "10%", Top="60%"/* Coords = new Vector2 { X = 964, Y = 334 }*/ },
+                                new Floorplan.Room { RoomID = 3, Left = "20%", Top="60%" /*Coords = new Vector2 { X = 965, Y = 511 }*/ },
+                                new Floorplan.Room { RoomID = 4, Left = "30%", Top="60%"/*Coords = new Vector2 { X = 700, Y = 571 }*/ },
+                                new Floorplan.Room { RoomID = 1, Left = "40%", Top="60%"/*Coords = new Vector2 { X = 885, Y = 415 }*/ },
+                                new Floorplan.Room { RoomID = 2, Left = "50%", Top="60%"  /*Coords = new Vector2 { X = 592, Y = 571 }*/ },
                             }},
                             new Floorplan { Source = "IMG/plan2.jpg", Rooms = new List<Floorplan.Room> {
                                 
@@ -111,18 +117,19 @@ namespace Bostadsvaljare.Data
                     }},
 
 
-
+                
 
                     { "V2", new HouseType {
                         Floorplans = new List<Floorplan> {
-                            new Floorplan { Source = "IMG/plan1_low.jpg", Rooms = new List<Floorplan.Room> {
-                          
+                             new Floorplan { Source = "IMG/V2_3D_Floor_Plan_1noback.png", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 4, Left = "55%", Top="28%" , IconClass="fas fa-street-view"  /*Coords = new Vector2 { X = 1150, Y = 1280 }*/ },
+                                new Floorplan.Room { RoomID = 3, Left = "19%", Top="50%", IconClass="fas fa-camera" /*Coords = new Vector2 { X = 800, Y = 720 }*/ },
                             }},
                             new Floorplan { Source = "IMG/plan2_low.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 1150, Y = 1280 } },
-                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 800, Y = 720 } },
+                                new Floorplan.Room { RoomID = 4, Left = "10%", Top="60%" /*Coords = new Vector2 { X = 1150, Y = 1280 }*/ },
+                                new Floorplan.Room { RoomID = 3, Left = "30%", Top="40%" /*Coords = new Vector2 { X = 800, Y = 720 }*/ },
                             }},
-                         
+
                         },
                         Images = new List<Image> {
                             new Image { Source="IMG/V2Redhouse_medium_low.jpg", Type=ImageType.Image, Thumbnail="IMG/color thumbnail.png" },
@@ -143,12 +150,13 @@ namespace Bostadsvaljare.Data
 
                        { "V2-color", new HouseType {
                         Floorplans = new List<Floorplan> {
-                            new Floorplan { Source = "IMG/plan1_low.jpg", Rooms = new List<Floorplan.Room> {
-
+                            new Floorplan { Source = "V2_3D_Floor_Plan_1.jpg", Rooms = new List<Floorplan.Room> {
+                                new Floorplan.Room { RoomID = 4, Left = "10%", Top="60%" , IconClass="fas fa-dragon"  /*Coords = new Vector2 { X = 1150, Y = 1280 }*/ },
+                                new Floorplan.Room { RoomID = 3, Left = "30%", Top="40%", IconClass="fas fa-dragon" /*Coords = new Vector2 { X = 800, Y = 720 }*/ },
                             }},
                             new Floorplan { Source = "IMG/plan2_low.jpg", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 4, Coords = new Vector2 { X = 1150, Y = 1280 } },
-                                new Floorplan.Room { RoomID = 3, Coords = new Vector2 { X = 800, Y = 720 } },
+                                new Floorplan.Room { RoomID = 4, Left = "10%", Top="60%" /*Coords = new Vector2 { X = 1150, Y = 1280 }*/ },
+                                new Floorplan.Room { RoomID = 3, Left = "30%", Top="40%" /*Coords = new Vector2 { X = 800, Y = 720 }*/ },
                             }},
 
                         },

@@ -79,36 +79,40 @@
             </div>
 
 
-            <div class="line-4">
+            <div id="rightContainer " class="line-4">
+
+
+
                 <div style="margin-top:-7px;" class="planritning floorplancontain pan_el">
-                    <SfCard>
-                        <CardStacked>
-                            <div class="btn-group">
-                                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                    @*<SfCard>
+            <CardStacked>*@
+                    <div class="btn-group">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                        }
+                    </div>
+
+                    <div id="floorplan-main">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="        position: relative;
+                                 background: transparent; @(FloorplanInited ? "" : "visibility: hidden;")">
+
+                                @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
                                 {
-                                    var _i = i;
-                                    <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                                    var _j = j;
+
+                                    <i id="icon" style="position: absolute; top:@HouseData.Floorplans[_i].Rooms[_j].Top;  left:@HouseData.Floorplans[_i].Rooms[_j].Left;" class="@HouseData.Floorplans[_i].Rooms[_j].IconClass icons"
+                                       @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"></i>
                                 }
+
                             </div>
-                            <div id="floorplan-main">
-                                @for (int i = 0; i < HouseData.Floorplans.Count; i++)
-                                {
-                                    var _i = i;
-                                    <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="position: relative; @(FloorplanInited ? "" : "visibility: hidden;")">
-                                        <map id="hotspots-@_i" name="hotspots-@_i">
-                                            @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
-                                            {
-                                                var _j = j;
-                                                var coords = HouseData.Floorplans[_i].Rooms[_j].Coords;
-                                                <area id="interior" status="" href="#" @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"
-                                                      coords="@coords.X,@coords.Y,@Radius" shape="circle">
-                                            }
-                                        </map>
-                                    </div>
-                                }
-                            </div>
-                        </CardStacked>
-                    </SfCard>
+                        }
+                    </div>
+
                 </div>
 
 
@@ -126,84 +130,81 @@
 
                 <div class="infocontain">
                     <div>
-                        <SfCard>
-                            <CardStacked>
-                                <div id="info" class="infodiv">
 
-                                    <div class="textitem">
-                                        <text class="card-info-header">Hus nr.</text>
+                        <div id="info" class="infodiv ram" style="margin-bottom:2%;">
 
-                                    </div>
+                            <div class="textitem ">
+                                <text class="card-info-header">Hus nr.</text>
 
-                                    <div class="textitem">
+                            </div>
 
-                                        <text class="card-info-header-fat">@House.HouseNumber</text>
-                                    </div>
 
-                                    <div class="textitem2">
-                                        <text class="card-info-header">Pris</text>
+                            <div class="textitem">
 
-                                    </div>
+                                <text class="card-info-header-fat">@House.HouseNumber</text>
+                            </div>
 
-                                    <div class="textitem">
+                            <div class="textitem2">
+                                <text class="card-info-header">Pris</text>
 
-                                        <text class="card-info-header-fat">Uppgift saknas</text>
-                                    </div>
+                            </div>
 
-                                    <div class="textitem">
-                                        <text class="card-info-header">Boarea</text>
+                            <div class="textitem">
 
-                                    </div>
+                                <text class="card-info-header-fat">Kommer</text>
+                            </div>
 
-                                    <div class="textitem">
+                            <div class="textitem">
+                                <text class="card-info-header">Boarea</text>
 
-                                        <text class="card-info-header-fat">@House.Sqm m²</text>
-                                    </div>
+                            </div>
 
-                                    <div class="textitem2">
-                                        <text class="card-info-header">Tomtarea</text>
+                            <div class="textitem">
 
-                                    </div>
+                                <text class="card-info-header-fat">@House.Sqm m²</text>
+                            </div>
 
-                                    <div class="textitem">
+                            <div class="textitem2">
+                                <text class="card-info-header">Tomtarea</text>
 
-                                        <text class="card-info-header-fat">Uppgift saknas</text>
-                                    </div>
+                            </div>
 
-                                    <div style="width:100%; display:flex;">
-                                        <div class="bofakta-link" style=" width: 20%;">
+                            <div class="textitem">
 
-                                            <a class="card-info-header-fat" href="www.c4hus.se">Bofaktablad</a>
-                                        </div>
-                                        <div class="rightbutton-div">
-                                            <SfButton CssClass="rightbutton" IsPrimary="true">Anmäl intresse nu</SfButton>
-                                        </div>
-                                    </div>
+                                <text class="card-info-header-fat">Kommer</text>
+                            </div>
 
-                                </div>
-                            </CardStacked>
-                        </SfCard>
+
+                        </div>
+
+
+
                     </div>
 
-                    @*<div class="arkitekt">
 
-                            <SfCard ID="ArkitektenHarOrdet">
-                                <CardStacked>
-                                    <text class="card-info-header" style="margin-left:6px;">Arkitekten har ordet</text>
-                                    <text class="italicfont" style="margin-left:6px;">"@HouseData.Comment" </text>
-                                </CardStacked>
-                            </SfCard>
 
-                        </div>*@
+
                 </div>
+
+                <div id="buttonAndFact" class="buttonNFact" style="display:flex;  width:100%; flex-direction:row; justify-content: space-between;">
+                    <div class="visibleButton">
+                        <a class="boFakta" href="www.c4hus.se">Bofaktablad</a>
+                    </div>
+                    <div class="hiddenButton">
+                        <button class="CallToActionBtn">Färgväljare</button>
+                    </div>
+                    <div class="visibleButton">
+                        <button class="CallToActionBtn">Anmäl Intresse </button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        @*<BSImage id="hide_info" src="IMG/icons/info.png" Class="icon" @onclick="ToggleInfo" />*@
-        @*<SfButton id="hide_info" CssClass="e-round" IconCss="icon e-icons e-info-icon" />*@
-
     </ContentTemplate>
 </SpinLoader>
+
+
 
 @code {
     public string MoveIcon2 { get; set; } = "position: absolute; left: 52%; top: 12px;";
@@ -253,27 +254,31 @@
     {
         if (firstRender)
         {
-
-            await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize", false);
+            await JSRuntime.InvokeVoidAsync("mapster.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+            await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
+            await JSRuntime.InvokeVoidAsync("exterior.dispose");
             await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
             ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
             firstRenderDone = true;
             base.StateHasChanged();
+
+            await JSRuntime.InvokeVoidAsync("util.hidecolorpicker");
+            await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+            await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
+            FloorplanInited = true;
+            base.StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("interior.resize");
+            await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
+
+            await JSRuntime.InvokeVoidAsync("util.enableContent");
+
         }
     }
 
     private async void OnAfterLoader(ProgressEventArgs ev)
     {
-        await JSRuntime.InvokeVoidAsync("util.hidecolorpicker");
-        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
-        //await JSRuntime.InvokeVoidAsync("pan_viewer.init", "apt_data");
-        FloorplanInited = true;
-        base.StateHasChanged();
-        await JSRuntime.InvokeVoidAsync("interior.resize");
-        await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
-        //await JSRuntime.InvokeVoidAsync("interior.adjustfloorplan");
-        await JSRuntime.InvokeVoidAsync("util.enableContent");
+
 
 
     }
@@ -320,7 +325,7 @@
         SelectedImage = HouseData.Images[ind];
         SelectedType = SelectedImage.Type;
         StateHasChanged();
-
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "roundme-embedded");
         await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, SelectedImage);
     }
 
@@ -332,6 +337,7 @@
 
         await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
         await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
+        await JSRuntime.InvokeVoidAsync("interior.addanimation");
     }
 
     public void Dispose()
@@ -353,6 +359,48 @@
 
 <style>
 
+    .hiddenButton{
+        display:none;
+    }
+
+    .visibleButton{
+        width:50%
+    }
+
+    .visibleButtonCP{
+        width: 50%
+    }
+
+    .hiddenButtonCP {
+        display: none;
+    }
+
+    .CallToActionBtn {
+        padding: 5px;
+        width: 100%;
+        font-size: 14px;
+        background-color: darkorange;
+        color: white; /* border: none; */
+        border-radius: 2px;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+
+    .buttonNFact:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .ram {
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+
     .hideit{
         display:none;
     }
@@ -371,24 +419,39 @@
 
     }
 
+    .icons {
+        color: darkorange;
+        font-size: 18px;
+    }
+
+    .icons:hover {
+        color: orange;
+        cursor:pointer;
+        font-size:18px;
+    }
 
     .infodiv {
-        width: 100%;
-        padding: 15px;
+        width: 101%;
+        
         flex-wrap: wrap;
         flex-direction: row;
         display: flex;
+        float:left;
 
     }
 
-    .textitem{
-        width:35%;
-        height:20%;
+    .textitem {
+        width: 35%;
+        height: 20%;
+    
+        padding-left: 2%;
     }
 
     .textitem2 {
         width: 35%;
         height: 20%;
+   
+        padding-left:2%;
     }
 
     .containerbig{
@@ -572,9 +635,6 @@
         width: 33.33%;
     }
 
-    .arkitekt {
-        padding-top: 14px;
-    }
 
     .line-5 {
         width: 41.66%;
@@ -608,18 +668,20 @@
         width: 100%;
     }
 
-    [class*="line-"] {
-        float: left;
-        padding: 7px;
-
+    .boFakta {
+        padding: 5px;
+        width: 80%;
+        height: 40px;
+        margin: 12px;
     }
+    
 
     .gallercontain {
         float: left;
-        padding: 4px;
-        width: 100%;
+        margin:7px;
+        width: 98%;
         overflow: hidden;
-        margin-bottom:4px;
+        margin-bottom:2%;
     }
 
     .floorplancontain {
@@ -632,6 +694,8 @@
 
         padding: 7px;
         width: 100%;
+        justify-content:space-around;
+
 
     }
 
@@ -719,12 +783,13 @@
     }
 
     #gallery {
-        padding: 7px;
-        overflow-y: hidden;
-        overflow-x: visible;
+       
+     overflow-x:scroll;
         white-space: nowrap;
         display: flex;
         flex-direction: row;
+        margin-bottom:7px;
+       
 
     }
 
@@ -747,22 +812,13 @@
 
     .gallery-img {
         width: 25%;
-        padding: 7px;
-        filter: brightness(120%);
-        transition-property: filter;
-        transition-duration: 0.25s;
-        -webkit-tap-highlight-color: transparent;
-        background-color: #fff;
-        border: 1px none #000;
-        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
-        color: rgba(0, 0, 0, 0.87);
-        outline: none;
         margin-right: 4px;
         align-self: center;
+        margin-bottom:4px;
     }
 
     .gallery-img:hover {
-        filter: brightness(100%);
+        filter: brightness(125%);
         cursor: pointer;
     }
 
@@ -806,11 +862,7 @@
         text-transform:none;
     }
 
-    @@media (max-width: 1467px) {
-        .arkitekt {
-            width: 100%;
-        }
-    }
+ 
 
     @@media (max-width: 1379px){
 
@@ -829,8 +881,10 @@
         }
 
         .infodiv {
-            padding: 7px;
+          
             justify-content: center;
+            margin-top:2%;
+         
         }
 
 
@@ -847,11 +901,14 @@
 
         .textitem {
             width: 21%;
+           
+
         }
 
         .textitem2 {
             width: 21%;
             margin-left: 20px;
+           
         }
 
         .infodiv{
@@ -867,42 +924,40 @@
             color: white;
             font-size: 12px;
         }
-            .e-btn.e-primary {
-                margin-top: 7px;
-            }
 
+        .visibleButton2{
+            width:30%;
+        }
 
         #gallery {
             width: 25%;
-            overflow-y: visible;
+            overflow-y: scroll;
             overflow-x: hidden;
-            white-space: nowrap;
+            margin: 0px;
             flex-direction: column;
         }
 
-        #gallery span {
-            display: initial;
-        }
+            #gallery span {
+                display: initial;
+            }
 
         .gallery-img {
             width: 100%;
-            padding: 0px;
+            padding-right: 2px;
         }
 
         .card-info-header-fat {
             font-family: acumin-pro,sans-serif;
-            font-size: 2vw;
-            float: right;
+            font-size: 2.8vw;
             display: inline-block;
-            padding-bottom:0px;
+            padding-bottom: 0px;
         }
 
 
         .card-info-header {
             font-family: acumin-pro,sans-serif;
-            font-size: 2vw;
+            font-size: 2.8vw;
             display: inline-block;
-
         }
 
 
@@ -923,10 +978,6 @@
             width: 100%;
         }
 
-        .arkitekt {
-            width: 100%;
-            padding-top: 6px;
-        }
 
         .planritning {
             width: 75%;
@@ -969,28 +1020,26 @@
             padding: 3px;
         }
 
-        .gallercontain{
-          width:  25%;
+        .gallercontain {
+            width: 25%;
         }
 
         .floorplancontain {
             width: 75%
         }
 
-        .infocontain{
-           width:100%
-
+        .infocontain {
+            width: 100%
         }
 
         .bofakta-link {
-
-            margin-left:-1.5%;
+            margin-left: -1.5%;
         }
 
         /* width */
         ::-webkit-scrollbar {
             height: 0px;
-            width: 4px;
+            width: 3px;
         }
 
         #pan_container.fullscreen {
@@ -1007,50 +1056,39 @@
             z-index: 110000;
             width: 40%;
             font-size: 8px;
-
         }
 
         .btn-group button {
-
             cursor: pointer;
             float: right;
-            width: 100%;
+            width: 200%;
             border-radius: 2px;
-            font-size: 9px;
-            padding:0px;
+            font-size: 11px;
+            padding: 3px;
+            margin-right: 2px;
         }
 
-        .e-checkicon {
-            height: 20px;
-            width: 20px;
-            display: none;
+        .infodiv {
+            width: 103%;
         }
 
-        .e-checkbox-wrapper .e-frame::before {
-            content: '\e78c';
-            font-size: 20px;
-            color: white;
-            background-color: #F9B256;
-            border-color: none;
-            outline: none;
-            height: 20px;
-            width: 20px;
+        .CallToActionBtn {
+            font-size:10px;
         }
 
-        .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
-            content: '\e799';
-            height: 20px;
-            width: 20px;
+        .boFakta{
+            font-size:10px;
         }
 
-        .e-checkicon.e-checkbox-wrapper .e-check {
-            font-size: 17px;
+        .visibleButtonCP {
+            width: 30%;
+           
         }
-        .e-checkicon.pan_el.fullscreen {
-        @MoveIcon2
-        z-index: 110000;
-        display:initial;
-    }
 
+        .hiddenButtonCP {
+            width: 30%;
+            display: initial;
+          
+        }
     }
 </style>
