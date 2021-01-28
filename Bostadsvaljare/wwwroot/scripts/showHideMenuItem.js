@@ -1,12 +1,12 @@
 ﻿(function () {
     window.showHideMenuItem = {
         hidecolorpicker: function () {
-            if ($(houseinputid).val() > 20 && $(houseinputid).val() <35) {
-                $(colorpickermenu).style.display = "initial"
+            if ($('#houseinputid').val() > 28 && $(houseinputid).val() <40) {
+                $('#colorpickermenu').style.display = "initial"
 
             }
             else {
-                (colorpickermenu).style.display = "none"
+                ('#colorpickermenu').style.display = "none"
             };
         },
 

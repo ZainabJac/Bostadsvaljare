@@ -17,6 +17,9 @@
 
             let idlist = 'list' + `${housenumber}`;
             $('#' + `${idlist}`).addClass('focus');
+            document.querySelector('#' + `${idlist}`).scrollIntoView({
+                behavior: 'smooth'
+            });
 
         },
 

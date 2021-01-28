@@ -23,7 +23,7 @@
         },
 
         hidecolorpicker: function () {
-            if ($('#houseinputid').val() > 20 && $('#houseinputid').val() < 35) {
+            if ($('#houseinputid').val() > 28 && $(houseinputid).val() < 40) {
                 $('#colorpick').removeClass('hidecolorpicker');
                 $('#colorpick').addClass('showcolorpicker');
                 $('#colorpickslink').addClass('animate__animated animate__pulse animate__slower animate__infinite infinite');

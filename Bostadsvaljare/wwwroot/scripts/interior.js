@@ -12,7 +12,7 @@
 
 
         hidecolorpicker: function () {
-            if ($('#houseinputid').val() == 99) {
+            if ($('#houseinputid').val() > 28 && $(houseinputid).val() < 40) {
                 $('#colorpick').removeClass("colorpickermenu")
                 $('#colorpick').addClass("colorpickermenu2")
                 $('#colorpickslink').addClass("animate__animated animate__bounce")

@@ -20,38 +20,59 @@
     </LoadingTemplate>
     <ContentTemplate>
         <div id="content">
-            <img src="IMG/pixel.gif" alt=""  style="position: absolute; top: 0px; visibility: hidden;" />
+            <img src="IMG/pixel.gif" alt="" style="position: absolute; top: 0px; visibility: hidden;" />
+            <div>
 
+            </div>
+            
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
                 <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                   
                     @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
                     {
+
                         var _j = j;
                         var sunStudy = _j == 0 ? "morning" : (_j == 1 ? "midday" : "evening");
-                        <div id="sun-study-@sunStudy" style="@(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
-
+                    <div id="sun-study-@sunStudy" style="position:relative; @(!ViewsInited || CurrentStudy == sunStudy ? "" : "display: none;")">
+                      
                             <map id="houses-@_i-@sunStudy" name="houses-@_i-@sunStudy">
+
                                 @foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
                                 {
                                     if (view.Key == Data.HouseMap.ImageNameToVariant(Views[_i].SunStudies["midday"]))
                                     {
                                         @foreach (Data.HouseMap map in view.Value)
                                         {
+                                            var housestatus = Data.House.Get(map.ID).Status;
+
                                             <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)"  onmouseout="hideTooltip()"  @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View)"
+                                                  
+                                                  @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View, housestatus)"
                                                   coords="@map.IMCoords" shape="poly">
                                         }
                                     }
                                 }
                             </map>
+                         
                         </div>
+                 
                     }
                 </div>
             }
 
         <div class="buttonrow">
+            @if (CurrentView != 0)
+            {
+            <div class="backIcon">
+                <span @onclick="() =>BackClicked()" class="fa-stack fa-2x">
+                    <i class="fas fa-circle fa-stack-2x " style="        color: #555555"></i>
+                    <i class="fas fa-arrow-left fa-stack-1x " style="color:white;"></i>
+                </span>
+            </div>
+            }
+
             <div id="highlight_all_checker">
                 <SfChipList Selection="Selection.Single">
                     <ChipListEvents OnClick="OnChangeHighlight"></ChipListEvents>
@@ -168,7 +189,9 @@
     private bool highlightAllIsChecked = false;
     private bool firstRenderDone = false;
     private bool TooltipIsdisabled = false;
-
+    private int Mouseout { get; set; } = 1;
+    private int MouseIn { get; set; } = 1;
+    private string MouseOverHouse { get; set; } = "";
 
     protected override void OnInitialized()
     {
@@ -184,7 +207,7 @@
 
         if (firstRender)
         {
-           
+
             await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
             await JSRuntime.InvokeVoidAsync("interior.dispose");
             await JSRuntime.InvokeVoidAsync("mapster.dispose");
@@ -238,84 +261,101 @@
         base.StateHasChanged();
     }
 
+    private async void OnMouseOutIM(string houseNumber)
+    {
+        Mouseout = Mouseout + 1;
+
+        MouseOverHouse = "";
+        await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+
+
+    }
+
     public async void OnMouseOverIM(MouseEventArgs e, string houseNumber, string views, int view)
     {
-        if (TooltipIsdisabled == true)
-        {
-            return;
-        }
+        MouseIn = MouseIn + 1;
 
-        else
+        MouseOverHouse = houseNumber;
+        await Task.Delay(200);
+        if (MouseIn > Mouseout)
         {
-            double x = e.ClientX;
-            double y = e.ClientY;
-
-            if (views == "view-1")
+            if (TooltipIsdisabled == true)
             {
-                string msg2 = "";
-
-                if (view == 1 )
-                {
-                    msg2 = "6, 7 och 10";
-                }
-
-                else if (view == 4)
-                {
-                    msg2 = "9 och 11";
-                }
-
-                else if (view == 2)
-                {
-                    msg2 = "1 - 5";
-                }
-
-                else if (view == 3)
-                {
-                    msg2 = "8";
-                }
-
-                string msg;
-
-
-                msg = "Område \t" + msg2;
-
-                await JSRuntime.InvokeVoidAsync(
-              "util.showTooltip", x, y, msg);
+                return;
             }
 
             else
             {
+                double x = e.ClientX;
+                double y = e.ClientY;
 
-
-                string msg;
-                Data.House house = null;
-                foreach (Data.House h in Data.House.GetHouseData())
+                if (views == "view-1")
                 {
-                    if (h.HouseNumber == houseNumber)
+                    string msg2 = "";
+
+                    if (view == 1)
                     {
-                        house = h;
-                        break;
+                        msg2 = "6, 7 och 10";
                     }
+
+                    else if (view == 4)
+                    {
+                        msg2 = "9 och 11";
+                    }
+
+                    else if (view == 2)
+                    {
+                        msg2 = "1 - 5";
+                    }
+
+                    else if (view == 3)
+                    {
+                        msg2 = "8";
+                    }
+
+                    string msg;
+
+
+                    msg = "Område \t" + msg2;
+
+                    await JSRuntime.InvokeVoidAsync(
+                  "util.showTooltip", x, y, msg);
                 }
 
-                switch (house.Status)
+                else
                 {
-                    case "sold":
-                        msg = "Såld";
-                        break;
-                    case "booked":
-                        msg = "Reserverad";
-                        break;
-                    default:
-                        msg = "Hus nr.\t" + houseNumber +
-                            "\nBoarea:\t" + house.Sqm + "m²" +
-                            "\nPris: \t" + house.Price;
-                        break;
-                }
 
-                await JSRuntime.InvokeVoidAsync(
-                    "util.showTooltip", x, y, msg
-                );
+
+                    string msg;
+                    Data.House house = null;
+                    foreach (Data.House h in Data.House.GetHouseData())
+                    {
+                        if (h.HouseNumber == houseNumber)
+                        {
+                            house = h;
+                            break;
+                        }
+                    }
+
+                    switch (house.Status)
+                    {
+                        case "sold":
+                            msg = "Såld";
+                            break;
+                        case "booked":
+                            msg = "Reserverad";
+                            break;
+                        default:
+                            msg = "Hus nr.\t" + houseNumber +
+                                "\nBoarea:\t" + house.Sqm + "m²" +
+                                "\nPris: \t" + house.Price;
+                            break;
+                    }
+
+                    await JSRuntime.InvokeVoidAsync(
+                        "util.showTooltip", x, y, msg
+                    );
+                }
             }
         }
     }
@@ -362,9 +402,17 @@
         );
     }
 
+    private async void BackClicked()
+    {
+        int view = 0;
+        this.CurrentView = view;
+        await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
 
+        this.MobileSelection = -1;
+        base.StateHasChanged();
+    }
 
-    private async void HousingClicked(int houseID, string ID, int view)
+    private async void HousingClicked(int houseID, string ID, int view, string housestatus)
     {
         if (ID == "view-1")
         {
@@ -377,18 +425,29 @@
 
         else {
 
-            var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
-            if (mobile && MobileSelection != houseID)
+            if (housestatus == "available")
             {
-                //ShowTooltip(x, y, houseID);
-                MobileSelection = houseID;
+
+
+                var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
+                if (mobile && MobileSelection != houseID)
+                {
+
+                    //ShowTooltip(x, y, houseID);
+                    MobileSelection = houseID;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("util.disableContent");
+                    await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
+                    await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+                    navManager.NavigateTo("/interior/" + houseID);
+                }
             }
+
             else
             {
-                await JSRuntime.InvokeVoidAsync("util.disableContent");
-                await JSRuntime.InvokeVoidAsync("util.disableClickMenu");
-                await JSRuntime.InvokeVoidAsync("util.hideTooltip");
-                navManager.NavigateTo("/interior/" + houseID);
+                return;
             }
         }
     }
@@ -416,7 +475,16 @@
 
 <style>
 
-
+    .backIcon {
+        position: absolute;
+        top: 40px;
+        left: 17vw;
+        z-index: 9999;
+        
+        font-size: 12px;
+        cursor: pointer;
+      
+    }
 
     .buttonrow {
         position: fixed;
@@ -494,7 +562,18 @@
         display: inline-block;
     }
 
-    @@media (max-width: 1538px) {
+    @@media (max-width: 1695px) {
+        .marginmobile {
+            margin-top: 30px;
+        }
+
+        .backIcon {
+            top: 60px;
+            left: 13vw;
+        }
+    }
+
+    @@media (max-width: 1537px) {
         .buttonrow {
             flex-direction: row-reverse;
         }
@@ -503,26 +582,34 @@
             margin-top: 8px;
             margin-right: 2px;
         }
-    }
 
-    @@media (max-width: 1695px){
-        .marginmobile {
-            margin-top: 30px;
+        .backIcon {
+            top: 60px;
+            left: 11vw;
+        }
+        
+    }
+ 
+
+
+        @@media (max-width:1291px) {
+            .backIcon {
+                top: 60px;
+                left: 3vw;
+            }
         }
 
 
-    }
 
-     @@media (max-width: 768px){
-        .buttonrow {
-            flex-direction: row-reverse;
-            top:65px;
+        @@media (max-width: 768px) {
+            .buttonrow {
+                flex-direction: row-reverse;
+                top: 65px;
+            }
+
+            .marginmobile {
+                margin-top: 35px;
+            }
         }
-         .marginmobile{
-             margin-top: 35px;
-         }
-
-       
-     }
 
 </style>

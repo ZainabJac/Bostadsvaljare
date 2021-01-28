@@ -46,6 +46,7 @@
             return true;
         },
 
+
         applyImages: async function () {
             var data;
 

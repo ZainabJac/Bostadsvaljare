@@ -188,7 +188,7 @@
 
                 <div id="buttonAndFact" class="buttonNFact" style="display:flex;  width:100%; flex-direction:row; justify-content: space-between;">
                     <div class="visibleButton">
-                        <a class="boFakta" href="www.c4hus.se">Bofaktablad</a>
+                        <button class="boFakta" href="www.c4hus.se">Bofaktablad</button>
                     </div>
                     <div class="hiddenButton">
                         <button class="CallToActionBtn">Färgväljare</button>
@@ -302,6 +302,7 @@
 
     private async void OnClickHotspot(int roomID)
     {
+
         Data.HouseType.Image oldImage = this.SelectedImage;
         this.SelectedImage = this.HouseData.Images[roomID];
         this.SelectedType = this.SelectedImage.Type;
@@ -359,16 +360,20 @@
 
 <style>
 
+    #buttonAndFact {
+        margin-left: 1.5%
+    }
+
     .hiddenButton{
         display:none;
     }
 
     .visibleButton{
-        width:50%
+        width:48%
     }
 
     .visibleButtonCP{
-        width: 50%
+        width: 48%
     }
 
     .hiddenButtonCP {
@@ -412,12 +417,7 @@
         right:7px;
     }
 
-    .bofakta-link {
-        color: #415965;
-        text-decoration:underline;
-        font-size: 0.8vw;
-
-    }
+  
 
     .icons {
         color: darkorange;
@@ -670,9 +670,14 @@
 
     .boFakta {
         padding: 5px;
-        width: 80%;
-        height: 40px;
-        margin: 12px;
+        width: 100%;
+        font-size: 14px;
+        background-color: white;
+        color: #415965;
+        border-radius: 2px;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
     }
     
 
@@ -927,8 +932,10 @@
             font-size: 12px;
         }
 
+       
+
         .visibleButton2{
-            width:30%;
+            width:31.5%;
         }
 
         #gallery {
@@ -950,7 +957,7 @@
 
         .card-info-header-fat {
             font-family: acumin-pro,sans-serif;
-            font-size: 2.8vw;
+            font-size: 14px;
             display: inline-block;
             padding-bottom: 0px;
         }
@@ -958,7 +965,7 @@
 
         .card-info-header {
             font-family: acumin-pro,sans-serif;
-            font-size: 2.8vw;
+            font-size: 14px;
             display: inline-block;
         }
 
@@ -1034,9 +1041,7 @@
             width: 100%
         }
 
-        .bofakta-link {
-            margin-left: -1.5%;
-        }
+     
 
         /* width */
         ::-webkit-scrollbar {
@@ -1065,39 +1070,135 @@
             float: right;
             width: 200%;
             border-radius: 2px;
-            font-size: 11px;
+            font-size: 15px;
             padding: 3px;
             margin-right: 2px;
         }
 
         .infodiv {
-            width: 103%;
+            width: 101.5%;
         }
 
         .CallToActionBtn {
-            font-size:10px;
+            font-size:15px;
         }
 
-        .boFakta{
-            font-size:10px;
-        }
+     
 
         .visibleButtonCP {
-            width: 30%;
+            width: 31.5%;
            
         }
 
         .hiddenButtonCP {
-            width: 30%;
+            width: 31.5%;
             display: initial;
           
         }
 
         @@media (max-width: 627px) {
+
+            .infodiv {
+                width: 102%;
+            }
+
             #icon{
                 font-size:12px;
+
+            }
+
+            .boFakta {
+                font-size: 14px;
+            }
+
+            .CallToActionBtn {
+                font-size: 14px;
+            }
+
+            .btn-group button {
+               
+                font-size: 14px;
+                
+            }
+
+            .card-info-header-fat {
+              
+                font-size: 12px;
+               
+            }
+
+
+            .card-info-header {
+              
+                font-size: 12px;
+           
+            }
+
+          
+        }
+
+        @@media (max-width: 427px) {
+
+            #buttonAndFact {
+                margin-left: 2%
+            }
+
+            .boFakta {
+                font-size: 12px;
+            }
+            #icon {
+                font-size: 12px;
+            }
+            .CallToActionBtn {
+                font-size: 12px;
+            }
+
+            .btn-group button {
+                font-size: 11px;
+            }
+
+            .card-info-header-fat {
+                font-size: 11px;
+            }
+
+
+            .card-info-header {
+                font-size: 11px;
             }
         }
+
+        @@media (max-width: 364px) {
+
+            .boFakta {
+                font-size: 10px;
+            }
+
+            #icon {
+                font-size: 11px;
+            }
+
+            .CallToActionBtn {
+                font-size: 10px;
+            }
+
+            .btn-group button {
+                font-size: 9px;
+            }
+
+            .card-info-header-fat {
+                font-size: 9px;
+            }
+
+
+            .card-info-header {
+                font-size: 9px;
+            }
+
+            #buttonAndFact {
+                margin-left: 2.5%
+            }
+        }
+
 
         }
 </style>
