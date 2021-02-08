@@ -12,8 +12,9 @@
 
 
         hidecolorpicker: function () {
-            if ($('#houseinputid').val() > 28 && $(houseinputid).val() < 40) {
+            if ($('#houseinputid').val() > 43 && $(houseinputid).val() < 55) {
                 $('#colorpick').removeClass("colorpickermenu")
+                $('#colorpick').removeClass("hidecolorpicker")
                 $('#colorpick').addClass("colorpickermenu2")
                 $('#colorpickslink').addClass("animate__animated animate__bounce")
             
@@ -156,16 +157,13 @@
                 this._loadFloorplan(data.img, data.style.width);
                
             }
-            $('#gallery').height('auto');
-            $('#rightContainer').height(parseInt($('#slideshow').height()))
+            $('#gallery').height('auto');         
             var height1 = parseInt($('#carousel-item-1').height())
-            
             var heightfloor = $('.planritning').height()
             var heightgal = $('.gallercontain').height()
             var heightbutton = $('#buttonAndFact').height()
             var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
             $('#info').height(newheight + 'px')
-
             var height10 = parseInt($('#carousel-item-1').height())
             $('.iframe-container iframe').height(height10 + 'px');
         },
@@ -234,8 +232,8 @@
         _onResize: function (event) {
 
             if ($(window).width() <= 927) {
-                var height = parseInt($('.planritning').height());
-                $('#gallery').height(height + 'px');
+                var height2 = parseInt($('.planritning').height());
+                $('#gallery').height(height2 + 'px');
                 $('#info').height('auto')
                 var height10 = parseInt($('#carousel-item-1').height())
                 $('.iframe-container iframe').height(height10 + 'px');
@@ -243,21 +241,11 @@
               
 
             }
-            //else if ($(window).width() <= 1380) {
-            //    $('#gallery').height('auto');
-            //    $('#rightContainer').height(parseInt($('#slideshow').height()))
-            //    var height1 = parseInt($('#slideshow').height())
-            //    var height2 = height1 *0.14
-            //    $('#info').height(height2)
-                
-            
-
-            //}
-
+     
             else {
                 $('#gallery').height('auto');
-                $('#rightContainer').height(parseInt($('#slideshow').height()))
-                var height1 = parseInt($('#slideshow').height())
+             
+                var height1 = parseInt($('#carousel-item-1').height())
                 var height2 = height1 * 0.15
                 var heightfloor = $('.planritning').height()
                 var heightgal = $('.gallercontain').height() 

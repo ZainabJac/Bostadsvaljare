@@ -21,6 +21,9 @@
     <ContentTemplate>
         <div id="content">
             <img src="IMG/pixel.gif" alt="" style="position: absolute; top: 0px; visibility: hidden;" />
+           
+            
+            
             <div>
 
             </div>
@@ -66,7 +69,7 @@
             @if (CurrentView != 0)
             {
             <div class="backIcon">
-                <span @onclick="() =>BackClicked()" class="fa-stack fa-2x">
+                <span @onclick="() =>BackClicked()" class="fa-stack fa-2x iconStack">
                     <i class="fas fa-circle fa-stack-2x " style="        color: #555555"></i>
                     <i class="fas fa-arrow-left fa-stack-1x " style="color:white;"></i>
                 </span>
@@ -128,9 +131,9 @@
             Name = "Översikt",
             ImageMapName = "imagemap-1",
             SunStudies = new Dictionary<string, string>() {
-                { "morning", "IMG/OversiktStora_medium.jpg" },
-                { "midday", "IMG/OversiktStora_medium.jpg" },
-                { "evening", "IMG/OversiktStora_medium.jpg" },
+                { "morning", "IMG/Oversikt_stor_medium.jpg" },
+                { "midday", "IMG/Oversikt_stor_medium.jpg" },
+                { "evening", "IMG/Oversikt_stor_medium.jpg" },
             },
         },
 
@@ -295,31 +298,28 @@
 
                     if (view == 1)
                     {
-                        msg2 = "6, 7 och 10";
+                        msg2 = "Etapp 1, radhus och kedjehus";
                     }
 
                     else if (view == 4)
                     {
-                        msg2 = "9 och 11";
+                        msg2 = "Etapp 3";
                     }
 
                     else if (view == 2)
                     {
-                        msg2 = "1 - 5";
+
+                        msg2 = "Villor";
                     }
 
                     else if (view == 3)
                     {
-                        msg2 = "8";
+                        msg2 = "Etapp, 2 radhus";
                     }
 
-                    string msg;
-
-
-                    msg = "Område \t" + msg2;
 
                     await JSRuntime.InvokeVoidAsync(
-                  "util.showTooltip", x, y, msg);
+                  "util.showTooltip", x, y, msg2);
                 }
 
                 else
@@ -337,24 +337,64 @@
                         }
                     }
 
-                    switch (house.Status)
+                    if (house.ID < 16)
                     {
-                        case "sold":
-                            msg = "Såld";
-                            break;
-                        case "booked":
-                            msg = "Reserverad";
-                            break;
-                        default:
-                            msg = "Hus nr.\t" + houseNumber +
-                                "\nBoarea:\t" + house.Sqm + "m²" +
-                                "\nPris: \t" + house.Price;
-                            break;
+
+                        switch (house.Status)
+                        {
+                            case "sold":
+                                msg = "Såld";
+                                break;
+                            case "comming":
+                                msg = "Kommande etapp";
+                                break;
+                            case "showcase":
+                                msg = "Visningshus";
+                                break;
+                            case "booked":
+                                msg = "Reserverad";
+                                break;
+                            default:
+                                msg = "Hus nr.:         \t" + "  " + houseNumber +
+                                    "\nBoarea:         \t" + "  " + house.Sqm +
+                                    "\nPris:           \t" + "  " + house.Price +
+                                     "\nHyra:           \t" + "  " + house.Rent +
+                                    "\nUpplåtelseform: " + house.Propertytyp;
+
+
+                                break;
+                        }
+                    }
+                    else
+                    {
+
+                        switch (house.Status)
+                        {
+                            case "sold":
+                                msg = "Såld";
+                                break;
+                            case "comming":
+                                msg = "Kommande etapp";
+                                break;
+                            case "showcase":
+                                msg = "Visningshus";
+                                break;
+                            case "booked":
+                                msg = "Reserverad";
+                                break;
+                            default:
+                                msg = "Hus nr.:    \t" + "  " + houseNumber +
+                                    "\nBoarea:     \t" + "  " + house.Sqm +
+                                    "\nPris:       \t" + "          " + house.Price +
+                                    "\nUpplåtelseform: " + house.Propertytyp;
+
+                                break;
+                        }
                     }
 
                     await JSRuntime.InvokeVoidAsync(
-                        "util.showTooltip", x, y, msg
-                    );
+                    "util.showTooltip", x, y, msg
+                );
                 }
             }
         }
@@ -383,23 +423,51 @@
             }
         }
 
-        switch (house.Status) {
-            case "sold":
-                msg = "Såld";
-                break;
-            case "booked":
-                msg = "Reserverad";
-                break;
-            default:
-                msg = "Hus nr.\t" + houseNumber +
-                    "\nBoarea:\t" + house.Sqm + "m²" +
-                    "\nPris: \t" + house.Price;
-                break;
+        if (house.ID < 16)
+        {
+
+            switch (house.Status)
+            {
+                case "sold":
+                    msg = "Såld";
+                    break;
+                case "booked":
+                    msg = "Reserverad";
+                    break;
+                default:
+                    msg = "Hus nr.\t" + houseNumber +
+                        "\nBoarea:\t" + house.Sqm + "m²" +
+                        "\nPris: \t" + house.Price +
+                        "\nPris: \t" + house.Propertytyp +
+                        "\nPris: \t" + house.Rent;
+
+                    break;
+            }
+        }
+        else
+        {
+
+            switch (house.Status)
+            {
+                case "sold":
+                    msg = "Såld";
+                    break;
+                case "booked":
+                    msg = "Reserverad";
+                    break;
+                default:
+                    msg = "Hus nr.\t" + houseNumber +
+                        "\nBoarea:\t" + house.Sqm  +
+                        "\nPris: \t" + house.Price +
+                        "\nPris: \t" + house.Propertytyp;
+
+                    break;
+            }
         }
 
         await JSRuntime.InvokeVoidAsync(
-            "util.showTooltip", x, y, msg
-        );
+        "util.showTooltip", x, y, msg
+    );
     }
 
     private async void BackClicked()
@@ -416,11 +484,20 @@
     {
         if (ID == "view-1")
         {
-            this.CurrentView = view;
-            await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
+            if (housestatus == "available")
+            {
+                this.CurrentView = view;
 
-            this.MobileSelection = -1;
-            base.StateHasChanged();
+                await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
+
+                this.MobileSelection = -1;
+                base.StateHasChanged();
+            }
+
+            else
+            {
+                return;
+            }
         }
 
         else {
@@ -498,8 +575,8 @@
     }
 
     .e-chip-list.e-chip, .e-chip-list .e-chip {
-        width: 122px;
-        height: 34px;
+        width: 122.85px;
+        height: 34.8px;
         border-radius: 3px;
         background-color: #555555;
         color: white;
@@ -610,6 +687,19 @@
             .marginmobile {
                 margin-top: 35px;
             }
+
+            .iconStack {
+                font-size: 17px;
+            }
+
+           
         }
+
+    @@media (max-width: 500px) {
+        .iconStack {
+            font-size: 15px;
+        }
+    }
+
 
 </style>

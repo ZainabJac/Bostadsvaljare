@@ -82,6 +82,9 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/panoplaceholderaddict25.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/6CquaWdm6YJXayR1DK9v", RoomName="vind" },
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/20210121_Uterum-1_1_25.jpg", Type=ImageType.Image },
+                                  new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-3_3D_medium.jpg", Type=ImageType.Image },
 
 
                         },
@@ -117,6 +120,9 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/panoplaceholderaddict25.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/6CquaWdm6YJXayR1DK9v", RoomName="vind" },
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },          
                              new Image { Source="IMG/20210121_Uterum-1_1_25.jpg", Type=ImageType.Image },
+                                  new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-3_3D_medium.jpg", Type=ImageType.Image },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
@@ -151,6 +157,9 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/panoplaceholderaddict25.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/6CquaWdm6YJXayR1DK9v", RoomName="vind" },
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/20210121_Uterum-1_1_25.jpg", Type=ImageType.Image },
+                               new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-3_3D_medium.jpg", Type=ImageType.Image },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
@@ -185,6 +194,9 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/panoplaceholderaddict25.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/6CquaWdm6YJXayR1DK9v", RoomName="vind" },
                             new Image { Source="IMG/G3kfloor3workAndplay.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/20210121_Uterum-1_1_25.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-3_3D_medium.jpg", Type=ImageType.Image },
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
                     }},
@@ -214,7 +226,10 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/Livingroom_Extra_Ready50.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
                             new Image { Source="IMG/360Iconplaceholder-g3k-living.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
                             new Image { Source="IMG/360placeholderG2vind.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JKgK4Wb7OeqM4tfrHu6Y", RoomName="vind" },
-                          
+                            new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/G2-Plan-3_3D_medium.jpg", Type=ImageType.Image },
+
 
                         },
                         Comment = "Med sin kubistiska utformning och minimalistiska formspråk sticker lägenheten ut från mängden. Här är det de anspråkslösa detaljerna som väcker intresset. Det stilrent takade entrépartiet följs upp invändigt av ett effektfullt ljusschakt med full takhöjd genom båda våningsplanen och ett högt glasparti."
@@ -238,12 +253,14 @@ namespace Bostadsvaljare.Data
                         },
                         Images = new List<Image> {                       
                             new Image { Source="IMG/Gata_grey_medium_low.jpg", Type=ImageType.Image, },
-                            new Image { Source="IMG/V2-livingroom-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2-allrum-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2_Sovrum_Master_medium_low_25.jpg", Type=ImageType.Image, },
+                            new Image { Source="IMG/V2_Allrum_plan1_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Allrum_plan2_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Sovrum_Master_60.jpg", Type=ImageType.Image, },
                             new Image { Source="IMG/V2_Badrum_medium_25_canvas.jpg", Type=ImageType.Image,  },              
                             new Image { Source="IMG/Mood_red_webttestMedium.jpg", Type=ImageType.Image,  },
                             new Image { Source="IMG/20210122_Uterum-V2_25.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2-Plan-1_3D_medium.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2-Plan-2_3D_medium.jpg", Type=ImageType.Image,  },
 
                         },
 
@@ -268,12 +285,14 @@ namespace Bostadsvaljare.Data
                         },
                         Images = new List<Image> {
                             new Image { Source="IMG/Gata_Greens_medium_low.jpg", Type=ImageType.Image, },
-                            new Image { Source="IMG/V2-livingroom-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2-allrum-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2_Sovrum_Master_medium_low_25.jpg", Type=ImageType.Image, },
+                            new Image { Source="IMG/V2_Allrum_plan1_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Allrum_plan2_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Sovrum_Master_60.jpg", Type=ImageType.Image, },
                             new Image { Source="IMG/V2_Badrum_medium_25_canvas.jpg", Type=ImageType.Image,  },
                             new Image { Source="IMG/Mood_red_webttestMedium.jpg", Type=ImageType.Image,  },
                             new Image { Source="IMG/20210122_Uterum-V2_25.jpg", Type=ImageType.Image,  },
+                                new Image { Source="IMG/V2-Plan-1_3D_medium.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2-Plan-2_3D_medium.jpg", Type=ImageType.Image,  },
                         },
 
 
@@ -296,13 +315,15 @@ namespace Bostadsvaljare.Data
 
                         },
                         Images = new List<Image> {
-                            new Image { Source="IMG/V2Redhouse_medium_low.jpg", Type=ImageType.Image,  },                   
-                            new Image { Source="IMG/V2-livingroom-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2-allrum-40.jpg", Type=ImageType.Image,  },
-                            new Image { Source="IMG/V2_Sovrum_Master_medium_low_25.jpg", Type=ImageType.Image, },
+                            new Image { Source="IMG/V2Redhouse_medium_low.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Allrum_plan1_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Allrum_plan2_75_50.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2_Sovrum_Master_60.jpg", Type=ImageType.Image, },
                             new Image { Source="IMG/V2_Badrum_medium_25_canvas.jpg", Type=ImageType.Image,  },
                             new Image { Source="IMG/Mood_red_webttestMedium.jpg", Type=ImageType.Image,  },
                             new Image { Source="IMG/20210122_Uterum-V2_25.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2-Plan-1_3D_medium.jpg", Type=ImageType.Image,  },
+                            new Image { Source="IMG/V2-Plan-2_3D_medium.jpg", Type=ImageType.Image,  },
                         },
 
 

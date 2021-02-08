@@ -1,7 +1,7 @@
 ﻿(function () {
     window.showHideMenuItem = {
         hidecolorpicker: function () {
-            if ($('#houseinputid').val() > 28 && $(houseinputid).val() <40) {
+            if ($('#houseinputid').val() > 43 && $(houseinputid).val() <55) {
                 $('#colorpickermenu').style.display = "initial"
 
             }

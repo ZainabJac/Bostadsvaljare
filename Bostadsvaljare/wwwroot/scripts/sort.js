@@ -10,8 +10,16 @@
 
         for (i = 1; i < (rows.length - 1); i++) {
             shouldSwitch = false;
-            x = rows[i].getElementsByTagName("td")[n];
-            y = rows[i + 1].getElementsByTagName("td")[n];
+            x = rows[i].getElementsByTagName("td")[0];
+            y = rows[i + 1].getElementsByTagName("td")[0];
+
+
+            if (x == null && dir == 'asc') {
+                x = 'a';
+            } else if (x == null && dir == 'desc') {
+                x = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
+            }
+
             if (n == 3) {
                 if (dir == "asc") {
                     if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {

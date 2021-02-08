@@ -10,16 +10,26 @@
             var self = this;
             this.listeners.resize = function (e) { self.resizeComplete(e); };
             window.addEventListener('resize', this.listeners.resize, false);
+            $(function () {
+                $("#tabletest").tablesorter();
+            });
 
         },
 
         focuslistitem: function (housenumber) {
+            var ScreenPixelsWidth = window["innerWidth"];
 
-            let idlist = 'list' + `${housenumber}`;
-            $('#' + `${idlist}`).addClass('focus');
-            document.querySelector('#' + `${idlist}`).scrollIntoView({
-                behavior: 'smooth'
-            });
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ScreenPixelsWidth < 1074 ) {
+                return
+            }
+
+            else {
+                let idlist = 'list' + `${housenumber}`;
+                $('#' + `${idlist}`).addClass('focus');
+                document.querySelector('#' + `${idlist}`).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
 
         },
 

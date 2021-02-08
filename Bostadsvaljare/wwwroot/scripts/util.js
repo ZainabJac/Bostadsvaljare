@@ -74,6 +74,20 @@
             setTimeout(() => { $('#theWindow').removeClass('loading'); }, 1500);
 
         },
+
+        enableContentinterior: function () {
+            setTimeout(() => {
+                $('#theWindow').removeClass('loading');
+                var height1 = parseInt($('#carousel-item-1').height())
+                var heightfloor = $('.planritning').height()
+                var heightgal = $('.gallercontain').height()
+                var heightbutton = $('#buttonAndFact').height()
+                var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
+                $('#info').height(newheight + 'px')
+                var height10 = parseInt($('#carousel-item-1').height())
+                $('.iframe-container iframe').height(height10 + 'px');}, 1500);
+
+        },
       
   
 

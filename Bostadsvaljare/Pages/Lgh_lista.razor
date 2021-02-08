@@ -21,6 +21,7 @@
        
             <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
 
+
             <div class="line-8"  id="gallerybox">
                 @for (int i = 0; i < Views.Count; i++)
                 {
@@ -61,44 +62,48 @@
             <div class="line-4 container" id="GridResize">
 
                 <table id="tabletest" style="width:100%;">
-                    <tr>
-                        <th onclick="sortTabletest(0)" class="listitemheader">Husnr. <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTabletest(1)" class="listitemheader">Boyta <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTabletest(2)" class="listitemheader">Pris <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTabletest(2)" class="listitemheader">Årshyra <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTabletest(0)" class="listitemheader">Tomtarea <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTabletest(3)" class="listitemheader">Status <i class="fas fa-sort"></i></th>
+                    <thead>
+                        <tr>
+                            <th  class="listitemheader">Husnr. <i class="fas fa-sort"></i></th>
+                            <th  class="listitemheader">Boyta <i class="fas fa-sort"></i></th>
+                            <th  class="listitemheader">Pris <i class="fas fa-sort"></i></th>
+                            <th class="listitemheader">Årshyra<i class="fas fa-sort"></i></th>
+                            <th  class="listitemheader hideonmobile">Tomtarea <i class="fas fa-sort"></i></th>
+                            <th  class="listitemheader">Status <i class="fas fa-sort"></i></th>
 
-                    </tr>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                    @for (int i = 0; i < HouseData.Count; i++)
-                    {
-                        var id = HouseData[i].ID;
-                        var houseNr = HouseData[i].HouseNumber;
-                        var housestatus = HouseData[i].Status;
+                        @for (int i = 0; i < HouseData.Count; i++)
+                        {
+                            var id = HouseData[i].ID;
+                            var houseNr = HouseData[i].HouseNumber;
+                            var housestatus = HouseData[i].Status;
 
-                <tr id="@("list"+houseNr)" class="listitem" @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(houseNr)" @onclick="() => HouselistClick(id, housestatus)">
+                            <tr id="@("list"+houseNr)" class="listitem" @onmouseleave="OnMouseOutGrid" @onmouseenter="() => HighlightInImageMap(houseNr)" @onclick="() => HouselistClick(id, housestatus)">
 
-                    <td class="listitemcell">@HouseData[i].HouseNumber </td>
-                    <td class="listitemcell">@HouseData[i].Sqm m2 </td>
-                    <td class="listitemcell">@HouseData[i].Price </td>
-                    <td class="listitemcell">@HouseData[i].Rent kr/mån </td>
-                    <td class="listitemcell">@HouseData[i].LandArea m2 </td>
-                    <td class="listitemcell">
-                        @if (HouseData[i].Status == "available")
-                        {<p style="color:forestgreen; margin-bottom:2px; margin-top:5px; "> Ledig </p>}
-                        @if (HouseData[i].Status == "sold")
-                        {<p style="color:red;  margin-bottom:5px; margin-top:5px;">Såld</p>}
-                        @if (HouseData[i].Status == "booked")
-                        {<p style="color:darkorange;  margin-bottom:2px; margin-top:5px;">Reserverad</p>}
-                        @if (HouseData[i].Status == "comming")
-                        {<p style="color:silver;  margin-bottom:2px; margin-top:5px;">Kommande</p>}
-                        @if (HouseData[i].Status == "showcase")
-                        {<p style="color:blue;  margin-bottom:2px; margin-top:5px;">Visningshus</p>}
-                    </td>
+                                <td class="listitemcell">@HouseData[i].HouseNumber</td>
+                                <td class="listitemcell">@HouseData[i].Sqm</td>
+                                <td class="listitemcell">@HouseData[i].Price</td>
+                                <td class="listitemcell">@HouseData[i].Rent</td>
+                                <td class="listitemcell hideonmobile">@HouseData[i].LandArea</td>
+                                <td class="listitemcell">
+                                    @if (HouseData[i].Status == "available")
+                                    {<p style="color:forestgreen; margin-bottom:2px; margin-top:5px; "> Ledig </p>}
+                                    @if (HouseData[i].Status == "sold")
+                                    {<p style="color:red;  margin-bottom:5px; margin-top:5px;">Såld</p>}
+                                    @if (HouseData[i].Status == "booked")
+                                    {<p style="color:darkorange;  margin-bottom:2px; margin-top:5px;">Reserverad</p>}
+                                    @if (HouseData[i].Status == "comming")
+                                    {<p style="color:silver;  margin-bottom:2px; margin-top:5px;">Kommande</p>}
+                                    @if (HouseData[i].Status == "showcase")
+                                    {<p style="color:blue;  margin-bottom:2px; margin-top:5px;">Visningshus</p>}
+                                </td>
 
-                </tr>
-                    }
+                            </tr>
+                        }
+                        </tbody>
 
                 </table>
 
@@ -183,7 +188,7 @@
     List<ViewData> Views = new List<ViewData> {
         new ViewData() {
             ID = _id + _ind,
-            Source = "IMG/OversiktStora_medium2.jpg",
+            Source = "IMG/Oversikt_stor_medium2.jpg",
             ImageMapName = _mapName +_ind++,
         },
         new ViewData {
@@ -277,9 +282,7 @@
             await JSRuntime.InvokeVoidAsync("mapster.dispose");
             await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
             await JSRuntime.InvokeVoidAsync("lgh_lista.init");
-
             await JSRuntime.InvokeVoidAsync("util.disableClickGridResize");
-
             await JSRuntime.InvokeVoidAsync("mapster_responsive.initialize");
             firstRenderDone = true;
             base.StateHasChanged();
@@ -443,12 +446,18 @@
             case "sold":
                 msg = "Såld";
                 break;
+            case "comming":
+                msg = "Kommande etapp";
+                break;
+            case "showcase":
+                msg = "Visningshus";
+                break;
             case "booked":
                 msg = "Reserverad";
                 break;
             default:
-                msg = "Lgh nr.\t" + houseNumber +
-                    "\nBoarea:\t" + house.Sqm + "m²" +
+                msg = "Hus nr.\t" + houseNumber +
+                    "\nBoarea:\t" + house.Sqm +
                     "\nPris: \t" + house.Price;
                 break;
         }
@@ -541,8 +550,11 @@
 
 <style>
 
+  
+
     .listitemheader:hover{
         text-decoration:underline;
+        cursor:pointer;
     }
 
     .listitemheader:focus {
@@ -885,16 +897,34 @@
         }
     }
 
-    @@media (max-width: 400px) {
+    @@media (max-width: 513px) {
+        .hideonmobile{
+            display:none;
+        }
+    }
 
-        .listitemheader{
-            font-size:12px;
+
+
+    @@media (max-width: 433px) {
+        .listitemcell {
+            font-size: 10px;
         }
 
         .listitemheader {
             font-size: 11px;
         }
     }
+
+        @@media (max-width: 400px) {
+
+            .listitemheader {
+                font-size: 10px;
+            }
+
+            .listitemcell {
+                font-size: 9px;
+            }
+        }
 
 
 

@@ -36,7 +36,7 @@
             <div class="line-7">
                 <!-- Stillbilder -->
                 <div id="slideshow" class="@(ShowInfo ? "" : "full")">
-                    <div id="gallery-carousel" class="carousel slide" data-ride="carousel">
+                    <div id="gallery-carousel" class="carousel slide" data-interval="false">
                         <ol class="carousel-indicators">
                             @for (int i = 0; i < HouseData.Images.Count; i++)
                             {
@@ -151,7 +151,7 @@
 
                             <div class="textitem">
 
-                                <text class="card-info-header-fat">Kommer</text>
+                                <text class="card-info-header-fat">@House.Price</text>
                             </div>
 
                             <div class="textitem">
@@ -161,7 +161,7 @@
 
                             <div class="textitem">
 
-                                <text class="card-info-header-fat">@House.Sqm m²</text>
+                                <text class="card-info-header-fat">@House.Sqm</text>
                             </div>
 
                             <div class="textitem2">
@@ -171,7 +171,7 @@
 
                             <div class="textitem">
 
-                                <text class="card-info-header-fat">Kommer</text>
+                                <text class="card-info-header-fat">@House.LandArea</text>
                             </div>
 
 
@@ -188,13 +188,13 @@
 
                 <div id="buttonAndFact" class="buttonNFact" style="display:flex;  width:100%; flex-direction:row; justify-content: space-between;">
                     <div class="visibleButton">
-                        <button class="boFakta" href="www.c4hus.se">Bofaktablad</button>
+                        <button @*onclick="window.open('IMG/Ringvägen2.pdf');"*@ class="boFakta" href="www.c4hus.se">Bofaktablad</button>
                     </div>
                     <div class="hiddenButton">
                         <button class="CallToActionBtn">Färgväljare</button>
                     </div>
                     <div class="visibleButton">
-                        <button class="CallToActionBtn">Anmäl Intresse </button>
+                        <button onclick="window.open('https://www.c4hus.se/kontakt/')"  class="CallToActionBtn">Anmäl Intresse </button>
                     </div>
                 </div>
 
@@ -270,8 +270,8 @@
             base.StateHasChanged();
             await JSRuntime.InvokeVoidAsync("interior.resize");
             await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
-
-            await JSRuntime.InvokeVoidAsync("util.enableContent");
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+            await JSRuntime.InvokeVoidAsync("util.enableContentinterior");
 
         }
     }
