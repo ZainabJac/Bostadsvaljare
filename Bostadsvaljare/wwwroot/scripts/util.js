@@ -50,7 +50,7 @@
 
 
         enableClickMenu: function () {
-            setTimeout(() => { $('#topnav').removeClass('loading'); }, 1500);
+            setTimeout(() => { $('#topnav').removeClass('loading'); }, 2000);
                                         
         },
 
@@ -60,7 +60,7 @@
         },
 
         enableClickGridResize: function () {
-            setTimeout(() => { $('#GridResize').removeClass('loading'); }, 1500);
+            setTimeout(() => { $('#GridResize').removeClass('loading'); }, 2000);
             
            
         },
@@ -71,21 +71,39 @@
         },
 
         enableContent: function () {
-            setTimeout(() => { $('#theWindow').removeClass('loading'); }, 1500);
+            setTimeout(() => { $('#theWindow').removeClass('loading'); }, 2000);
 
         },
 
         enableContentinterior: function () {
             setTimeout(() => {
                 $('#theWindow').removeClass('loading');
-                var height1 = parseInt($('#carousel-item-1').height())
-                var heightfloor = $('.planritning').height()
-                var heightgal = $('.gallercontain').height()
-                var heightbutton = $('#buttonAndFact').height()
-                var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
-                $('#info').height(newheight + 'px')
-                var height10 = parseInt($('#carousel-item-1').height())
-                $('.iframe-container iframe').height(height10 + 'px');}, 1500);
+                if ($(window).width() <= 927) {
+                    var height2 = parseInt($('.planritning').height());
+                    $('#gallery').height(height2 + 'px');
+                    $('#info').height('auto')
+                    var height10 = parseInt($('#carousel-item-1').height())
+                    $('.iframe-container iframe').height(height10 + 'px');
+
+
+
+                }
+
+                else {
+                    $('#gallery').height('auto');
+
+                    var height1 = parseInt($('#carousel-item-1').height())
+                    var height2 = height1 * 0.15
+                    var heightfloor = $('.planritning').height()
+                    var heightgal = $('.gallercontain').height()
+                    var heightbutton = $('#buttonAndFact').height()
+                    var newheight = height1 - heightfloor - heightgal - heightbutton - heightbutton;
+                    $('#info').height(newheight + 'px')
+                    var height10 = parseInt($('#carousel-item-1').height())
+                    $('.iframe-container iframe').height(height10 + 'px');
+
+
+                }}, 2100);
 
         },
       

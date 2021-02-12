@@ -37,7 +37,7 @@ namespace Bostadsvaljare.Data
         public static List<House> GetHouseData()
         {
             if (houseData == null) {
-                int id = 0;
+                int id = 1;
                 houseData = new List<House> {
                     new House { ID = id++, Sqm = "148 m²", LandArea="-", Price = "4 595 000 kr", Rent = "5 450 kr/mån", Propertytyp = "Bostadsrätt", HouseNumber = "1", Status = "available", Housetype="G3K-red" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="-", Price = "4 475 000 kr", Rent = "5 450 kr/mån", Propertytyp = "Bostadsrätt", HouseNumber = "2", Status = "available", Housetype="G3K-red" },
