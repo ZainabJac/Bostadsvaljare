@@ -7,6 +7,43 @@
 
 <div style="width:100%">
 
+    <img src="/IMG/G2-Hus_medium.jpg" class="full" />
+
+    <video autoplay preload="" id="myVideo1" class="hide full">
+        <source src="/IMG/G2%20Hus_20210105_beauty%20element_2.mp4" type="video/mp4" />
+    </video>
+
+    <img id="img1" src="/IMG/G2-Hus_medium.jpg" class="hide full" />
+
+    <video autoplay id="myVideo2" class="hide full ">
+        <source src="/IMG/G2%20Hus_20210105_beauty%20element_2.mp4" type="video/mp4" />
+    </video>
+
+
+    <img src="/IMG/G2-Hus_medium.jpg" class="hide full" />
+
+    <video autoplay id="myVideo3" class="hide full">
+        <source src="/IMG/G2%20Hus_20210105_beauty%20element_2.mp4" type="video/mp4" />
+    </video>
+
+
+    <img src="/IMG/G2-Hus_medium.jpg" class="hide full" />
+
+    <video autoplay id="myVideo4" class="hide full">
+        <source src="/IMG/G2%20Hus_20210105_beauty%20element_2.mp4" type="video/mp4" />
+    </video>
+
+
+    <img src="/IMG/G2-Hus_medium.jpg" class="hide full" />
+
+
+
+    <button onclick="Reverse('myVideo1', 1)"> reverse</button>
+    <button onclick="Reverse('myVideo2', 2)"> reverse</button>
+    <button onclick="Reverse('myVideo3', 3)"> reverse</button>
+    <button onclick="Reverse('myVideo4', 4)"> reverse</button>
+    <button onclick="Reverse('myVideo4', 5)"> reverse</button>
+
 
     <div id="map" style="width:100%; margin:auto;"></div>
 
@@ -96,6 +133,18 @@
 
 
 <style>
+
+    .hide{
+        display:none
+    }
+
+    .full{
+        width:80%
+    }
+
+    .show{
+        display:block!important;
+    }
 
     .firstSearch {
         position: absolute;
