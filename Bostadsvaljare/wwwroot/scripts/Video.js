@@ -17,6 +17,8 @@
 
     var Numberofloops = btnid - currentimg
 
+    
+
     if (Numberofloops > 0) {
 
         while (i < Numberofloops) {
@@ -29,9 +31,10 @@
         var Numberofloops2 = Numberofloops * -1;
 
         while (i < Numberofloops2) {
-
+           
             id++;
             i++;
+            looping(id, i)
         }
 
     }
@@ -42,7 +45,8 @@
             el.classList.add('hide')
             console.log(el.tagName);
         });
-        var vid = document.getElementById(id)
+
+        var vid = document.getElementById('myVideo' + `${id}`)
         vid.classList.add('show')   
         vid.play()
         vid.onended = function () {
