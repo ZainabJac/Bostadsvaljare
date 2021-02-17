@@ -18,9 +18,6 @@ function playsunstudy(btnId) {
 }
 
 function playVid(id) {
-    // remove event listener
-    $('video').off('ended', onVidEnded);
-
     vid = $(`#${id}`);
 
     var els = $('.full');
@@ -47,4 +44,6 @@ function onVidEnded(e) {
             img = $(`#${curId}`);
         }, 1500);
     }
+
+    vid.off('ended', onVidEnded);
 }
