@@ -13,16 +13,15 @@ function playsunstudy(btnId) {
     if (direction) {
         playVid(`${curId}-${curId+direction}`);
         curId += direction;
+        img = $(`#${curId}`);
     }
 }
 
 function playVid(id) {
     // remove event listener
-    var videos = $('video');
-    videos.off('ended', onVidEnded);
+    $('video').off('ended', onVidEnded);
 
-    vid = $('#' + `${id}`);
-    img = $('#' + `${curId}`);
+    vid = $(`#${id}`);
 
     var els = $('.full');
     els.removeClass('show');
@@ -36,14 +35,16 @@ function playVid(id) {
 }
 
 function onVidEnded(e) {
-    vid.currentTime = 0;
     vid.removeClass('show');
     vid.addClass('hide');
     img.removeClass('hide');
     img.addClass('show');
 
     if (curId != targetId) {
-        playVid(`${curId}-${curId+direction}`);
-        curId += direction;
+        setTimeout(function () {
+            playVid(`${curId}-${curId+direction}`);
+            curId += direction;
+            img = $(`#${curId}`);
+        }, 1500);
     }
 }
