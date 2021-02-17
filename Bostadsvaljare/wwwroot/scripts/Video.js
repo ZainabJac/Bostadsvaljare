@@ -25,9 +25,6 @@ function playsunstudy(btnId) {
 }
 
 function playVid(id) {
-    // remove event listener
-    $('video').off('ended', onVidEnded);
-
     if (currentActive > circles.length) {
         currentActive = circles.length;
     }
@@ -60,6 +57,8 @@ function onVidEnded(e) {
             img = $(`#${curId}`);
         }, 1500);
     }
+
+    vid.off('ended', onVidEnded);
 }
 
 
