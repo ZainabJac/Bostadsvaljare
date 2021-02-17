@@ -50,11 +50,11 @@
 
     <div class="progress-container">
         <div class="progress" id="progress"></div>
-        <div onclick="playsunstudy(1)" class="circle active">1</div>
-        <div onclick="playsunstudy(2)" class="circle ">2</div>
-        <div onclick="playsunstudy(3)" class="circle ">3</div>
-        <div onclick="playsunstudy(4)" class="circle ">4</div>
-        <div onclick="playsunstudy(5)" class="circle ">4</div>
+        <div onclick="playsunstudy(1)" class="circle active">08:00</div>
+        <div onclick="playsunstudy(2)" class="circle ">12:00</div>
+        <div onclick="playsunstudy(3)" class="circle ">16:00</div>
+        <div onclick="playsunstudy(4)" class="circle ">20:00</div>
+        <div onclick="playsunstudy(5)" class="circle ">24:00</div>
     </div>
 
     <p> This is a tutorial project I added these boxes to</p>
@@ -156,7 +156,7 @@
         position: relative;
         margin-bottom: 30px;
         max-width: 100%;
-        width: 350px;
+        width: 90%;
     }
 
         .progress-container::before {
@@ -172,7 +172,7 @@
         }
 
     .progress {
-        background: #3498db;
+        background: #415965;
         position: absolute;
         top: 50%;
         left: 0;
@@ -185,20 +185,25 @@
 
     .circle {
         background: #fff;
-        color: #999;
+        color: #e0e0e0;
         border-radius: 50%;
-        height: 30px;
-        width: 30px;
+        height: 53px;
+        width: 53px;
         display: flex;
         align-items: center;
         justify-content: center;
         border: 3px solid #e0e0e0;
         transition: 0.4s ease;
+        font-size: 15px;
+        cursor: pointer;
     }
 
         .circle.active {
-            border-color: #3498db;
+            border-color: #415965;
+            color:darkorange;
         }
+
+
 
     .btn {
         background: #3498db;

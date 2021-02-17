@@ -68,6 +68,11 @@ function update() {
     circles.forEach((circle, inx) => {
         if (inx < currentActive) {
             circle.classList.add('active');
+            circle.classList.add('animate__animated')
+            circle.classList.add('animate__pulse')
+            circle.classList.add('animate__repeat-2')
+     
+            
         } else {
             circle.classList.remove('active');
         }
