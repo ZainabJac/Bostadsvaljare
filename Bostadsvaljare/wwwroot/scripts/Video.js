@@ -12,7 +12,8 @@ function playsunstudy(btnId) {
     progress = $('#progress');
     circles = $('.circle');
     targetId = btnId;
-
+    if (!img)
+        img = $(`#${curId}`);
 
     if (direction) {
         playVid(`${curId}-${curId+direction}`);
@@ -26,38 +27,26 @@ function playsunstudy(btnId) {
 function playVid(id) {
     vid = $(`#${id}`);
 
-    var els = $('.full');
-    els.removeClass('show');
-    els.addClass('hide');
-    vid.removeClass('animate__fadeIn')
-    vid.removeClass('animate__animated')
-    vid.addClass('animate__animated');
-    vid.addClass('animate__fadeIn');
+    let tmpImg = img;
+    img.fadeOut(100, function () {
+        tmpImg.addClass('hide');
+    });
     vid.removeClass('hide');
-    vid.addClass('show');
+    vid.fadeIn(100);
 
     vid[0].currentTime = 0;
     vid[0].play();
     vid.on('ended', onVidEnded);
+
+    setTimeout(function () {
+        vid.fadeOut(200);
+        img.removeClass('hide');
+        img.fadeIn(200);
+    }, vid[0].duration*1000 - 200);
 }
 
 function onVidEnded(e) {
-    vid.removeClass('animate__animated')
-    vid.removeClass('animate__fadeOut')
-    vid.addClass('animate__animated');
-    vid.addClass('animate__fadeOut')
-    vid.removeClass('show');
     vid.addClass('hide');
-
-    img.removeClass('hide');
-    img.removeClass('animate__animated');
-    img.removeClass('animate__fadeIn');
-    img.addClass('show');
-    img.addClass('animate__animated');
-    img.addClass('animate__fadeIn');
-
-    
-    
 
     if (curId != targetId) {
         setTimeout(function () {
@@ -70,7 +59,6 @@ function onVidEnded(e) {
     }
 
     vid.off('ended', onVidEnded);
-
 }
 
 function update() {
