@@ -1,37 +1,35 @@
-﻿var curIdx = 1;
-var target = 1;
+﻿var curId = 1;
+var targetId = 1;
 var direction = 0;
 var vid;
 var img;
 
-function playsunstudy(id, btnid) {
+function playsunstudy(btnId) {
     // direction=1(forward), direction=-1(backward), direction=0(nothing)
-    direction = Math.sign(btnid - curIdx);
+    direction = Math.sign(btnId - curId);
 
-    target = btnid;
+    targetId = btnId;
 
-    if (!direction) {
-        return;
-    } else {
-        curIdx += direction;
-        playVid('myVideo' + `${curIdx}`);
+    if (direction) {
+        playVid(`${curId}-${curId+direction}`);
+        curId += direction;
     }
 }
 
 function playVid(id) {
     // remove event listener
-    var videoes = document.getElementsByTagName("video");
-    Array.prototype.forEach.call(videoes, function (video) {
-        video.removeEventListener('ended', myHandler, false)
+    var videos = document.getElementsByTagName("video");
+    Array.prototype.forEach.call(videos, function (video) {
+        video.removeEventListener('ended', myHandler, false);
     });
 
     vid = document.getElementById(id);
-    img = document.getElementById(curIdx);
+    img = document.getElementById(curId);
 
-    var els = document.getElementsByClassName('full')
+    var els = document.getElementsByClassName('full');
     Array.prototype.forEach.call(els, function (el) {
-        el.classList.remove('show')
-        el.classList.add('hide')
+        el.classList.remove('show');
+        el.classList.add('hide');
     });
 
     img.classList.remove('hide');
@@ -55,16 +53,8 @@ function myHandler(e) {
     img.classList.remove('hide');
     img.classList.add('show');
 
-    if (curIdx != target) {
-        curIdx += direction;
-        playVid('myVideo' + `${curIdx}`);
-    }
-
-    else if (curIdx == 5) {
-        img.classList.remove('show');
-        img.classList.add('hide');
-
-        document.getElementById('6').classList.remove('hide');
-        document.getElementById('6').classList.add('show');
+    if (curId != targetId) {
+        playVid(`${curId}-${curId+direction}`);
+        curId += direction;
     }
 }
