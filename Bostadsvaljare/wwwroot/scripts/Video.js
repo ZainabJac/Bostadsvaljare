@@ -3,21 +3,34 @@ var targetId = 1;
 var direction = 0;
 var vid;
 var img;
+let currentActive = 1;
+let progress;
+let circles;
 
 function playsunstudy(btnId) {
     // direction=1(forward), direction=-1(backward), direction=0(nothing)
     direction = Math.sign(btnId - curId);
+    progress = document.getElementById('progress');
+    circles = document.querySelectorAll('.circle');
 
     targetId = btnId;
+
 
     if (direction) {
         playVid(`${curId}-${curId+direction}`);
         curId += direction;
         img = $(`#${curId}`);
+        currentActive += direction;
     }
 }
 
 function playVid(id) {
+    if (currentActive > circles.length) {
+        currentActive = circles.length;
+    }
+    update();
+
+
     vid = $(`#${id}`);
 
     var els = $('.full');
@@ -46,4 +59,21 @@ function onVidEnded(e) {
     }
 
     vid.off('ended', onVidEnded);
+}
+
+
+function update() {
+   
+    circles.forEach((circle, inx) => {
+        if (inx < currentActive) {
+            circle.classList.add('active');
+        } else {
+            circle.classList.remove('active');
+        }
+    });
+
+    const actives = document.querySelectorAll('.active');
+    progress.style.width = (actives.length - 1) / (circles.length - 1) * 100 + '%';
+
+
 }
