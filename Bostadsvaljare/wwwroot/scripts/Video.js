@@ -18,40 +18,29 @@ function playsunstudy(btnId) {
 
 function playVid(id) {
     // remove event listener
-    var videos = document.getElementsByTagName("video");
-    Array.prototype.forEach.call(videos, function (video) {
-        video.removeEventListener('ended', myHandler, false);
-    });
+    var videos = $('video');
+    videos.off('ended', onVidEnded);
 
-    vid = document.getElementById(id);
-    img = document.getElementById(curId);
+    vid = $('#' + `${id}`);
+    img = $('#' + `${curId}`);
 
-    var els = document.getElementsByClassName('full');
-    Array.prototype.forEach.call(els, function (el) {
-        el.classList.remove('show');
-        el.classList.add('hide');
-    });
+    var els = $('.full');
+    els.removeClass('show');
+    els.addClass('hide');
 
-    img.classList.remove('hide');
-    img.classList.add('show');
-
-    setTimeout(() => {
-        img.classList.remove('show');
-        img.classList.add('hide');
-        vid.classList.remove('hide');
-        vid.classList.add('show');
-        vid.currentTime = 0;
-        vid.play();
-        vid.addEventListener('ended', myHandler, false);
-    }, 500);
+    vid.removeClass('hide');
+    vid.addClass('show');
+    vid[0].currentTime = 0;
+    vid[0].play();
+    vid.on('ended', onVidEnded);
 }
 
-function myHandler(e) {
+function onVidEnded(e) {
     vid.currentTime = 0;
-    vid.classList.remove('show');
-    vid.classList.add('hide');
-    img.classList.remove('hide');
-    img.classList.add('show');
+    vid.removeClass('show');
+    vid.addClass('hide');
+    img.removeClass('hide');
+    img.addClass('show');
 
     if (curId != targetId) {
         playVid(`${curId}-${curId+direction}`);
