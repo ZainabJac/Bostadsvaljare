@@ -28,21 +28,21 @@ function playVid(id) {
     vid = $(`#${id}`);
 
     let tmpImg = img;
-    img.fadeOut(100, function () {
+    img.fadeOut(400, function () {
         tmpImg.addClass('hide');
     });
     vid.removeClass('hide');
-    vid.fadeIn(100);
+    vid.fadeIn(300);
 
     vid[0].currentTime = 0;
     vid[0].play();
     vid.on('ended', onVidEnded);
 
     setTimeout(function () {
-        vid.fadeOut(200);
+        vid.fadeOut(400);
         img.removeClass('hide');
-        img.fadeIn(200);
-    }, vid[0].duration*1000 - 200);
+        img.fadeIn(300);
+    }, vid[0].duration*1000 - 400);
 }
 
 function onVidEnded(e) {
@@ -55,7 +55,7 @@ function onVidEnded(e) {
             img = $(`#${curId}`);
 
             update();
-        }, 200);
+        }, 1500);
     }
 
     vid.off('ended', onVidEnded);

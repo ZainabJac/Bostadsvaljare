@@ -5,8 +5,8 @@
 
 
 
-<div style="width:100%">
-    <div style="position: relative; height: 800px;">
+<div style="width: 100%">
+    <div id="sunstudy-container" style="position: relative;">
         <img id="1" src="/IMG/test/6-00 (August).jpg" class="sunstudy" />
         <img id="2" src="/IMG/test/9-00 (August).jpg" class="hide sunstudy" />
         <img id="3" src="/IMG/test/3.jpg" class="hide sunstudy" />
@@ -130,9 +130,11 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("sunstudy_responsive.init");
+            await JSRuntime.InvokeVoidAsync("sunstudy_responsive.resize");
             await JSRuntime.InvokeVoidAsync(
-                "googlemaps.initAutocomplete", 59.534533, 17.940488
-            );
+            "googlemaps.initAutocomplete", 59.534533, 17.940488
+        );
         }
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("util.hideCP");
