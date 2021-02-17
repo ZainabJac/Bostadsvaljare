@@ -29,19 +29,35 @@ function playVid(id) {
     var els = $('.full');
     els.removeClass('show');
     els.addClass('hide');
-
+    vid.removeClass('animate__fadeIn')
+    vid.removeClass('animate__animated')
+    vid.addClass('animate__animated');
+    vid.addClass('animate__fadeIn');
     vid.removeClass('hide');
     vid.addClass('show');
+
     vid[0].currentTime = 0;
     vid[0].play();
     vid.on('ended', onVidEnded);
 }
 
 function onVidEnded(e) {
+    vid.removeClass('animate__animated')
+    vid.removeClass('animate__fadeOut')
+    vid.addClass('animate__animated');
+    vid.addClass('animate__fadeOut')
     vid.removeClass('show');
     vid.addClass('hide');
+
     img.removeClass('hide');
+    img.removeClass('animate__animated');
+    img.removeClass('animate__fadeIn');
     img.addClass('show');
+    img.addClass('animate__animated');
+    img.addClass('animate__fadeIn');
+
+    
+    
 
     if (curId != targetId) {
         setTimeout(function () {
@@ -54,6 +70,7 @@ function onVidEnded(e) {
     }
 
     vid.off('ended', onVidEnded);
+
 }
 
 function update() {
@@ -65,6 +82,9 @@ function update() {
             circle.classList.add('animate__repeat-2');
         } else {
             circle.classList.remove('active');
+            circle.classList.remove('animate__animated');
+            circle.classList.remove('animate__pulse');
+            circle.classList.remove('animate__repeat-2');
         }
     });
 
