@@ -41,11 +41,11 @@
     </video>
 
 
-    <button onclick="playsunstudy(1)"> 1</button>
+    <!-- <button onclick="playsunstudy(1)"> 1</button>
     <button onclick="playsunstudy(2)"> 2</button>
     <button onclick="playsunstudy(3)"> 3</button>
     <button onclick="playsunstudy(4)"> 4</button>
-    <button onclick="playsunstudy(5)"> 5</button>
+    <button onclick="playsunstudy(5)"> 5</button> -->
 
 
     <div class="progress-container">
@@ -180,7 +180,7 @@
         height: 4px;
         width: 0%;
         z-index: -1;
-        transition: 0.4s ease;
+        transition: 3.648s linear;
     }
 
     .circle {
@@ -193,12 +193,13 @@
         align-items: center;
         justify-content: center;
         border: 3px solid #e0e0e0;
-        transition: 0.4s ease;
+        transition: 0.348s ease;
         font-size: 15px;
         cursor: pointer;
     }
 
         .circle.active {
+            transition-delay: 3.3s;
             border-color: #415965;
             color:darkorange;
         }

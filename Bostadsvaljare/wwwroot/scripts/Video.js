@@ -3,16 +3,14 @@ var targetId = 1;
 var direction = 0;
 var vid;
 var img;
-let currentActive = 1;
 let progress;
 let circles;
 
 function playsunstudy(btnId) {
     // direction=1(forward), direction=-1(backward), direction=0(nothing)
     direction = Math.sign(btnId - curId);
-    progress = document.getElementById('progress');
-    circles = document.querySelectorAll('.circle');
-
+    progress = $('#progress');
+    circles = $('.circle');
     targetId = btnId;
 
 
@@ -20,17 +18,12 @@ function playsunstudy(btnId) {
         playVid(`${curId}-${curId+direction}`);
         curId += direction;
         img = $(`#${curId}`);
-        currentActive += direction;
+
+        update();
     }
 }
 
 function playVid(id) {
-    if (currentActive > circles.length) {
-        currentActive = circles.length;
-    }
-    update();
-
-
     vid = $(`#${id}`);
 
     var els = $('.full');
@@ -55,30 +48,26 @@ function onVidEnded(e) {
             playVid(`${curId}-${curId+direction}`);
             curId += direction;
             img = $(`#${curId}`);
-        }, 1500);
+
+            update();
+        }, 200);
     }
 
     vid.off('ended', onVidEnded);
 }
 
-
 function update() {
-   
-    circles.forEach((circle, inx) => {
-        if (inx < currentActive) {
+    circles.each((inx, circle) => {
+        if (inx < curId) {
             circle.classList.add('active');
-            circle.classList.add('animate__animated')
-            circle.classList.add('animate__pulse')
-            circle.classList.add('animate__repeat-2')
-     
-            
+            circle.classList.add('animate__animated');
+            circle.classList.add('animate__pulse');
+            circle.classList.add('animate__repeat-2');
         } else {
             circle.classList.remove('active');
         }
     });
 
-    const actives = document.querySelectorAll('.active');
-    progress.style.width = (actives.length - 1) / (circles.length - 1) * 100 + '%';
-
-
+    const actives = $('.active');
+    progress.css('width', (actives.length - 1) / (circles.length - 1) * 100 + '%');
 }
