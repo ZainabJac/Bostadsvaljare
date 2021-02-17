@@ -6,7 +6,7 @@ var img;
 
 function playsunstudy(id, btnid) {
     // direction=1(forward), direction=-1(backward), direction=0(replay)
-    direction = (btnid == curIdx) ? 0 : ((btnid > curIdx) ? 1 : -1);
+    direction = Math.sign(btnid - curIdx);
 
     target = btnid;
 
