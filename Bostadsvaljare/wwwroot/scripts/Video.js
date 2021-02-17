@@ -5,13 +5,13 @@ var vid;
 var img;
 
 function playsunstudy(id, btnid) {
-    // direction=1(forward), direction=-1(backward), direction=0(replay)
+    // direction=1(forward), direction=-1(backward), direction=0(nothing)
     direction = Math.sign(btnid - curIdx);
 
     target = btnid;
 
     if (!direction) {
-        playVid(id);
+        return;
     } else {
         curIdx += direction;
         playVid('myVideo' + `${curIdx}`);
