@@ -68,6 +68,9 @@ function update() {
         }
     });
 
-    const actives = $('.active');
-    progress.css('width', (actives.length - 1) / (circles.length - 1) * 100 + '%');
+    const maxWidth = $('.progress-container').width(),
+        circleSize = 53,
+        circleNr = circles.length - 1,
+        activesNr = $('.active').length - 1;
+    progress.width((maxWidth - circleSize) * activesNr / circleNr);
 }
