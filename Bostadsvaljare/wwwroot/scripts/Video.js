@@ -64,12 +64,21 @@ function onVidEnded(e) {
 }
 
 function update() {
+
+    setTimeout(function () {
+        console.log(`#0${curId}`)
+        $(`#0${curId}`).addClass('animate__animated');
+        $(`#0${curId}`).addClass('animate__pulse');
+        $(`#0${curId}`).addClass('animate__repeat-2');
+    }, 4500);
+
     circles.each((inx, circle) => {
         if (inx < curId) {
+            circle.classList.remove('animate__animated');
+            circle.classList.remove('animate__pulse');
+            circle.classList.remove('animate__repeat-2');
             circle.classList.add('active');
-            circle.classList.add('animate__animated');
-            circle.classList.add('animate__pulse');
-            circle.classList.add('animate__repeat-2');
+           
         } else {
             circle.classList.remove('active');
             circle.classList.remove('animate__animated');
