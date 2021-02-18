@@ -48,7 +48,10 @@ function onVidEnded(e) {
     vid.addClass('hide');
     $('#progressdiv').removeClass('loading');
     if (curId != targetId) {
+        let oldTarget = targetId;
         setTimeout(function () {
+            if (oldTarget !== targetId)
+                return;
             playVid(`${curId}-${curId + direction}`);
             curId += direction;
             img = $(`#${curId}`);
