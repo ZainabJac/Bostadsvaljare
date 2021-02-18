@@ -27,21 +27,21 @@ function playVid(id) {
     vid = $(`#${id}`);
     $('#progressdiv').addClass('loading');
     let tmpImg = img;
-    img.fadeOut(400, function () {
+    img.fadeOut(500, function () {
         tmpImg.addClass('hide');
     });
     vid.removeClass('hide');
-    vid.fadeIn(300);
+    vid.fadeIn(100);
 
     vid[0].currentTime = 0;
     vid[0].play();
     vid.on('ended', onVidEnded);
 
     setTimeout(function () {
-        vid.fadeOut(400);
+        vid.fadeOut(500);
         img.removeClass('hide');
-        img.fadeIn(300);
-    }, vid[0].duration * 1000 - 400);
+        img.fadeIn(50);
+    }, vid[0].duration * 1000 - 500);
 }
 
 function onVidEnded(e) {
