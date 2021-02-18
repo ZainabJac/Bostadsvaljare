@@ -12,53 +12,41 @@ function playsunstudy(btnId) {
     progress = $('#progress');
     circles = $('.circle');
     targetId = btnId;
-
+    if (!img)
+        img = $(`#${curId}`);
 
     if (direction) {
         playVid(`${curId}-${curId + direction}`);
         curId += direction;
         img = $(`#${curId}`);
-
         update();
     }
 }
 
 function playVid(id) {
     vid = $(`#${id}`);
-
-    var els = $('.full');
-    els.removeClass('show');
-    els.addClass('hide');
-    vid.removeClass('animate__fadeIn')
-    vid.removeClass('animate__animated')
-    vid.addClass('animate__animated');
-    vid.addClass('animate__fadeIn');
+    $('#progressdiv').addClass('loading');
+    let tmpImg = img;
+    img.fadeOut(400, function () {
+        tmpImg.addClass('hide');
+    });
     vid.removeClass('hide');
-    vid.addClass('show');
+    vid.fadeIn(300);
 
     vid[0].currentTime = 0;
     vid[0].play();
     vid.on('ended', onVidEnded);
+
+    setTimeout(function () {
+        vid.fadeOut(400);
+        img.removeClass('hide');
+        img.fadeIn(300);
+    }, vid[0].duration * 1000 - 400);
 }
 
 function onVidEnded(e) {
-    vid.removeClass('animate__animated')
-    vid.removeClass('animate__fadeOut')
-    vid.addClass('animate__animated');
-    vid.addClass('animate__fadeOut')
-    vid.removeClass('show');
     vid.addClass('hide');
-
-    img.removeClass('hide');
-    img.removeClass('animate__animated');
-    img.removeClass('animate__fadeIn');
-    img.addClass('show');
-    img.addClass('animate__animated');
-    img.addClass('animate__fadeIn');
-
-
-
-
+    $('#progressdiv').removeClass('loading');
     if (curId != targetId) {
         setTimeout(function () {
             playVid(`${curId}-${curId + direction}`);
@@ -66,11 +54,10 @@ function onVidEnded(e) {
             img = $(`#${curId}`);
 
             update();
-        }, 200);
+        }, 1500);
     }
 
     vid.off('ended', onVidEnded);
-
 }
 
 function update() {
