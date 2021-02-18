@@ -90,6 +90,7 @@ function update() {
     const maxWidth = $('.progress-container').width(),
         circleSize = 53,
         circleNr = circles.length - 1,
-        activesNr = $('.active').length - 1;
-    progress.width((maxWidth - circleSize) * activesNr / circleNr);
+        activesNr = $('.active').length - 1,
+        widthPx = (maxWidth - circleSize) * activesNr / circleNr;
+    progress.css('width', `${widthPx / maxWidth * 100}%`);
 }
