@@ -23,6 +23,11 @@ function playsunstudy(btnId) {
     }
 }
 
+function loadDone() {
+    console.log('test')
+    $('#theWindow').removeClass('loading');
+} 
+
 function playVid(id) {
     vid = $(`#${id}`);
     $('#progressdiv').addClass('loading');
@@ -66,7 +71,7 @@ function onVidEnded(e) {
 function update() {
 
     setTimeout(function () {
-        console.log(`#0${curId}`)
+       
         $(`#0${curId}`).addClass('animate__animated');
         $(`#0${curId}`).addClass('animate__pulse');
         $(`#0${curId}`).addClass('animate__repeat-2');

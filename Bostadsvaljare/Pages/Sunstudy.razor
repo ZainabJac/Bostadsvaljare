@@ -6,14 +6,14 @@
 
 
 
-<div style="width: 65%; margin:auto;">
+<div id="sunstudysection" style="width: 65%; margin:auto;">
     <div id="sunstudy-container" style="position: relative;">
         <img id="1" src="/IMG/test/6-00 (August).jpg" class="sunstudy" />
         <img id="2" src="/IMG/test/9-00 (August).jpg" class="hide sunstudy" />
         <img id="3" src="/IMG/test/9-00 (August).jpg" class="hide sunstudy" />
         <img id="4" src="/IMG/test/9-00 (August).jpg" class="hide sunstudy" />
         <img id="5" src="/IMG/test/9-00 (August).jpg" class="hide sunstudy" />
-        <video preload="auto" id="1-2" class="hide sunstudy">
+        <video preload="auto" id="1-2" onloadeddata="loadDone()" class="hide sunstudy">
             <source src="/IMG/test/TestAnim_1_1.mp4" type="video/mp4" />
         </video>
         <video preload="auto" id="2-3" class="hide sunstudy">
@@ -60,8 +60,9 @@
     {
         await JSRuntime.InvokeVoidAsync("sunstudy_responsive.init");
         await JSRuntime.InvokeVoidAsync("sunstudy_responsive.resize");
+        await JSRuntime.InvokeVoidAsync("util.disableContent");
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
-        await JSRuntime.InvokeVoidAsync("util.hideCP");
+        await JSRuntime.InvokeVoidAsync("util.hideCP"); 
     }
 
 }
@@ -99,7 +100,7 @@
         height: 4px;
         width: 0%;
         z-index: 1;
-        transition: 3.648s linear;
+        transition: 5s linear;
     }
 
     .circle {
@@ -112,14 +113,14 @@
         align-items: center;
         justify-content: center;
         border: 3px solid #e0e0e0;
-        transition: 0.348s ease;
+        transition: 0.4s ease;
         font-size: 15px;
         cursor: pointer;
         z-index: 2;
     }
 
         .circle.active {
-            transition-delay: 3.3s;
+            transition-delay: 4.5s;
             border-color: #415965;
             color: darkorange;
         }
