@@ -216,7 +216,7 @@
 
     private async void HouselistClick(int houseID, string housestatus)
     {
-        if (housestatus == "available")
+        if (housestatus == "available" || housestatus == "booked")
         {
             var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
             if (mobile && MobileSelection != houseID)
@@ -477,7 +477,7 @@
     private async void HousingClickedIM(int houseID, string ID, int view, string housestatus)
     {
 
-        if (housestatus == "available")
+        if (housestatus == "available" || housestatus == "booked")
         {
             var mobile = await JSRuntime.InvokeAsync<bool>("util.isDevice");
             if (mobile && MobileSelection != houseID)

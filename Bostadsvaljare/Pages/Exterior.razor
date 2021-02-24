@@ -84,13 +84,14 @@
                     </ChipCollection>
                 </SfChipList>
             </div>
+            <button onclick="window.location.href='/Solstudie'" type="button" class="sunstudybtn">Solstudie</button>
             <div id="view_menu">
                 <SfDropDownButton Content="Byt Område">
                     <DropDownButtonEvents OnItemRender="RenderMenuItem" ItemSelected="ChangeView" />
                     <DropDownButtonItems>
                         @for (int i = 0; i < Views.Count; i++)
                         {
-                            <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
+                        <DropDownButtonItem Id="@i.ToString()" Text="@Views[i].Name"></DropDownButtonItem>
                         }
                     </DropDownButtonItems>
                 </SfDropDownButton>
@@ -106,6 +107,8 @@
                     </DropDownButtonItems>
                 </SfDropDownButton>
             </div>
+
+
 
 
         </div>
@@ -484,7 +487,7 @@
     {
         if (ID == "view-1")
         {
-            if (housestatus == "available")
+            if (housestatus == "available" || housestatus =="booked")
             {
                 this.CurrentView = view;
 
@@ -502,7 +505,7 @@
 
         else {
 
-            if (housestatus == "available")
+            if (housestatus == "available" || housestatus == "booked")
             {
 
 
@@ -552,6 +555,19 @@
 
 <style>
 
+    .sunstudybtn {
+        width: 122.85px;
+        height: 34.8px;
+        border-radius: 3px;
+        background-color: #555555;
+        color: white;
+        font-family: acumin-pro,sans-serif;
+        margin-top:8px;
+        margin-bottom:15px;
+        font-size: 15px;
+        border-color:transparent;
+    }
+
     .backIcon {
         position: absolute;
         top: 40px;
@@ -565,7 +581,7 @@
 
     .buttonrow {
         position: fixed;
-        top: 60px;
+        top: 72px;
         left: 28px;
         display: flex;
         flex-direction: column;
@@ -640,19 +656,22 @@
     }
 
     @@media (max-width: 1695px) {
-        .marginmobile {
-            margin-top: 30px;
-        }
-
+      
         .backIcon {
             top: 60px;
             left: 13vw;
         }
     }
 
-    @@media (max-width: 1537px) {
+    @@media (max-width: 1630px) {
         .buttonrow {
             flex-direction: row-reverse;
+            top: 60px;
+            left: 33px;
+        }
+
+        .marginmobile {
+            margin-top: 30px;
         }
 
         .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
@@ -699,6 +718,32 @@
         .iconStack {
             font-size: 15px;
         }
+
+        .buttonrow{
+            width:100%;
+            position:initial;
+            justify-content:space-between
+        }
+
+
+
+        .e-chip-list.e-chip, .e-chip-list .e-chip {
+            font-size: 11px;
+            width: auto;
+            height: 30.5px;
+        }
+
+        .sunstudybtn {
+           
+            font-size: 11px;
+            width:auto;
+            height:30.5px;
+        }
+
+        .e-dropdown-btn, .e-dropdown-btn.e-btn, .e-dropdown-popup ul, .e-item {
+            font-size:11px;
+        }
+
     }
 
 

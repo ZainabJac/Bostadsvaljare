@@ -6,6 +6,8 @@ var img;
 let progress;
 let circles;
 
+
+
 function playsunstudy(btnId) {
     // direction=1(forward), direction=-1(backward), direction=0(nothing)
     direction = Math.sign(btnId - curId);
@@ -23,33 +25,39 @@ function playsunstudy(btnId) {
     }
 }
 
-function loadDone() {
-    console.log('test')
-    $('#theWindow').removeClass('loading');
-} 
+function loadisdone() {
+    setTimeout(() => { $('#theWindow').removeClass('loading'); }, 2000);
+}
 
 function playVid(id) {
     vid = $(`#${id}`);
     $('#progressdiv').addClass('loading');
     let tmpImg = img;
+    vid.fadeIn(100);
     img.fadeOut(500, function () {
         tmpImg.addClass('hide');
     });
     vid.removeClass('hide');
-    vid.fadeIn(100);
 
     vid[0].currentTime = 0;
     vid[0].play();
-    vid.on('ended', onVidEnded);
+    //vid.on('ended', onVidEnded);
+
+    setTimeout(function () {
+
+        onVidEnded()
+    }, 5000)
 
     setTimeout(function () {
         vid.fadeOut(500);
         img.removeClass('hide');
-        img.fadeIn(50);
+        img.fadeIn(100);
     }, vid[0].duration * 1000 - 500);
 }
 
-function onVidEnded(e) {
+    
+function onVidEnded() {
+    vid.stop() 
     vid.addClass('hide');
     $('#progressdiv').removeClass('loading');
     if (curId != targetId) {
@@ -67,6 +75,8 @@ function onVidEnded(e) {
 
     vid.off('ended', onVidEnded);
 }
+
+
 
 function update() {
 

@@ -1,0 +1,263 @@
+﻿
+@page "/Solstudie"
+
+@inject IJSRuntime JSRuntime
+@using BlazorPro.Spinkit
+
+<SpinLoader IsLoading="true">
+    <LoadingTemplate>
+        <div id="loader" style="text-align:center; padding-top:18%;">
+            <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
+            <Plane Center="true" />
+        </div>
+    </LoadingTemplate>
+</SpinLoader>
+
+<div id="sunstudysection" class="bigsection hide">
+    <div id="sunstudy-container" style="position: relative;">
+        <img id="1" src="/IMG/600.jpg" class="sunstudy" />
+        <img id="2" src="/IMG/900.jpg" class="hide sunstudy" />
+        <img id="3" src="/IMG/1200.jpg" class="hide sunstudy" />
+        <img id="4" src="/IMG/1500.jpg" class="hide sunstudy" />
+        <img id="5" src="/IMG/1800.jpg" class="hide sunstudy" />
+
+        <video id="1-2" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/600-900.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="2-3" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/900-1200.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="3-4" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/1200-1500.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="4-5" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/1500-1800.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="2-1" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/900-600.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="3-2" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/1200-900.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="4-3" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/1500-1200.m4v" type="video/mp4" />
+        </video>
+        <video preload="auto" id="5-4" class="hide sunstudy" playsinline="true">
+            <source src="/IMG/1800-1500.m4v" />
+        </video>
+        <p class="infotag">Augusti månad</p>
+    </div>
+
+    <div class="progress-container" id="progressdiv">
+        <div class="progress" id="progress"></div>
+        <div onclick="playsunstudy(1)" id="01" class="circle active">06:00</div>
+        <div onclick="playsunstudy(2)" id="02" class="circle ">09:00</div>
+        <div onclick="playsunstudy(3)" id="03" class="circle ">12:00</div>
+        <div onclick="playsunstudy(4)" id="04" class="circle ">15:00</div>
+        <div onclick="playsunstudy(5)" id="05" class="circle ">18:00</div>
+    </div>
+
+  
+
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("sunstudy_responsive.init");
+        await JSRuntime.InvokeVoidAsync("sunstudy_responsive.resize");
+      
+        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+        await JSRuntime.InvokeVoidAsync("util.hideCP");
+    }
+
+}
+
+
+
+<style>
+
+    .infotag {
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+        color: white;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .progress-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 30px;
+        max-width: 100%;
+        width: 100%;
+    }
+
+        .progress-container::before {
+            content: "";
+            background: #e0e0e0;
+            position: absolute;
+            top: 50%;
+            left: 0.1%;
+            transform: translateY(-50%);
+            height: 4px;
+            width: 99.8%;
+            z-index: 1;
+        }
+
+    .bigsection {
+        width: 65%;
+        margin: auto;
+    }
+
+
+    .progress {
+        background: #415965;
+        position: absolute;
+        top: 50%;
+        left: 26.5px;
+        transform: translateY(-50%);
+        height: 4px;
+        width: 0%;
+        z-index: 1;
+        transition: 5s linear;
+    }
+
+    .circle {
+        background: #fff;
+        color: #e0e0e0;
+        border-radius: 50%;
+        height: 53px;
+        width: 53px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #e0e0e0;
+        transition: 0.4s ease;
+        font-size: 15px;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+        .circle.active {
+            transition-delay: 4.5s;
+            border-color: #415965;
+            color: darkorange;
+        }
+
+    .btn {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 8px 30px;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:focus {
+            outline: 0;
+        }
+
+        .btn:disabled {
+            background: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+    .hide {
+        display: none;
+    }
+
+    .sunstudy {
+        position: absolute;
+        width: 100%;
+    }
+
+    .show {
+        display: block !important;
+    }
+
+    @@media (max-width: 927px) {
+        .circle {
+            height: 43px;
+            width: 43px;
+            font-size: 13px;
+        }
+
+        .bigsection {
+            width: 100%;
+        }
+
+        .circle {
+           
+            border: 2px solid #e0e0e0;
+        }
+    }
+
+    @@media (max-width: 727px) {
+        .circle {
+            height: 33px;
+            width: 33px;
+            font-size: 12px;
+        }
+
+        .infotag{font-size:12px}
+    }
+
+    @@media (max-width: 527px) {
+        .circle {
+            height: 33px;
+            width: 33px;
+            font-size: 12px;
+        }
+
+        .progress {
+            height: 2px;
+        }
+
+
+       
+    }
+
+
+    @@media (max-width: 427px) {
+        .circle {
+            height: 27px;
+            width: 27px;
+            font-size: 10px;
+        }
+
+        .infotag{
+            font-size:10px;
+        }
+    }
+
+    @@media (max-width: 427px) {
+        .circle {
+            height: 26px;
+            width: 26px;
+            font-size: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .progress-container::before {
+            content: "";
+            background: #e0e0e0;
+            position: absolute;
+            top: 50%;
+            left: 0.1%;
+            transform: translateY(-50%);
+            height: 2px;
+            width: 99.8%;
+            z-index: 1;
+        }
+    }
+</style>
