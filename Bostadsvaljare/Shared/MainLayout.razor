@@ -1,30 +1,31 @@
 ﻿@inherits LayoutComponentBase
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Navigations
+@using BlazorPro.BlazorSize
 
-
-<div class="topnav">
-    <NavMenu />
-</div>
-
-<div  id="theWindow" class="main">
-    <div class="top-center px-4">
-
-
+<MediaQueryList>
+    <div class="topnav">
+        <NavMenu />
     </div>
 
-    <div class="content px-4">
-        @Body
+    <div id="theWindow" class="main">
+        <div class="top-center px-4">
 
-        <div id="tipmsg"></div>
+
+        </div>
+
+        <div class="content px-4">
+            @Body
+
+            <div id="tipmsg"></div>
+        </div>
     </div>
-</div>
-
+</MediaQueryList>
 
 <style>
 
-    body{
-        background-color:white;
+    body {
+        background-color: white;
     }
 
     /* width */
@@ -36,7 +37,6 @@
     /* Track */
     ::-webkit-scrollbar-track {
         background: #f1f1f1;
-        
     }
 
     /* Handle */
@@ -51,7 +51,7 @@
         }
 
 
- .hidecolorpicker {
+    .hidecolorpicker {
         display: none;
     }
 
@@ -116,6 +116,7 @@
             height: 0%;
         }
     }
+
     .main {
         margin-top: 62px;
     }
@@ -168,5 +169,4 @@
             font-size: 8px;
         }
     }
-
 </style>

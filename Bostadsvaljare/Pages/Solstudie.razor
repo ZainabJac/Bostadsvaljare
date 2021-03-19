@@ -3,6 +3,7 @@
 
 @inject IJSRuntime JSRuntime
 @using BlazorPro.Spinkit
+@using BlazorPro.BlazorSize
 
 <SpinLoader IsLoading="true">
     <LoadingTemplate>
@@ -20,31 +21,62 @@
         <img id="3" src="/IMG/1200.jpg" class="hide sunstudy" />
         <img id="4" src="/IMG/1500.jpg" class="hide sunstudy" />
         <img id="5" src="/IMG/1800.jpg" class="hide sunstudy" />
+        
+        @if (IsXSmall)
+        {
+            <video  id="1-2" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/600-900-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="2-3" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/900-1200-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="3-4" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1200-1500-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="4-5" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1500-1800-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="2-1" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/900-600-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="3-2" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1200-900-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="4-3" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1500-1200-1.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="5-4" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1800-1500-1.m4v" />
+            </video>
+        }
+        else
+        {
+            <video id="1-2" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/600-900.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="2-3" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/900-1200.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="3-4" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1200-1500.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="4-5" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1500-1800.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="2-1" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/900-600.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="3-2" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1200-900.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="4-3" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1500-1200.m4v" type="video/mp4" />
+            </video>
+            <video preload="auto" id="5-4" class="hide sunstudy firstindex" playsinline="true">
+                <source src="/IMG/1800-1500.m4v" />
+            </video>
+        }
 
-        <video id="1-2" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/600-900.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="2-3" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/900-1200.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="3-4" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/1200-1500.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="4-5" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/1500-1800.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="2-1" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/900-600.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="3-2" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/1200-900.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="4-3" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/1500-1200.m4v" type="video/mp4" />
-        </video>
-        <video preload="auto" id="5-4" class="hide sunstudy" playsinline="true">
-            <source src="/IMG/1800-1500.m4v" />
-        </video>
         <p class="infotag">Augusti månad</p>
     </div>
 
@@ -57,16 +89,22 @@
         <div onclick="playsunstudy(5)" id="05" class="circle ">18:00</div>
     </div>
 
-  
+
 
 </div>
 
+<MediaQuery Media="@Breakpoints.XSmallDown" @bind-Matches="IsXSmall" />
+
 @code {
+
+ 
+    bool IsXSmall = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JSRuntime.InvokeVoidAsync("sunstudy_responsive.init");
         await JSRuntime.InvokeVoidAsync("sunstudy_responsive.resize");
-        
+
         await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
         await JSRuntime.InvokeVoidAsync("util.hideCP");
     }
@@ -76,6 +114,10 @@
 
 
 <style>
+
+    .firstindex{
+        z-index:9999;
+    }
 
     .infotag {
         position: absolute;
@@ -173,7 +215,9 @@
         }
 
     .hide {
-        display: none;
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
     }
 
     .sunstudy {
@@ -182,7 +226,8 @@
     }
 
     .show {
-        display: block !important;
+      top:initial;
+      left:initial;
     }
 
     @@media (max-width: 927px) {
@@ -197,7 +242,6 @@
         }
 
         .circle {
-           
             border: 2px solid #e0e0e0;
         }
     }
@@ -209,7 +253,9 @@
             font-size: 12px;
         }
 
-        .infotag{font-size:12px}
+        .infotag {
+            font-size: 12px
+        }
     }
 
     @@media (max-width: 527px) {
@@ -222,9 +268,6 @@
         .progress {
             height: 2px;
         }
-
-
-       
     }
 
 
@@ -235,8 +278,8 @@
             font-size: 10px;
         }
 
-        .infotag{
-            font-size:10px;
+        .infotag {
+            font-size: 10px;
         }
     }
 
