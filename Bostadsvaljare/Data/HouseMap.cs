@@ -7,12 +7,12 @@ namespace Bostadsvaljare.Data
     {
         private static Dictionary<string, List<HouseMap>> data;
         private static readonly Dictionary<string, string> imageToVariant = new Dictionary<string, string> {
-            { "IMG/Oversikt_stor_medium.jpg", "view-1" },
+            { "IMG/OversiktStora_medium.jpg", "view-1" },
             { "IMG/Oversikt1-5_medium.jpg", "view-2" },
             { "IMG/Oversikt_V2_medium.jpg", "view-3" },
             { "IMG/Oversikt8_medium.jpg", "view-4" },
             { "IMG/Oversikt11_medium.jpg", "view-5" },
-            { "IMG/Oversikt_stor_medium2.jpg", "view-6" },
+            { "IMG/OversiktStora_medium2.jpg", "view-6" },
 
         };
 
@@ -99,11 +99,11 @@ namespace Bostadsvaljare.Data
     new HouseMap { HouseNumber = "25", IMCoords="2174, 751, 2374, 747, 2326, 667, 2341, 613, 2319, 555, 2344, 477, 2322, 265, 2136, 265, 2147, 471, 2128, 555, 2146, 609, 2136, 649" },
     new HouseMap { HouseNumber = "26", IMCoords="1970, 750, 2172, 749, 2136, 650, 2146, 611, 2127, 555, 2147, 473, 2136, 266, 1948, 267, 1954, 475, 1938, 550, 1953, 615, 1944, 671" },
     new HouseMap { HouseNumber = "27", IMCoords="1758, 753, 1970, 751, 1942, 672, 1952, 616, 1938, 552, 1951, 475, 1943, 275, 1742, 275, 1749, 486, 1744, 564, 1752, 621, 1750, 661" },
-    new HouseMap { HouseNumber = "29", IMCoords="1742, 565, 1749, 484, 1740, 278, 1556, 278, 1547, 329, 1530, 329, 1539, 757, 1755, 754, 1748, 664, 1750, 624" },
-    new HouseMap { HouseNumber = "28", IMCoords="1046, 762, 1242, 757, 1244, 667, 1241, 629, 1249, 576, 1244, 497, 1242, 290, 1051, 291, 1047, 496, 1058, 577, 1052, 629, 1061, 672" },
-    new HouseMap { HouseNumber = "30", IMCoords="1242, 762, 1467, 758, 1464, 669, 1464, 623, 1465, 329, 1446, 328, 1438, 290, 1241, 291, 1243, 496, 1250, 576, 1241, 631, 1243, 667" },
-    new HouseMap { HouseNumber = "31", IMCoords="666, 749, 844, 772, 870, 674, 862, 635, 874, 579, 854, 498, 866, 297, 674, 297, 664, 499, 664, 509, 691, 585, 671, 632, 682, 677" },
-    new HouseMap { HouseNumber = "32", IMCoords="849, 773, 1047, 763, 1060, 672, 1052, 630, 1059, 577, 1045, 499, 1053, 300, 864, 297, 854, 499, 854, 509, 875, 582, 861, 632, 872, 677" },
+    new HouseMap { HouseNumber = "28", IMCoords="1742, 565, 1749, 484, 1740, 278, 1556, 278, 1547, 329, 1530, 329, 1539, 757, 1755, 754, 1748, 664, 1750, 624" },
+    new HouseMap { HouseNumber = "30", IMCoords="1046, 762, 1242, 757, 1244, 667, 1241, 629, 1249, 576, 1244, 497, 1242, 290, 1051, 291, 1047, 496, 1058, 577, 1052, 629, 1061, 672" },
+    new HouseMap { HouseNumber = "29", IMCoords="1242, 762, 1467, 758, 1464, 669, 1464, 623, 1465, 329, 1446, 328, 1438, 290, 1241, 291, 1243, 496, 1250, 576, 1241, 631, 1243, 667" },
+    new HouseMap { HouseNumber = "32", IMCoords="666, 749, 844, 772, 870, 674, 862, 635, 874, 579, 854, 498, 866, 297, 674, 297, 664, 499, 664, 509, 691, 585, 671, 632, 682, 677" },
+    new HouseMap { HouseNumber = "31", IMCoords="849, 773, 1047, 763, 1060, 672, 1052, 630, 1059, 577, 1045, 499, 1053, 300, 864, 297, 854, 499, 854, 509, 875, 582, 861, 632, 872, 677" },
     new HouseMap { HouseNumber = "33", IMCoords="512, 266, 699, 268, 756, 299, 698, 299, 676, 298, 667, 469, 666, 509, 692, 585, 671, 633, 682, 677, 666, 751, 440, 723, 421, 719, 382, 625, 497, 487, 496, 472" },
 
                     }},
