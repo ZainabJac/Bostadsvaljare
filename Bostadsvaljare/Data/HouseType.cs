@@ -284,7 +284,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/G3-G2_Badrum.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3_Sovrum_vr25.jpg", Type=ImageType.Roundme, Link="https://player.vimeo.com/video/525570276", RoomName="kok" },
                             new Image { Source="IMG/360placeholderG2vind.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/JKgK4Wb7OeqM4tfrHu6Y", RoomName="vind" },
-                                new Image { Source="IMG/360placeholderG2vind.jpg", Type=ImageType.Roundme, Link="https://player.vimeo.com/video/526129528", RoomName="kok" },
+                            new Image { Source="IMG/360placeholderG2vindCopy.jpg", Type=ImageType.Roundme, Link="https://player.vimeo.com/video/526129528", RoomName="kok" },
                             new Image { Source="IMG/G3(kt)-Plan-1_3D_medium.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3(kt)-Plan-2_3D_medium.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G2-Plan-3_3D_medium.jpg", Type=ImageType.Image },
