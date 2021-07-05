@@ -12,7 +12,7 @@
 
 
         hidecolorpicker: function () {
-            if ($('#houseinputid').val() > 43 && $(houseinputid).val() < 55) {
+            if ($('#houseinputid').val() > 44 && $(houseinputid).val() < 56) {
                 $('#colorpick').removeClass("colorpickermenu")
                 $('#colorpick').removeClass("hidecolorpicker")
                 $('#colorpick').addClass("colorpickermenu2")
