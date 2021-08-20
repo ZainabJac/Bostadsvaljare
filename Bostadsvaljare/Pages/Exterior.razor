@@ -21,8 +21,7 @@
     <ContentTemplate>
         <div id="content">
             <img src="IMG/pixel.gif" alt="" style="position: absolute; top: 0px; visibility: hidden;" />
-           
-            
+                      
             
             <div>
 
@@ -128,6 +127,9 @@
 
     }
 
+
+    //Views is a list of the class viewdata that contains all the overview images, its used in the For loops for the "overview gallery", if more overviews are need add more the Views as a new object of ViewData to the list. 
+
     List<ViewData> Views = new List<ViewData> {
         new ViewData() {
             ID = "view-1",
@@ -186,18 +188,18 @@
     };
 
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
-    private int CurrentView { get; set; } = 0;
-    private string CurrentStudy { get; set; } = "midday";
+    private int CurrentView { get; set; } = 0; //this can be set to a diffrent inte depending on wich starting "overview is needed" 0 is the first class object in the views list.  
+    private string CurrentStudy { get; set; } = "midday"; //currently not used. displays the current images in views -> SunStudies dictionary. cant be used if a dropdown sunstudy is needed to switch between diffrent images (time of the day) on the overviewImage.
     private int MobileSelection { get; set; } = -1;
 
-    private bool ImagesLoaded { get; set; } = false;
+    private bool ImagesLoaded { get; set; } = false; // is used with the spinloader 
     private bool ViewsInited { get; set; } = false;
-    private bool highlightAllIsChecked = false;
+    private bool highlightAllIsChecked = false; // displays all imagemap colors if ture. 
     private bool firstRenderDone = false;
     private bool TooltipIsdisabled = false;
-    private int Mouseout { get; set; } = 1;
-    private int MouseIn { get; set; } = 1;
-    private string MouseOverHouse { get; set; } = "";
+    private int Mouseout { get; set; } = 1;  // is used togheter with MouseIn to keep track on when to display tooltips
+    private int MouseIn { get; set; } = 1; // is used togheter with Mouseout to keep track on when to display tooltips
+    private string MouseOverHouse { get; set; } = ""; // displays the housenumber depending on what house is currently beeing hoovred. 
 
     protected override void OnInitialized()
     {
@@ -213,6 +215,7 @@
 
         if (firstRender)
         {
+            // initializes the js needed for the pages and disposes the ones that are not used. 
 
             await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
             await JSRuntime.InvokeVoidAsync("interior.dispose");
@@ -235,20 +238,15 @@
         }
 
 
-
-
     }
 
-    //private async void OnAfterLoader()
-    //{
-
-    //}
-
+    // used to display the name of the views (overview images) in a dropdown menu. 
     private void RenderMenuItem(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         args.Element.AddClass(new string[] { "item-background" });
     }
 
+    // changes the view depending on what name is selected from the dropdown menu
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentView = int.Parse(args.Element.ID);
@@ -258,6 +256,7 @@
         base.StateHasChanged();
     }
 
+    // not in use. but can be used the same way as above with dropdown meny, but changes the current sunstudy selection of the current view instead of changing to a diffrent view. 
     public async void ChangeSunStudy(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
         this.CurrentStudy = args.Element.ID;
@@ -267,6 +266,8 @@
         base.StateHasChanged();
     }
 
+
+    //hides the tooltip and increments mouseout. 
     private async void OnMouseOutIM(string houseNumber)
     {
         Mouseout = Mouseout + 1;
@@ -277,6 +278,8 @@
 
     }
 
+    // shows diffrent tooltip depending on mouse in and mouse out intergers and what view is currently active (some views contains imagemaps with houseumbers, some "overviews" contains imagemaps with other views in them.)
+    // more conditions can be added/removed if needed for a the current tooltips view. 
     public async void OnMouseOverIM(MouseEventArgs e, string houseNumber, string views, int view)
     {
         MouseIn = MouseIn + 1;
@@ -403,7 +406,7 @@
         }
     }
 
-
+    //when used it sets ightlights all the areas on the imagemap with  the mapster script. 
     public async void OnChangeHighlight(Syncfusion.Blazor.Buttons.ClickEventArgs e)
     {
         highlightAllIsChecked = !highlightAllIsChecked;
@@ -413,66 +416,7 @@
             await JSRuntime.InvokeVoidAsync("mapster.deselect");
     }
 
-    private async void ShowTooltip(double x, double y, string houseNumber)
-    {
-
-
-        string msg;
-        Data.House house = null;
-        foreach (Data.House h in Data.House.GetHouseData()) {
-            if (h.HouseNumber == houseNumber) {
-                house = h;
-                break;
-            }
-        }
-
-        if (house.ID < 16)
-        {
-
-            switch (house.Status)
-            {
-                case "sold":
-                    msg = "Såld";
-                    break;
-                case "booked":
-                    msg = "Reserverad";
-                    break;
-                default:
-                    msg = "Hus nr.\t" + houseNumber +
-                        "\nBoarea:\t" + house.Sqm + "m²" +
-                        "\nPris: \t" + house.Price +
-                        "\nPris: \t" + house.Propertytyp +
-                        "\nPris: \t" + house.Rent;
-
-                    break;
-            }
-        }
-        else
-        {
-
-            switch (house.Status)
-            {
-                case "sold":
-                    msg = "Såld";
-                    break;
-                case "booked":
-                    msg = "Reserverad";
-                    break;
-                default:
-                    msg = "Hus nr.\t" + houseNumber +
-                        "\nBoarea:\t" + house.Sqm  +
-                        "\nPris: \t" + house.Price +
-                        "\nPris: \t" + house.Propertytyp;
-
-                    break;
-            }
-        }
-
-        await JSRuntime.InvokeVoidAsync(
-        "util.showTooltip", x, y, msg
-    );
-    }
-
+    // changes the view to the first on in the views list. Can be changed to be another one depending on what interger view is set to. 
     private async void BackClicked()
     {
         int view = 0;
@@ -483,6 +427,8 @@
         base.StateHasChanged();
     }
 
+
+    //takes the user to the Interior page with the housenumber that is selected, but if a certain view is in the currentview ("view-1" in this one) it takes you to a diffrent view instead.
     private async void HousingClicked(int houseID, string ID, int view, string housestatus)
     {
         if (ID == "view-1")
@@ -541,9 +487,10 @@
         DisposeAsync();
     }
 
+
+ 
     public async ValueTask DisposeAsync()
     {
-
         await JSRuntime.InvokeVoidAsync("mapster.dispose");
         await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
         await JSRuntime.InvokeVoidAsync("exterior.dispose");
@@ -617,23 +564,17 @@
 
 
     #view_menu {
-     /*   position: fixed;
-        top: 65px;
-        left: 130px;*/
+  
         display: inline-block;
     }
 
     #sun_study_menu {
-     /*   position: fixed;
-        top: 65px;
-        left: 7px;*/
+
         display: inline-block;
     }
 
     #highlight_all_checker {
-     /*   position: fixed;
-        top: 65px;
-        left: 265px;*/
+
         display: inline-block;
         padding: 0px;
     }
