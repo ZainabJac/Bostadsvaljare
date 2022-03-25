@@ -162,6 +162,8 @@ namespace Bostadsvaljare.Data
                                 new Floorplan.Room { RoomID = 3, Left = "63%", Top="41%",  IconClass="fas fa-camera" },
                                 new Floorplan.Room { RoomID = 7, Left = "36%", Top="45%",  IconClass="fas fa-camera" },
                                   new Floorplan.Room { RoomID = 8, Left = "31%", Top="59%", IconClass="fas fa-video" },
+
+                          
                             }},
                             new Floorplan { Source = "IMG/G3(kt)-Plan-2-50.png", Rooms = new List<Floorplan.Room> {
                                  new Floorplan.Room { RoomID = 9, Left = "34%", Top="52%", IconClass="fas fa-camera"  },
@@ -181,6 +183,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/Ext1-5grey.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image},
                             new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Livingroom_Extra_Ready50.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
                             new Image { Source="IMG/360Iconplaceholder-g3k-living.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
                             new Image { Source="IMG/Bathroom_1-(G3_Floor-1).jpg", Type=ImageType.Image },
@@ -230,6 +233,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/Ext1-5red.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image},
                             new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
+                             new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Livingroom_Extra_Ready50.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
                             new Image { Source="IMG/360Iconplaceholder-g3k-living.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
                             new Image { Source="IMG/Bathroom_1-(G3_Floor-1).jpg", Type=ImageType.Image },
@@ -253,22 +257,22 @@ namespace Bostadsvaljare.Data
                     { "G2", new HouseType {
                         Floorplans = new List<Floorplan> {
                            new Floorplan { Source = "IMG/G3(kt)-Plan-1-50.png", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 5, Left = "63.5%", Top="54%", IconClass="fas fa-street-view"},
-                                new Floorplan.Room { RoomID = 3, Left = "56%", Top="60%", IconClass="fas fa-camera"  },
-                                new Floorplan.Room { RoomID = 1, Left = "63%", Top="30%", IconClass="fas fa-camera" },
-                                new Floorplan.Room { RoomID = 4, Left = "74%", Top="42%", IconClass="fas fa-street-view"  },
-                                new Floorplan.Room { RoomID = 2, Left = "63%", Top="41%",  IconClass="fas fa-camera" },
-                                new Floorplan.Room { RoomID = 6, Left = "36%", Top="45%",  IconClass="fas fa-camera" },
-                                 new Floorplan.Room { RoomID = 7, Left = "31%", Top="59%", IconClass="fas fa-video" },
+                              new Floorplan.Room { RoomID = 6, Left = "63.5%", Top="54%", IconClass="fas fa-street-view"},
+                                new Floorplan.Room { RoomID = 4, Left = "56%", Top="60%", IconClass="fas fa-camera"  },
+                                new Floorplan.Room { RoomID = 2, Left = "63%", Top="30%", IconClass="fas fa-camera" },
+                                new Floorplan.Room { RoomID = 5, Left = "74%", Top="42%", IconClass="fas fa-street-view"  },
+                                new Floorplan.Room { RoomID = 3, Left = "63%", Top="41%",  IconClass="fas fa-camera" },
+                                new Floorplan.Room { RoomID = 7, Left = "36%", Top="45%",  IconClass="fas fa-camera" },
+                                  new Floorplan.Room { RoomID = 8, Left = "31%", Top="59%", IconClass="fas fa-video" },
                             }},
                             new Floorplan { Source = "IMG/G3(kt)-Plan-2-50.png", Rooms = new List<Floorplan.Room> {
-                                new Floorplan.Room { RoomID = 8, Left = "34%", Top="52%", IconClass="fas fa-camera"  },
-                                new Floorplan.Room { RoomID = 9, Left = "59%", Top="53%", IconClass="fas fa-camera" },
-                                       new Floorplan.Room { RoomID = 10, Left = "59%", Top="34%", IconClass="fas fa-video" },
+                                new Floorplan.Room { RoomID = 9, Left = "34%", Top="52%", IconClass="fas fa-camera"  },
+                                new Floorplan.Room { RoomID = 10, Left = "59%", Top="53%", IconClass="fas fa-camera" },
+                                       new Floorplan.Room { RoomID = 11, Left = "59%", Top="34%", IconClass="fas fa-video" },
                             }},
                             new Floorplan { Source = "IMG/G2-Plan-3-50.png", Rooms = new List<Floorplan.Room> {
-                                 new Floorplan.Room { RoomID = 11, Left = "50%", Top="35%", IconClass="fas fa-street-view" },
-                                   new Floorplan.Room { RoomID = 12, Left = "55%", Top="41%", IconClass="fas fa-video" },
+                                 new Floorplan.Room { RoomID = 12, Left = "50%", Top="35%", IconClass="fas fa-street-view" },
+                                   new Floorplan.Room { RoomID = 13, Left = "55%", Top="41%", IconClass="fas fa-video" },
                             }},
                         },
                         Images = new List<Image> {
@@ -276,6 +280,7 @@ namespace Bostadsvaljare.Data
                             new Image { Source="IMG/G2-Hus_medium.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/G3kfloor1sofa.jpg", Type=ImageType.Image},
                             new Image { Source="IMG/G3kfloor1livingAndKitchen.jpg", Type=ImageType.Image },
+                            new Image { Source="IMG/Adjust-KitchenG3KT2.jpg", Type=ImageType.Image },
                             new Image { Source="IMG/Livingroom_Extra_Ready50.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/5KtHD5XRR9URI3CE0W2V", RoomName="vardagsrum" },
                             new Image { Source="IMG/360Iconplaceholder-g3k-living.jpg", Type=ImageType.Roundme, Link="https://roundme.com/embed/zbbOja9JGWDzc5v1WVZe", RoomName="kok" },
                             new Image { Source="IMG/Bathroom_1-(G3_Floor-1).jpg", Type=ImageType.Image },
