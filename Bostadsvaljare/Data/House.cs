@@ -96,7 +96,7 @@ namespace Bostadsvaljare.Data
                     new House { ID = id++, Sqm = "150 m²", LandArea="474 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "55", Status = "sold", Housetype="V2-green", HouseFact="Ag1Husnr55.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="380 m²", Price = "7 070 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "56", Status = "available", Housetype="G3K-top-red", HouseFact="ag2_56.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="272 m²", Price = "6 820 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "57", Status = "available", Housetype="G3K-top-red", HouseFact="ag2_57.pdf" },
-                    new House { ID = id++, Sqm = "148 m²", LandArea="357 m²", Price = "6 970 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "58", Status = "booked", Housetype="G3K-top-red", HouseFact="ag2_58.pdf" },
+                    new House { ID = id++, Sqm = "148 m²", LandArea="357 m²", Price = "6 970 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "58", Status = "available", Housetype="G3K-top-red", HouseFact="ag2_58.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="410 m²", Price = "7 170 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "59", Status = "available", Housetype="G3K-top-red", HouseFact="ag2_59.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="345 m²", Price = "6 850 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "60", Status = "booked", Housetype="G3K-top-red", HouseFact="ag2_60.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="380 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "61", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_61.pdf" },
@@ -106,7 +106,7 @@ namespace Bostadsvaljare.Data
                     new House { ID = id++, Sqm = "148 m²", LandArea="191 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "65", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_65.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="169 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "66", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_66.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="182 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "67", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_67.pdf" },
-                    new House { ID = id++, Sqm = "148 m²", LandArea="196 m²", Price = "6 070 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "68", Status = "booked", Housetype="G3K-top-grey", HouseFact="ag2_68.pdf" },
+                    new House { ID = id++, Sqm = "148 m²", LandArea="196 m²", Price = "6 070 000 kr", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "68", Status = "available", Housetype="G3K-top-grey", HouseFact="ag2_68.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="209 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "69", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_69.pdf" },
                     new House { ID = id++, Sqm = "148 m²", LandArea="343 m²", Price = "-", Rent = "-", Propertytyp = "Äganderätt", HouseNumber = "70", Status = "sold", Housetype="G3K-top-grey", HouseFact="ag2_70.pdf" },
                 };
