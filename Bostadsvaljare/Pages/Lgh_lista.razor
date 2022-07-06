@@ -34,10 +34,12 @@
                                 {
                                     @foreach (Data.HouseMap map in view.Value)
                                     {
-                                        var housestatus = Data.House.Get(map.ID).Status;
+                                        string housestatus = "available";
+                                        if (map.ID > 0)
+                                          housestatus = Data.House.Get(map.ID).Status;
 
-                                        <area id="@Data.House.Get(map.ID).Status" status="" href="#"
-                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID, Views[_i].ID, map.View, housestatus)"
+                                        <area id="@housestatus" status="" href="#"
+                                              @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID, housestatus)"
                                               coords="@map.IMCoords" shape="poly">
                                     }
                                 }
@@ -254,17 +256,20 @@
 
         foreach (KeyValuePair<string, List<Data.HouseMap>> view in MapData)
         {
-            Dictionary<string, int> statuses = new Dictionary<string, int> {
-                { "available", 0 },
-                { "booked", 0 },
-                { "sold", 0 },
-                { "comming", 0 },
-                {"showcase", 0 }
-            };
+            Dictionary<string, int> statuses = new Dictionary<string, int> {};
             foreach (Data.HouseMap map in view.Value)
             {
-                string status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
-                HouseToStatus.Add(view.Key +"_"+ map.HouseNumber,
+                string status = "available";
+                if (map.ID > 0)
+                    status = HouseData.Find(x => x.HouseNumber == map.HouseNumber).Status;
+
+                if (!statuses.ContainsKey(status))
+                    statuses.Add(status, 0);
+
+                string id = map.HouseNumber != null
+                          ? map.HouseNumber : map.View;
+
+                HouseToStatus.Add(view.Key +"_"+ id,
                                   status + statuses[status]++);
             }
         }
@@ -474,7 +479,7 @@
 
 
 
-    private async void HousingClickedIM(int houseID, string ID, int view, string housestatus)
+    private async void HousingClickedIM(int houseID, string housestatus)
     {
 
         if (housestatus == "available" || housestatus == "booked")

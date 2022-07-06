@@ -30,7 +30,7 @@
             @for (int i = 0; i < Views.Count; i++)
             {
                 var _i = i;
-                <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == _i ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
+                <div id="view-@_i" class="marginmobile" style="@(!ViewsInited || CurrentView == "view-"+(_i+1) ? "" : "display: none;") @(ViewsInited ? "" : "visibility: hidden;")">
                    
                     @for (int j = 0; j < Views[_i].SunStudies.Count; j++)
                     {
@@ -47,9 +47,11 @@
                                     {
                                         @foreach (Data.HouseMap map in view.Value)
                                         {
-                                            var housestatus = Data.House.Get(map.ID).Status;
+                                            string housestatus = "available";
+                                            if (map.ID > 0)
+                                              housestatus = Data.House.Get(map.ID).Status;
 
-                                            <area id="@Data.House.Get(map.ID).Status" status="" href="#"
+                                            <area id="@housestatus" status="" href="#"
                                                   
                                                   @onmouseover="e => OnMouseOverIM(e, map.HouseNumber, Views[_i].ID, map.View)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClicked(map.ID, Views[_i].ID, map.View, housestatus)"
                                                   coords="@map.IMCoords" shape="poly">
@@ -65,7 +67,7 @@
             }
 
         <div class="buttonrow">
-            @if (CurrentView != 0)
+            @if (CurrentView != "view-1")
             {
             <div class="backIcon">
                 <span @onclick="() =>BackClicked()" class="fa-stack fa-2x iconStack">
@@ -188,7 +190,7 @@
     };
 
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
-    private int CurrentView { get; set; } = 0; //this can be set to a diffrent inte depending on wich starting "overview is needed" 0 is the first class object in the views list.  
+    private string CurrentView { get; set; } = "view-1"; //this can be set to a diffrent inte depending on wich starting "overview is needed" 0 is the first class object in the views list.  
     private string CurrentStudy { get; set; } = "midday"; //currently not used. displays the current images in views -> SunStudies dictionary. cant be used if a dropdown sunstudy is needed to switch between diffrent images (time of the day) on the overviewImage.
     private int MobileSelection { get; set; } = -1;
 
@@ -249,7 +251,7 @@
     // changes the view depending on what name is selected from the dropdown menu
     public async void ChangeView(Syncfusion.Blazor.SplitButtons.MenuEventArgs args)
     {
-        this.CurrentView = int.Parse(args.Element.ID);
+        this.CurrentView = "view-" + (args.Element.ID + 1);
         await JSRuntime.InvokeVoidAsync("exterior.changeImage", this.CurrentView, this.CurrentStudy);
 
         this.MobileSelection = -1;
@@ -280,7 +282,7 @@
 
     // shows diffrent tooltip depending on mouse in and mouse out intergers and what view is currently active (some views contains imagemaps with houseumbers, some "overviews" contains imagemaps with other views in them.)
     // more conditions can be added/removed if needed for a the current tooltips view. 
-    public async void OnMouseOverIM(MouseEventArgs e, string houseNumber, string views, int view)
+    public async void OnMouseOverIM(MouseEventArgs e, string houseNumber, string currentView, string targetView)
     {
         MouseIn = MouseIn + 1;
 
@@ -298,40 +300,17 @@
                 double x = e.ClientX;
                 double y = e.ClientY;
 
-                if (views == "view-1")
+                if (currentView == "view-1")
                 {
-                    string msg2 = "";
-
-                    if (view == 1)
-                    {
-                        msg2 = "Etapp 1, radhus och kedjehus";
-                    }
-
-                    else if (view == 4)
-                    {
-                        msg2 = "Etapp 2 – radhus och kedjehus";
-                    }
-
-                    else if (view == 2)
-                    {
-
-                        msg2 = "Villor";
-                    }
-
-                    else if (view == 3)
-                    {
-                        msg2 = "Etapp 2, Brf-radhus";
-                    }
-
+                    string msg = Views.Find(view => view.ID == targetView).Name;
 
                     await JSRuntime.InvokeVoidAsync(
-                  "util.showTooltip", x, y, msg2);
+                      "util.showTooltip", x, y, msg
+                    );
                 }
 
                 else
                 {
-
-
                     string msg;
                     Data.House house = null;
                     foreach (Data.House h in Data.House.GetHouseData())
@@ -419,7 +398,7 @@
     // changes the view to the first on in the views list. Can be changed to be another one depending on what interger view is set to. 
     private async void BackClicked()
     {
-        int view = 0;
+        string view = "view-1";
         this.CurrentView = view;
         await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
 
@@ -429,15 +408,15 @@
 
 
     //takes the user to the Interior page with the housenumber that is selected, but if a certain view is in the currentview ("view-1" in this one) it takes you to a diffrent view instead.
-    private async void HousingClicked(int houseID, string ID, int view, string housestatus)
+    private async void HousingClicked(int houseID, string currentView, string targetView, string housestatus)
     {
-        if (ID == "view-1")
+        if (currentView == "view-1")
         {
             if (housestatus == "available" || housestatus =="booked")
             {
-                this.CurrentView = view;
+                this.CurrentView = targetView;
 
-                await JSRuntime.InvokeVoidAsync("exterior.changeImage", view, this.CurrentStudy);
+                await JSRuntime.InvokeVoidAsync("exterior.changeImage", targetView, this.CurrentStudy);
 
                 this.MobileSelection = -1;
                 base.StateHasChanged();

@@ -6,7 +6,7 @@
      
         
         loadImages: async function (data) {
-            var self = this,
+            var self = this, ind = 0
                 imagesLoaded = data.length * 3,
                 onLoadImg = function () { imagesLoaded = imagesLoaded - 1; };
             // Load images that use image maps every time
@@ -30,15 +30,10 @@
                         usemap: '#houses-' + i + '-' + name,
                         style: { width: '99%' },
                     });
+
+                    self.mapIndex[name + view.Name] = ind++;
                 }
             });
-
-            var i, name, ind = 0;
-            for (i in data) {
-                for (name in data[i].sunStudies) {
-                    this.mapIndex[name + i] = ind++;
-                }
-            }
 
             while (imagesLoaded > 0) {
                 await util.delay(100);
