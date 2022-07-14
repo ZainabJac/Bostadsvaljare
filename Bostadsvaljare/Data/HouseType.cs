@@ -477,8 +477,6 @@ namespace Bostadsvaljare.Data
                           }}
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                           //new Image { Source="IMG/SolHav/interior/G3G3kt-Område-11Gata_25.jpg", Type=ImageType.Image },
@@ -513,8 +511,6 @@ namespace Bostadsvaljare.Data
                           }}
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                         },
@@ -527,10 +523,9 @@ namespace Bostadsvaljare.Data
                           }},
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/SolHav/interior/220711_Kitchen_3K.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                         },
                         Comment = "Nån lämplig kommentar..."
                       }},
@@ -541,10 +536,9 @@ namespace Bostadsvaljare.Data
                           }},
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/SolHav/interior/220711_Kitchen_3K.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                         },
                         Comment = "Nån lämplig kommentar..."
                       }},
@@ -555,10 +549,9 @@ namespace Bostadsvaljare.Data
                           }},
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/SolHav/interior/220711_Kitchen_3K.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                         },
                         Comment = "Nån lämplig kommentar..."
                       }},
@@ -569,10 +562,9 @@ namespace Bostadsvaljare.Data
                           }},
                         },
                         Images = new List<Image> {
-                          new Image { Source="IMG/SolHav/interior/220630_SolHav_Kitchen_3K_JPG.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/SolHav/interior/220711_Kitchen_3K.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/interior/220630_SolHav_KitchenZoomed_3K_JPG.jpg", Type=ImageType.Image },
                           new Image { Source="IMG/SolHav/exterior/220607_SolHav_Gatubild_BeautyElement.jpg", Type=ImageType.Image },
-                          new Image { Source="IMG/SolHav/exterior/SolHav_Moodbild__beauty element.jpg", Type=ImageType.Image },
                         },
                         Comment = "Nån lämplig kommentar..."
                       }},
