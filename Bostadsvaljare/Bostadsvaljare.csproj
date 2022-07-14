@@ -104,4 +104,8 @@
     <None Include="wwwroot\IMG\icons\info.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Pdf\SolHav\" />
+  </ItemGroup>
+
 </Project>

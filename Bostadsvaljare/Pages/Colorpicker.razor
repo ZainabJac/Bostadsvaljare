@@ -99,6 +99,8 @@
 </SpinLoader>
 
 @code {
+    private static Colorpicker self;
+    private static string Project { get; } = "WIJK";
 
     private bool isChecked = true;
     public Dictionary<string, List<Data.House>> MapData { get; set; }
@@ -119,8 +121,6 @@
     private bool InitRoundme { get; set; } = false;
     private bool firstRenderDone = false;
 
-    private static Colorpicker self;
-
 
 
     protected override void OnInitialized()
@@ -129,7 +129,7 @@
 
         House = Data.House.Getcolor("0");
         string houseType = House.Housetype;
-        HouseData = Data.HouseType.GetData(houseType);
+        HouseData = Data.HouseType.GetData(houseType, Project);
         self = this;
         SelectedImage = HouseData.Images[0];
         base.StateHasChanged();

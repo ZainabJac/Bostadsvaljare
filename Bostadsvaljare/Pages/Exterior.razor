@@ -49,7 +49,7 @@
                                         {
                                             string housestatus = "available";
                                             if (map.ID > 0)
-                                              housestatus = Data.House.Get(map.ID).Status;
+                                              housestatus = Data.House.Get(map.ID, Project).Status;
 
                                             <area id="@housestatus" status="" href="#"
                                                   
@@ -189,6 +189,8 @@
           },
     };
 
+    private static string Project { get; } = "WIJK";
+
     public Dictionary<string, List<Data.HouseMap>> MapData { get; set; }
     private string CurrentView { get; set; } = "view-1"; //this can be set to a diffrent inte depending on wich starting "overview is needed" 0 is the first class object in the views list.  
     private string CurrentStudy { get; set; } = "midday"; //currently not used. displays the current images in views -> SunStudies dictionary. cant be used if a dropdown sunstudy is needed to switch between diffrent images (time of the day) on the overviewImage.
@@ -207,7 +209,7 @@
     {
 
         base.OnInitialized();
-        this.MapData = Data.HouseMap.GetHouseMapData();
+        this.MapData = Data.HouseMap.GetHouseMapData(Project);
         base.StateHasChanged();
     }
 
@@ -313,7 +315,7 @@
                 {
                     string msg;
                     Data.House house = null;
-                    foreach (Data.House h in Data.House.GetHouseData())
+                    foreach (Data.House h in Data.House.GetHouseData(Project))
                     {
                         if (h.HouseNumber == houseNumber)
                         {

@@ -1,0 +1,1209 @@
+﻿@*@page "/interior"*@
+@page "/solhav/interior/{HouseID}"
+@layout SolHavLayout
+
+@implements IDisposable
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using BlazorPro.Spinkit
+
+
+<SpinLoader IsLoading="SelectedImage == null || !ImagesLoaded ">
+    <LoadingTemplate>
+        <div style="text-align:center; padding-top:18%;">
+            <span class="loader"><span class="loader-inner"></span></span> <text style="color:#415965; font-weight:bold; font-family:acumin-pro,sans-serif;"> Loading.. </text>
+            <Plane Center="true" />
+        </div>
+    </LoadingTemplate>
+    <ContentTemplate>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <img src="IMG/pixel.gif" alt="" @onload="OnAfterLoader" style="position: absolute; top: 0px; visibility: hidden;" />
+
+        <div id="fullscreen-image" class="@(ShowFullscreenImage ? "" : "hidden")">
+            <div class="fs-bg" @onclick="OnClickClose">
+                <div class="fs-border" @onclick:stopPropagation="true">
+                    <span class="fs-close" @onclick="OnClickClose"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="containerbig">
+            <input value="@HouseID" id="houseinputid" style="display:none;" />
+            <div class="line-7">
+                <!-- Stillbilder -->
+                <div id="slideshow" class="@(ShowInfo ? "" : "full")">
+                    <div id="gallery-carousel" class="carousel slide" data-interval="false">
+                        <ol class="carousel-indicators">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
+                                <li data-target="#gallery-carousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < HouseData.Images.Count; i++)
+                            {
+
+
+                                var _i = i;
+
+                                <div id="carousel-item-@_i" class="carousel-item @(_i == 0 ? "active" : "")">
+                                    @if (HouseData.Images[_i].Type == Bostadsvaljare.Data.ImageType.Roundme)
+                                    {
+                                        <div class="iframe-container">
+                                            <iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen src="@HouseData.Images[_i].Link" @onload="OnLoadRoundme"> </iframe>
+                                        </div>
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="hideit" c_ind="@_i">
+                                    }
+                                    else
+                                    {
+                                        <img id="@("carosal" +_i)" src="@HouseData.Images[_i].Source" class="d-block w-100" c_ind="@_i">
+                                    }
+                                </div>
+
+                            }
+                        </div>
+                        <a class="carousel-control-prev" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" onclick="interior.adjustpan()" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" onclick="interior.adjustpan()" style="height:25%; margin-top:32.5%;" href="#gallery-carousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="rightContainer " class="line-4">
+
+
+
+                <div style="margin-top:-7px;" class="planritning floorplancontain pan_el">
+                    @*<SfCard>
+            <CardStacked>*@
+                    <div class="btn-group">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <button id="button@_i" class="BtnInbtngrp" @onclick="() => ChangeFloor(_i)">Plan @(_i+1)</button>
+                        }
+                    </div>
+
+                    <div id="floorplan-main">
+                        @for (int i = 0; i < HouseData.Floorplans.Count; i++)
+                        {
+                            var _i = i;
+                            <div id="floorplan-@_i" class="@(!FloorplanInited || Floor == _i ? "" : "hidden")" style="        position: relative;
+                                 background: transparent; @(FloorplanInited ? "" : "visibility: hidden;")">
+
+                                @for (int j = 0; j < HouseData.Floorplans[_i].Rooms.Count; j++)
+                                {
+                                    var _j = j;
+
+                                    <i id="icon" style="position: absolute; top:@HouseData.Floorplans[_i].Rooms[_j].Top;  left:@HouseData.Floorplans[_i].Rooms[_j].Left;" class="@HouseData.Floorplans[_i].Rooms[_j].IconClass icons"
+                                       @onclick="() => OnClickHotspot(HouseData.Floorplans[_i].Rooms[_j].RoomID)"></i>
+                                }
+
+                            </div>
+                        }
+                    </div>
+
+                </div>
+
+
+
+                <div id="gallery" class="gallercontain">
+                    @for (int i = 0; i < HouseData.Images.Count; i++)
+                    {
+                        var _i = i;
+                        <span id="gallery-item-@i">
+                            <img id="@("galler" + i)" src="@HouseData.Images[i].Source" class="gallery-img" c_ind="@i" @onclick="e=>StaticChangeRoomClick(_i)">
+                        </span>
+                    }
+                </div>
+
+
+                <div class="infocontain">
+                    <div>
+
+                        <div id="info" class="infodiv ram" style="margin-bottom:2%;">
+
+                            <div class="textitem ">
+                                <text class="card-info-header">Hus nr.</text>
+
+                            </div>
+
+
+                            <div class="textitem">
+
+                                <text class="card-info-header-fat">@House.HouseNumber</text>
+                            </div>
+
+                            <div class="textitem2">
+                                <text class="card-info-header">Pris</text>
+
+                            </div>
+
+                            <div class="textitem">
+
+                                <text class="card-info-header-fat">@House.Price</text>
+                            </div>
+
+                            <div class="textitem">
+                                <text class="card-info-header">Boarea</text>
+
+                            </div>
+
+                            <div class="textitem">
+
+                                <text class="card-info-header-fat">@House.Sqm</text>
+                            </div>
+
+                            <div class="textitem2">
+                                <text class="card-info-header">Tomtarea</text>
+
+                            </div>
+
+                            <div class="textitem">
+
+                                <text class="card-info-header-fat">@House.LandArea</text>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+
+                <div id="buttonAndFact" class="buttonNFact" style="display:flex;  width:100%; flex-direction:row; justify-content: space-between;">
+                    <div class="visibleButton">
+                        <button onclick="window.open('pdf/@Project/@House.HouseFact');" class="boFakta" href="www.c4hus.se">Bofaktablad</button>
+                    </div>
+                    <div class="hiddenButton">
+                        <button class="CallToActionBtn">Färgväljare</button>
+                    </div>
+                    <div class="visibleButton">
+                        <button onclick="window.open('https://www.c4hus.se/kontakt/')"  class="CallToActionBtn">Anmäl Intresse </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </ContentTemplate>
+</SpinLoader>
+
+
+@code {
+    private static Interior self;
+    private static string Project { get; } = "SolHav";
+
+    public string MoveIcon2 { get; set; } = "position: absolute; left: 52%; top: 12px;";
+    public string MoveIcon { get; set; } = "position: absolute; left: 78%; top: 17px;";
+    public string MinimapHide { get; set; } = "display: initial;";
+    private bool isChecked = true;
+    public Dictionary<string, List<Data.House>> MapData { get; set; }
+
+    [Parameter]
+
+    public string HouseID { get; set; }
+    public Data.House House { get; set; }
+    public Data.HouseType.Image SelectedImage { get; set; }
+    public Data.ImageType SelectedType { get; set; }
+    public bool ShowInfo { get; set; } = true;
+
+    private Data.HouseType HouseData { get; set; }
+    private bool ShowFullscreenImage { get; set; } = false;
+    private int Floor { get; set; } = 0;
+    private int Radius { get; set; } = 15;
+    private bool ImagesLoaded { get; set; } = false;
+    private bool FloorplanInited { get; set; } = false;
+    private bool InitVR { get; set; } = false;
+    private bool InitRoundme { get; set; } = false;
+    private bool firstRenderDone = false;
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        House = Data.House.Get(int.Parse(HouseID), Project);
+        string houseType = House.Housetype;
+        HouseData = Data.HouseType.GetData(houseType, Project);
+        self = this;
+        SelectedImage = HouseData.Images[0];
+
+        base.StateHasChanged();
+    }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mapster.dispose");
+            await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+            await JSRuntime.InvokeVoidAsync("lgh_lista.dispose");
+            await JSRuntime.InvokeVoidAsync("exterior.dispose");
+            await JSRuntime.InvokeVoidAsync("interior.addResizeListener");
+            ImagesLoaded = await JSRuntime.InvokeAsync<bool>("interior.loadImages", House.Housetype, HouseData);
+            firstRenderDone = true;
+            base.StateHasChanged();
+
+            await JSRuntime.InvokeVoidAsync("util.hidecolorpicker");
+            await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+            await JSRuntime.InvokeVoidAsync("interior.applyImages", House.Housetype);
+            FloorplanInited = true;
+            base.StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("interior.resize");
+            await JSRuntime.InvokeVoidAsync("interior.hidecolorpicker");
+            await JSRuntime.InvokeVoidAsync("util.hideTooltip");
+            await JSRuntime.InvokeVoidAsync("util.enableContentinterior");
+
+        }
+    }
+
+    private async void OnAfterLoader(ProgressEventArgs ev)
+    {
+
+
+
+    }
+
+    private async void OnLoadVR(ProgressEventArgs ev)
+    {
+        // Change height on #vr_video to be its width*2/3
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "vr_video");
+        InitVR = true;
+        base.StateHasChanged();
+    }
+
+    private async void OnLoadRoundme(ProgressEventArgs ev)
+    {
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "roundme-embedded");
+        InitRoundme = true;
+        base.StateHasChanged();
+    }
+
+
+
+    private async void OnClickHotspot(int roomID)
+    {
+
+        Data.HouseType.Image oldImage = this.SelectedImage;
+        this.SelectedImage = this.HouseData.Images[roomID];
+        this.SelectedType = this.SelectedImage.Type;
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, this.SelectedImage);
+    }
+
+    private void OnClickClose(MouseEventArgs ev)
+    {
+        ShowFullscreenImage = false;
+        base.StateHasChanged();
+    }
+
+
+
+
+    public async void StaticChangeRoomClick(int ind)
+    {
+        Data.HouseType.Image oldImage = SelectedImage;
+        SelectedImage = HouseData.Images[ind];
+        SelectedType = SelectedImage.Type;
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("util.matchHeightToWidth", "roundme-embedded");
+        await JSRuntime.InvokeVoidAsync("interior.changeRoom", oldImage, SelectedImage);
+    }
+
+
+    private async void ChangeFloor(int floor)
+    {
+        Floor = floor;
+        base.StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.changeImage", floor);
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.resize");
+        await JSRuntime.InvokeVoidAsync("interior.addanimation");
+    }
+
+    public void Dispose()
+    {
+        if (!firstRenderDone)
+            return;
+
+        DisposeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("mapster.dispose");
+        await JSRuntime.InvokeVoidAsync("mapster_responsive.dispose");
+        await JSRuntime.InvokeVoidAsync("interior.dispose");
+        //await JSRuntime.InvokeVoidAsync("pan_viewer.dispose");
+    }
+}
+
+<style>
+
+    .carousel-indicators{
+        bottom:-17px !important;
+    }
+
+    #buttonAndFact {
+        margin-left: 1.5%
+    }
+
+    .hiddenButton{
+        display:none;
+    }
+
+    .visibleButton{
+        width:48%
+    }
+
+    .visibleButtonCP{
+        width: 48%
+    }
+
+    .hiddenButtonCP {
+        display: none;
+    }
+
+    .CallToActionBtn {
+        padding: 5px;
+        width: 100%;
+        font-size: 14px;
+        background-color: darkorange;
+        color: white; /* border: none; */
+        border-radius: 2px;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+
+    .buttonNFact:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .ram {
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+
+    .hideit{
+        display:none;
+    }
+
+    .rightbutton-div{
+        width:50%;
+        position:absolute;
+        bottom:10px;
+        right:7px;
+    }
+
+  
+
+    .icons {
+        color: darkorange;
+        font-size: 18px;
+    }
+
+    .icons:hover {
+        color: orange;
+        cursor:pointer;
+        font-size:18px;
+    }
+
+    .infodiv {
+        width: 101%;
+        
+        flex-wrap: wrap;
+        flex-direction: row;
+        display: flex;
+        float:left;
+
+    }
+
+    .textitem {
+        width: 35%;
+        height: 20%;
+    
+        padding-left: 2%;
+    }
+
+    .textitem2 {
+        width: 35%;
+        height: 20%;
+   
+        padding-left:2%;
+    }
+
+    .containerbig{
+        display:flex;
+        flex-wrap:wrap;
+        flex-direction:row;
+        justify-content:center;
+    }
+
+
+        .iframe-container iframe {
+
+            width: 100%;
+        }
+    .rightbutton{
+        float: right;
+
+        background-color:darkorange !important;
+    }
+
+    #fullscreen-image {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        z-index: 18;
+    }
+
+    .fs-bg {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 0px;
+        background: rgba(32, 32, 32, 0.3);
+    }
+
+    .fs-border {
+        position: relative;
+        width: 90%;
+        margin: auto;
+        top: 87px;
+        border: 5px solid #fafafa;
+        border-radius: 11px;
+        box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .fs-close {
+        position: absolute;
+        top: -17px;
+        right: -17px;
+        background: #415965;
+
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
+        box-shadow: inset 0 0 9px rgba(16, 16, 16, 0.35);
+    }
+    .fs-close:hover {
+        cursor: pointer;
+    }
+    .fs-close:before, .fs-close:after {
+        content: '';
+        height: 25px;
+        border-left: 2px solid white;
+        position: absolute;
+        left: 12px;
+    }
+    .fs-close:after {
+        transform: rotate(45deg);
+    }
+    .fs-close:before {
+        transform: rotate(-45deg);
+    }
+
+    .e-checkbox-wrapper .e-frame{
+        border:none;
+    }
+
+    .e-checkicon {
+        height: 40px;
+        width: 40px;
+        display:none;
+
+    }
+
+    .e-btn {
+        background-color: #415965;
+        color: white;
+    }
+
+    .e-checkbox-wrapper .e-frame::before {
+        content: '\e78c';
+        font-size: 35px;
+        color: white;
+        background-color: #F9B256;
+        border-color: none;
+        outline: none;
+        height: 40px;
+        width: 40px;
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-frame.e-check::before {
+        content: '\e799';
+        height: 40px;
+        width: 40px;
+
+    }
+
+    .e-checkicon.e-checkbox-wrapper .e-check {
+        font-size: 35px;
+    }
+
+
+    .btn-group button {
+        color: #415965;
+        cursor: pointer;
+        float: right;
+        width: 100%;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+
+    /* Clear floats (clearfix hack) */
+    .btn-group:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .btn-group button:hover {
+        background: #415965;
+        color: white;
+      
+    }
+
+    .btn-group button:focus {
+        background: #415965;
+        color: white;
+       
+    }
+
+    .e-chip-list.e-chip, .e-chip-list .e-chip {
+        border-radius: 3px;
+        background-color: #fafafa;
+        color: #415965;
+        font-family: acumin-pro,sans-serif;
+        padding: 7px;
+    }
+
+    .e-card {
+        font-family: acumin-pro,sans-serif;
+    }
+
+    .italicfont {
+        font-family: acumin-pro,sans-serif;
+        font-size: 12px;
+        font-style: italic;
+        text-size-adjust: none;
+    }
+
+    .line-1 {
+        width: 8.33%;
+    }
+
+    .last {
+        margin-right: initial;
+    }
+
+    .line-2 {
+        width: 16.66%;
+    }
+
+    .line-3 {
+        width: 25%;
+    }
+
+    .line-4 {
+        width: 33.33%;
+    }
+
+
+    .line-5 {
+        width: 41.66%;
+    }
+
+    .line-6 {
+        width: 50%;
+    }
+
+    .line-7 {
+        width: 60%;
+    }
+
+    .line-8 {
+        width: 66.66%;
+    }
+
+    .line-9 {
+        width: 75%;
+    }
+
+    .line-10 {
+        width: 83.33%;
+    }
+
+    .line-11 {
+        width: 91.66%;
+    }
+
+    .line-12 {
+        width: 100%;
+    }
+
+    .boFakta {
+        padding: 5px;
+        width: 100%;
+        font-size: 14px;
+        background-color: white;
+        color: #415965;
+        border-radius: 2px;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        outline: none;
+    }
+    
+
+    .gallercontain {
+        float: left;
+        margin:7px;
+        width: 98%;
+        overflow: hidden;
+        margin-bottom:2%;
+    }
+
+    .floorplancontain {
+        float: left;
+        padding: 7px;
+        width: 100%;
+    }
+
+    .infocontain {
+
+        padding: 7px;
+        width: 100%;
+        justify-content:space-around;
+
+
+    }
+
+    #slideshow {
+        float: left;
+        width: 100%;
+        height: auto;
+        transition-duration: 0.15s;
+    }
+
+    #slideshow.full {
+        width: 100%;
+        transition-duration: 0.45s;
+    }
+
+    canvas {
+        margin: auto;
+        width: 100%;
+    }
+
+    #pan_container {
+        width: 100%;
+    }
+
+    #pan_container.fullscreen {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 100000;
+    }
+
+    #pan_fullscreen-btn {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+
+    }
+    #pan_fullscreen-btn:hover {
+        cursor: pointer;
+    }
+    #pan_fullscreen-btn::before {
+        content: '';
+        background-image: url(IMG/icons/pan/fullscreen_on_icon.png);
+        width: 48px;
+        height: 48px;
+        background-size: 48px 48px;
+        display: inline-block;
+        filter: brightness(45%) sepia(1) saturate(10000%) hue-rotate(183deg);
+
+    }
+
+    .pan_el.fullscreen {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        z-index: 110000;
+        width: 20%;
+    }
+
+    .planritning.pan_el.fullscreen {
+        @MinimapHide
+    }
+
+    .e-checkicon.pan_el.fullscreen {
+        @MoveIcon
+        z-index: 110000;
+        display:initial;
+    }
+
+    #housing_info {
+        float: right;
+        width: 33%;
+        font-family: acumin-pro,sans-serif;
+        transition: width 0.1s 0.5s, opacity 0.4s 0.5s, display 0.5s 0.5s;
+        @*transition-duration: 0.35s;*@
+        @*transition-delay: 0.25s;*@
+    }
+
+    #housing_info.hidden {
+        display: none;
+        width: 25%;
+        opacity: 0;
+        @*transition-duration: 0.05s;
+        transition-delay: 0s;*@
+    }
+
+    #gallery {
+       
+     overflow-x:scroll;
+        white-space: nowrap;
+        display: flex;
+        flex-direction: row;
+        margin-bottom:7px;
+       
+
+    }
+
+        #gallery span {
+            display: contents;
+
+        }
+
+
+    #hide_info {
+        position: fixed;
+        bottom: 0px;
+        right: 0px;
+        transition-duration: 0.4s;
+    }
+
+    #hide_info:hover {
+        width: 50px;
+    }
+
+    .gallery-img {
+        width: 25%;
+        margin-right: 4px;
+        align-self: center;
+        margin-bottom:4px;
+    }
+
+    .gallery-img:hover {
+        filter: brightness(125%);
+        cursor: pointer;
+    }
+
+    .gallery-img.active {
+        filter: brightness(100%);
+    }
+
+    .card-info-header {
+        font-family: acumin-pro,sans-serif;
+        font-size: 0.8vw;
+    }
+
+    .card-info-text {
+        font-family: acumin-pro,sans-serif;
+        font-size: 12px;
+        display: inline-block;
+        text-size-adjust: none;
+    }
+
+    .card-info-header-fat {
+        font-family: acumin-pro,sans-serif;
+        font-size: 0.8vw;
+        font-weight: 700;
+
+    }
+
+    .list1 {
+        list-style-type: none;
+    }
+
+    e-info-icon::before {
+        content: url(IMG/icons/info_tiny.png);
+    }
+
+    .icon {
+        width: 32px;
+    }
+
+    .e-btn{
+        font-size:1vw;
+        text-transform:none;
+    }
+
+ 
+
+    @@media (max-width: 1379px){
+
+
+
+        .textitem {
+            width: 21%;
+            height: 27%;
+        }
+
+        .textitem2 {
+            width: 21%;
+            height:27%;
+
+            margin-left: 20px;
+        }
+
+        .infodiv {
+          
+            justify-content: center;
+            margin-top:2%;
+         
+        }
+
+
+
+        #gallery{
+            padding-top:0px;
+        }
+
+    }
+
+
+
+    @@media (max-width: 1300px) {
+
+
+
+        .textitem {
+            width: 21%;
+           
+
+        }
+
+        .textitem2 {
+            width: 21%;
+            margin-left: 20px;
+           
+        }
+
+        .infodiv{
+            padding:2px;
+        }
+
+
+    }
+
+    @@media (max-width: 927px) {
+        .e-btn {
+            background-color: #415965;
+            color: white;
+            font-size: 12px;
+        }
+
+       
+
+        .visibleButton2{
+            width:31.5%;
+        }
+
+        #gallery {
+            width: 25%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            margin: 0px;
+            flex-direction: column;
+        }
+
+            #gallery span {
+                display: initial;
+            }
+
+        .gallery-img {
+            width: 100%;
+            padding-right: 2px;
+        }
+
+        .card-info-header-fat {
+            font-family: acumin-pro,sans-serif;
+            font-size: 14px;
+            display: inline-block;
+            padding-bottom: 0px;
+        }
+
+
+        .card-info-header {
+            font-family: acumin-pro,sans-serif;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+
+
+        .line-1 {
+            width: 25%;
+        }
+
+        .line-2 {
+            width: 100%;
+        }
+
+        .line-3 {
+            width: 100%;
+        }
+
+        .line-4 {
+            width: 100%;
+        }
+
+
+        .planritning {
+            width: 75%;
+        }
+
+        .line-5 {
+            width: 50%;
+        }
+
+        .line-6 {
+            width: 50%;
+        }
+
+        .line-7 {
+            width: 100%;
+        }
+
+        .line-8 {
+            width: 100%;
+        }
+
+        .line-9 {
+            width: 100%;
+        }
+
+        .line-10 {
+            width: 100%;
+        }
+
+        .line-11 {
+            width: 100%;
+        }
+
+        .line-12 {
+            width: 100%;
+        }
+
+        [class*="line-"] {
+            float: left;
+            padding: 3px;
+        }
+
+        .gallercontain {
+            width: 25%;
+        }
+
+        .floorplancontain {
+            width: 75%
+        }
+
+        .infocontain {
+            width: 100%
+        }
+
+     
+
+        /* width */
+        ::-webkit-scrollbar {
+            height: 0px;
+            width: 3px;
+        }
+
+        #pan_container.fullscreen {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 100000;
+        }
+
+        .pan_el.fullscreen {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            z-index: 110000;
+            width: 40%;
+            font-size: 8px;
+        }
+
+        .btn-group button {
+            cursor: pointer;
+            float: right;
+            width: 200%;
+            border-radius: 2px;
+            font-size: 15px;
+            padding: 3px;
+            margin-right: 2px;
+        }
+
+        .infodiv {
+            width: 101.5%;
+        }
+
+        .CallToActionBtn {
+            font-size:15px;
+        }
+
+     
+
+        .visibleButtonCP {
+            width: 31.5%;
+           
+        }
+
+        .hiddenButtonCP {
+            width: 31.5%;
+            display: initial;
+          
+        }
+
+        @@media (max-width: 627px) {
+
+            .infodiv {
+                width: 102%;
+            }
+
+            #icon{
+                font-size:12px;
+
+            }
+
+            .boFakta {
+                font-size: 14px;
+            }
+
+            .CallToActionBtn {
+                font-size: 14px;
+            }
+
+            .btn-group button {
+               
+                font-size: 14px;
+                
+            }
+
+            .card-info-header-fat {
+              
+                font-size: 12px;
+               
+            }
+
+
+            .card-info-header {
+              
+                font-size: 12px;
+           
+            }
+
+          
+        }
+
+        @@media (max-width: 427px) {
+
+            #buttonAndFact {
+                margin-left: 2%
+            }
+
+            .boFakta {
+                font-size: 12px;
+            }
+            #icon {
+                font-size: 12px;
+            }
+            .CallToActionBtn {
+                font-size: 12px;
+            }
+
+            .btn-group button {
+                font-size: 11px;
+            }
+
+            .card-info-header-fat {
+                font-size: 11px;
+            }
+
+
+            .card-info-header {
+                font-size: 11px;
+            }
+        }
+
+        @@media (max-width: 364px) {
+
+            .boFakta {
+                font-size: 10px;
+            }
+
+            #icon {
+                font-size: 11px;
+            }
+
+            .CallToActionBtn {
+                font-size: 10px;
+            }
+
+            .btn-group button {
+                font-size: 9px;
+            }
+
+            .card-info-header-fat {
+                font-size: 9px;
+            }
+
+
+            .card-info-header {
+                font-size: 9px;
+            }
+
+            #buttonAndFact {
+                margin-left: 2.5%
+            }
+        }
+
+
+        }
+</style>

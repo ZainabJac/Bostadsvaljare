@@ -36,7 +36,7 @@
                                     {
                                         string housestatus = "available";
                                         if (map.ID > 0)
-                                          housestatus = Data.House.Get(map.ID).Status;
+                                          housestatus = Data.House.Get(map.ID, Project).Status;
 
                                         <area id="@housestatus" status="" href="#"
                                               @onmouseover="e => OnMouseOverIM(e, map.HouseNumber)" @onmouseout="() => OnMouseOutIM(map.HouseNumber)" @onclick="() => HousingClickedIM(map.ID, housestatus)"
@@ -164,6 +164,7 @@
 
 
     private static Lgh_lista self;
+    private static string Project { get; } = "WIJK";
 
     private SfGrid<Data.House> HouseList;
     private Dictionary<string, string> HouseToStatus;
@@ -246,8 +247,8 @@
         _ind=0;
         base.OnInitialized();
         self = this;
-        this.HouseData = Data.House.GetHouseData();
-        this.MapData = Data.HouseMap.GetHouseMapData();
+        this.HouseData = Data.House.GetHouseData(Project);
+        this.MapData = Data.HouseMap.GetHouseMapData(Project);
         this.HouseToStatus = new Dictionary<string, string>();
         this.IsHighlighting = false;
         this.HighlightedRow = -1;
