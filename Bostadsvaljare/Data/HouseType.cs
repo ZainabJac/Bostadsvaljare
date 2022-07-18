@@ -569,8 +569,34 @@ namespace Bostadsvaljare.Data
                         Comment = "Nån lämplig kommentar..."
                       }},
                     });
+                } else if (project == "Kilen") {
+                    data.Add(project, new Dictionary<string, HouseType> {
+                      { "lgh", new HouseType {
+                        Floorplans = new List<Floorplan> {
+                          new Floorplan { Source = "IMG/Kilen/interior/plan.png", Rooms = new List<Floorplan.Room> {
+                            //new Floorplan.Room { RoomID = 6, Left = "63.5%", Top="54%", IconClass="fas fa-street-view" },
+                            //new Floorplan.Room { RoomID = 4, Left = "56%", Top="60%", IconClass="fas fa-camera" },
+                            //new Floorplan.Room { RoomID = 2, Left = "63%", Top="30%", IconClass="fas fa-camera" },
+                            //new Floorplan.Room { RoomID = 5, Left = "74%", Top="42%", IconClass="fas fa-street-view" },
+                            //new Floorplan.Room { RoomID = 3, Left = "63%", Top="41%", IconClass="fas fa-camera" },
+                            //new Floorplan.Room { RoomID = 7, Left = "36%", Top="45%", IconClass="fas fa-camera" },
+                            //new Floorplan.Room { RoomID = 8, Left = "31%", Top="59%", IconClass="fas fa-video" },
+                          }},
+                        },
+                        Images = new List<Image> {
+                          new Image { Source="IMG/Kilen/interior/220712_Kitchen_3K.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/interior/Kilen_Sovrum.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/interior/Kilen_Vardagsrum-1.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/interior/Kilen_Vardagsrum-3.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/interior/Kilen_WC.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/exterior/Kilen_Moodbild-Balkong_220629_beauty element.jpg", Type=ImageType.Image },
+                          new Image { Source="IMG/Kilen/exterior/Kilen_Innergard.jpg", Type=ImageType.Image },
+                        },
+                        Comment = "Nån lämplig kommentar..."
+                      }},
+                    });
                 }
-            }
+      }
 
             return data[project][type];
         }

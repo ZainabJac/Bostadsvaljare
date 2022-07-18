@@ -1,0 +1,388 @@
+﻿@page "/kilen/närområde"
+@layout KilenLayout
+
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@inject IJSRuntime JSRuntime
+
+
+
+<div style="width:100%">
+
+
+    <div id="map" style="width:100%; margin:auto;"></div>
+
+    <div id="travel-data" class="firstSearchResult">
+
+        <div> <i id="route"></i> <a id="travel-distance"></a></div>
+
+        <div> <i id="clock"></i>  <a id="travel-time"></a></div>
+
+    </div>
+
+    <div class="firstSearch">
+        <div style="justify-content: center; display: flex; flex-direction: column; width:100%; float:left; ">
+            <div class="container">
+
+                <input id="searchBar" class="searchbar" type="text" placeholder="Sök destination..">
+                <a id="btnSearch" class="btn-search"></a>
+            </div>
+
+            <div class="radiobuttons">
+                <SfRadioButton Name="travelMode" Value="car" Checked="true" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-car radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="bike" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-bicycle radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="public" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-subway radioicons"></i>
+                <br>
+
+                <SfRadioButton Name="travelMode" Value="walk" Checked="false" ValueChange="@OnTravelModeValueChange"></SfRadioButton> <i class="fas fa-walking radioicons"></i>
+
+            </div>
+
+
+
+        </div>
+
+
+
+    </div>
+
+    <div class="secondSearch">
+        <div class="container">
+            <input id="searchBar2" class="searchbar" type="text" placeholder="Sök i området..">
+            <a id="btnSearch" class="btn-search"></a>
+        </div>
+
+    </div>
+
+
+
+
+    <div id="travel-data">
+        <div style="padding-bottom: 7px;" display: inline-block;> <a id="travel-distance1"></a> </div>
+        <div style=" padding-bottom:7px;">  <a id="travel-time1"></a></div>
+    </div>
+
+
+
+</div>
+  
+
+
+
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "googlemaps.initAutocomplete", 56.410291, 12.638953
+            );
+        }
+        await JSRuntime.InvokeVoidAsync("util.enableClickMenu");
+        await JSRuntime.InvokeVoidAsync("util.hideCP");
+    }
+
+    private async void OnTravelModeValueChange(Syncfusion.Blazor.Buttons.ChangeArgs args)
+    {
+        await JSRuntime.InvokeVoidAsync(
+            "googlemaps.setTravelMode", args.Value
+        );
+    }
+}
+
+
+<style>
+
+    .firstSearch {
+        position: absolute;
+        top: 11%;
+        left: 20%;
+        width: 40%;
+    }
+
+
+    .secondSearch {
+        position: absolute;
+        top: 11%;
+        left: 52%;
+        width: 40%;
+    }
+
+    .firstSearchResult {
+        position: absolute;
+        top: 18%;
+        left: 2%;
+      
+    }
+
+    .radioicons{
+        margin-right: 10px;
+       margin-left:-5px;
+    }
+
+    .radiobuttons {
+        
+        display:flex;
+        justify-content:center;
+        flex-direction:row;
+        margin-top:12px;
+        margin-bottom:12px;
+    }
+
+    input:focus::-webkit-input-placeholder {
+        color: transparent;
+    }
+  
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }
+
+    .searchbar {
+        float: right;
+        color: #415965;
+        background-color: white;
+        width: 65%;
+        border: none;
+        margin-top:0px;
+        margin-right: 8px;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1em;
+        border-bottom: white solid 2px;
+        transition: 0.3s;
+        border-radius: 3px;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        height:40px;
+    }
+
+        .searchbar::placeholder {
+            color: #415965;
+            font-family: acumin-pro,sans-serif;
+            font-size: 12px;
+            text-align: center;
+            /* transition: 0.2s; */
+        }
+
+    .searchbar:focus {
+        width: 90%;
+        font-family: acumin-pro,sans-serif;
+        font-size: 12px;
+        transition: 0.3s;
+        /* Stops the input box from inheriting the styling from the inputs on the request form */
+        border-bottom: white solid 2px;
+        outline: none;
+        text-align: center;
+    }
+
+    .btn-search {
+        cursor: pointer;
+        color: white;
+        text-decoration: none !important;
+        font-family: acumin-pro,sans-serif;
+        font-size: 1.5em;
+        text-align: center;
+        position: relative;
+        left: -6.5%;
+        top: 10px;
+        overflow: auto;
+    }
+
+
+    .naromrodetxt {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+        margin: auto;
+        font-size: 14px;
+        padding: 7px;
+    }
+
+    .naromrodeheader {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+        margin: auto;
+        font-size: 20px;
+    }
+
+    #pac-input2 {
+        
+        font-family: acumin-pro,sans-serif;
+        padding: 1px;
+    }
+
+    .e-card-stacked {
+        background-color: #415965;
+    }
+
+    .controls {
+        margin-top: 14px;
+        margin-left: 7px;
+        width: 100%;
+    }
+
+    .results {
+        font-family: acumin-pro,sans-serif;
+        color: white;
+        display: inline-block;
+        width: 250px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        font-size: 15px;
+        font-weight: 500;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+        padding-top:10px;
+        height:40px;
+        border-radius:3px;
+    }
+
+    #map {
+        height: 700px;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fff;
+        border: 1px none #000;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+        color: rgba(0, 0, 0, 0.87);
+        outline: none;
+    }
+
+    #pac-input {
+     
+        font-family: acumin-pro,sans-serif;
+        padding: 1px;
+    }
+
+    .e-radio + label .e-label {
+        font-family: acumin-pro,sans-serif;
+        color: black;
+    }
+
+
+    .italicfont {
+        font-family: acumin-pro,sans-serif;
+        font-size: 12px;
+        font-style: italic;
+        text-size-adjust: none;
+    }
+
+
+    @@media (max-width: 1700px) {
+    
+        .btn-search{
+            left:-8%;
+        }
+
+        .firstSearchResult{
+            left:3%;
+        }
+    
+    }
+
+    @@media (max-width: 1515px) {
+
+        .btn-search {
+            left: -9%;
+        }
+
+        .firstSearchResult{
+            left:3.5%;
+        }
+    }
+
+
+
+
+    @@media (max-width: 1200px) {
+        .btn-search {
+            left: -10%;
+        }
+
+        .firstSearchResult{
+            left:4%;
+        }
+    }
+
+    @@media (max-width: 1000px) {
+        .firstSearch {
+                position: initial;
+                float: left;
+                width: 50%;
+                margin-top: 10px;
+            }
+
+        .firstSearchResult {
+            position: initial;
+            float: left;
+            width: 100%;
+            margin:10px;
+        }
+
+
+            .secondSearch {
+                position: initial;
+                float: left;
+                width: 50%;
+                margin-top: 10px;
+            }
+
+
+            .radiobuttons {
+                padding: 7px;
+                margin: auto;
+            }
+
+            .cardsearch {
+                display: none;
+            }
+
+
+            @@media (max-width: 600px) {
+
+                #map {
+                    height: 400px;
+                }
+
+      
+
+                .firstSearchResult {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin: 10px;
+                }
+
+                .firstSearch {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+
+
+                .secondSearch {
+                    position: initial;
+                    float: left;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+            }
+        }
+</style>

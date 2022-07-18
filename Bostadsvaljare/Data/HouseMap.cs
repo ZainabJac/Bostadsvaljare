@@ -18,6 +18,9 @@ namespace Bostadsvaljare.Data
             { "IMG/SolHav/exterior/SolHav_Oversikt_V3_BeautyElement.jpg", "view-2" },
             { "IMG/SolHav/exterior/solhav_PerspectiveMatch_oversikt2.jpg", "view-3" },
 
+            { "IMG/Kilen/exterior/DJI_0227.jpg", "view-1" },
+            { "IMG/Kilen/exterior/Oversikt_Bostadsväljare_3K.jpg", "view-2" },
+
         };
 
         public int ID { get; set; }
@@ -259,9 +262,46 @@ namespace Bostadsvaljare.Data
                 }},
 
             });
+        } else if (project == "Kilen") {
+          data.Add(project, new Dictionary<string, List<HouseMap>> {
+            { "view-1", new List<HouseMap> {
+              new HouseMap { View = "view-2", IMCoords = "1584,565, 1122,1788, 2814,1784, 2729,898, 2358,512" },
+            }},
+            { "view-2", new List<HouseMap> {
+              new HouseMap { HouseNumber = "1", IMCoords = "1351,1174, 1353,1345, 1927,1573, 2175,1428, 2184,1359, 2085,1327, 2090,1242, 1817,1379" },
+              new HouseMap { HouseNumber = "2", IMCoords = "2090,1242, 2085,1327, 2184,1359, 2175,1428, 2393,1300, 2403,1236, 2308,1208, 2316,1127" },
+              new HouseMap { HouseNumber = "3", IMCoords = "2316,1127, 2308,1208, 2403,1236, 2393,1300, 2582,1188, 2593,1129, 2501,1109, 2507,1030" },
+              new HouseMap { HouseNumber = "4", IMCoords = "2507,1030, 2501,1109, 2593,1129, 2582,1188, 2746,1095, 2756,1035, 2673,1017, 2680,942" },
+              new HouseMap { HouseNumber = "5", IMCoords = "1353,1345, 1354,1479, 2000,1753, 2250,1591, 2223,1582, 2223,1574, 2080,1518, 2080,1483, 1927,1573" },
+              new HouseMap { HouseNumber = "6", IMCoords = "2083,1481, 2083,1514, 2254,1590, 2460,1450, 2437,1442, 2437,1434, 2290,1384, 2290,1362" },
+              new HouseMap { HouseNumber = "7", IMCoords = "2293,1359, 2293,1386, 2469,1445, 2648,1326, 2623,1320, 2623,1313, 2481,1272, 2481,1249" },
+              new HouseMap { HouseNumber = "8", IMCoords = "2484,1246, 2484,1275, 2651,1325, 2803,1222, 2782,1216, 2783,1210, 2655,1173, 2656,1145" },
+              new HouseMap { HouseNumber = "9", IMCoords = "155,902, 166,994, 460,1078, 493,1067, 517,1076, 514,1049, 657,994, 652,937, 551,974, 495,960, 447,976" },
+              new HouseMap { HouseNumber = "10", IMCoords = "652,937, 657,994, 765,955, 819,972, 892,938, 828,925, 825,874, 741,905, 716,899, 716,916" },
+              new HouseMap { HouseNumber = "11", IMCoords = "824,875, 828,925, 892,938, 951,907, 948,856, 900,846" },
+              new HouseMap { HouseNumber = "12", IMCoords = "902,934, 961,945, 1016,920, 1015,869, 948,856, 951,907" },
+              new HouseMap { HouseNumber = "13", IMCoords = "961,945, 1152,984, 1209,961, 1209,907, 1196,902, 1196,878, 1178,874, 1133,891, 1015,869, 1016,920" },
+              new HouseMap { HouseNumber = "14", IMCoords = "1152,984, 1365,1034, 1417,1005, 1417,947, 1410,945, 1410,920, 1382,915, 1341,933, 1209,907, 1209,961" },
+              new HouseMap { HouseNumber = "15", IMCoords = "1365,1034, 1569,1077, 1678,1032, 1678,1017, 1716,1000, 1716,993, 1775,962, 1791,973, 1843,955, 1844,857, 1597,984, 1417,947, 1417,1005" },
+              new HouseMap { HouseNumber = "16", IMCoords = "144,810, 155,902, 447,976, 495,960, 551,974, 716,916, 715,863, 653,853, 653,836, 543,873, 484,862, 435,877" },
+              new HouseMap { HouseNumber = "17", IMCoords = "653,836, 653,853, 715,863, 716,899, 741,905, 900,846, 900,834, 947,819, 946,763, 897,753, 735,807, 709,804, 709,817" },
+              new HouseMap { HouseNumber = "18", IMCoords = "900,834, 900,846, 1133,891, 1178,874, 1196,878, 1196,858, 1206,850, 1206,812, 1196,808, 1195,783, 1177,780, 1131,795, 946,763, 947,819" },
+              new HouseMap { HouseNumber = "19", IMCoords = "1196,858, 1196,902, 1341,933, 1382,915, 1410,920, 1410,896, 1417,891, 1417,850, 1410,848, 1410,820, 1384,817, 1340,836, 1201,810, 1206,850" },
+              new HouseMap { HouseNumber = "20", IMCoords = "1410,896, 1410,945, 1597,984, 1844,857, 1845,765, 1599,883, 1417,850, 1417,891" },
+              new HouseMap { HouseNumber = "21", IMCoords = "131,711, 144,810, 435,877, 484,862, 543,873, 709,817, 707,765, 640,752, 637,712, 425,773" },
+              new HouseMap { HouseNumber = "22", IMCoords = "637,712, 640,752, 707,765, 709,804, 735,807, 897,753, 897,745, 941,730, 939,650, 880,639" },
+              new HouseMap { HouseNumber = "23", IMCoords = "897,745, 897,753, 1131,795, 1177,780, 1195,783, 1195,758, 1205,755, 1203,694, 939,650, 941,730" },
+              new HouseMap { HouseNumber = "24", IMCoords = "1196,758, 1196,808, 1340,836, 1384,817, 1410,820, 1410,798, 1417,793, 1417,728, 1203,694, 1204,755" },
+              new HouseMap { HouseNumber = "25", IMCoords = "1410,798, 1410,848, 1599,883, 1845,765, 1847,675, 1647,765, 1417,728, 1417,793" },
+              new HouseMap { HouseNumber = "26", IMCoords = "122,648, 131,711, 425,773, 746,680, 744,653, 652,640, 647,566, 350,642, 150,604, 156,638" },
+              new HouseMap { HouseNumber = "27", IMCoords = "647,566, 652,640, 744,653, 746,680, 881,639, 880,588, 891,586, 888,517, 856,513" },
+              new HouseMap { HouseNumber = "28", IMCoords = "880,588, 881,639, 1133,682, 1133,654, 1201,634, 1200,562, 888,517, 891,586" },
+              new HouseMap { HouseNumber = "29", IMCoords = "1133,654, 1133,682, 1647,765, 1847,675, 1847,649, 1855,645, 1855,606, 1824,601, 1824,573, 1687,631, 1200,562, 1201,634" },
+            }},
+          });
         }
 
-                List <House> houseData = House.GetHouseData(project);
+        List <House> houseData = House.GetHouseData(project);
                 //houseData.RemoveAt(70);
                 foreach (KeyValuePair<string, List<HouseMap>> view in data[project]) {
                     foreach (HouseMap map in view.Value) {
